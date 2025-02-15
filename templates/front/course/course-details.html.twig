@@ -1,0 +1,170 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Détails du Cours{% endblock %}
+
+{% block body %}
+
+<main class="main">
+
+    <!-- Titre de la page -->
+    <div class="page-title" data-aos="fade">
+      <div class="heading">
+        <div class="container">
+          <div class="row d-flex justify-content-center text-center">
+            <div class="col-lg-8">
+              <h1>Détails du Cours</h1>
+              <p class="mb-0">Découvrez les informations essentielles sur ce cours, y compris son contenu, son formateur et ses horaires.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <nav class="breadcrumbs">
+        <div class="container">
+          <ol>
+            <li><a href="{{ path('app_course') }}">Accueil</a></li>
+            <li class="current">Détails du Cours</li>
+          </ol>
+        </div>
+      </nav>
+    </div><!-- Fin du titre de la page -->
+
+    <!-- Section Détails du Cours -->
+    <section id="courses-course-details" class="courses-course-details section">
+
+      <div class="container" data-aos="fade-up">
+
+        <div class="row">
+          <div class="col-lg-8">
+            <img src="assets/img/course-details.jpg" class="img-fluid" alt="Image du cours">
+            <h3>Introduction au Développement Web</h3>
+            <p>
+              Ce cours vous guidera à travers les bases du développement web, en couvrant les langages essentiels comme HTML, CSS et JavaScript. Vous apprendrez à créer des sites interactifs et réactifs.
+            </p>
+          </div>
+          <div class="col-lg-4">
+
+            <div class="course-info d-flex justify-content-between align-items-center">
+              <h5>Formateur</h5>
+              <p><a href="#">Jean Dupont</a></p>
+            </div>
+
+            <div class="course-info d-flex justify-content-between align-items-center">
+              <h5>Tarif</h5>
+              <p>200€</p>
+            </div>
+
+            <div class="course-info d-flex justify-content-between align-items-center">
+              <h5>Places Disponibles</h5>
+              <p>25</p>
+            </div>
+
+            <div class="course-info d-flex justify-content-between align-items-center">
+              <h5>Horaires</h5>
+              <p>18h00 - 20h00</p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- Fin de la section Détails du Cours -->
+
+    <!-- Section Contenu du Cours -->
+    <section id="tabs" class="tabs section">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row">
+          <div class="col-lg-3">
+            <ul class="nav nav-tabs flex-column">
+              <li class="nav-item">
+                <a class="nav-link active show" data-bs-toggle="tab" href="#tab-1">Introduction</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#tab-2">HTML & CSS</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#tab-3">JavaScript</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#tab-4">Frameworks</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="tab" href="#tab-5">Projet Final</a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-lg-9 mt-4 mt-lg-0">
+            <div class="tab-content">
+              <div class="tab-pane active show" id="tab-1">
+                <div class="row">
+                  <div class="col-lg-8 details order-2 order-lg-1">
+                    <h3>Introduction au Cours</h3>
+                    <p class="fst-italic">Présentation générale du cours et des objectifs d'apprentissage.</p>
+                    <p>Découvrez les bases du développement web et les technologies que nous allons explorer tout au long de la formation.</p>
+                  </div>
+                  <div class="col-lg-4 text-center order-1 order-lg-2">
+                    <img src="assets/img/tabs/tab-1.png" alt="Introduction" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane" id="tab-2">
+                <div class="row">
+                  <div class="col-lg-8 details order-2 order-lg-1">
+                    <h3>Fondamentaux de HTML & CSS</h3>
+                    <p class="fst-italic">Apprenez à structurer et styliser vos pages web.</p>
+                    <p>Nous explorerons la syntaxe HTML, les balises essentielles et les concepts CSS pour améliorer l'apparence de vos sites.</p>
+                  </div>
+                  <div class="col-lg-4 text-center order-1 order-lg-2">
+                    <img src="assets/img/tabs/tab-2.png" alt="HTML & CSS" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane" id="tab-3">
+                <div class="row">
+                  <div class="col-lg-8 details order-2 order-lg-1">
+                    <h3>JavaScript et Interactivité</h3>
+                    <p class="fst-italic">Ajoutez du dynamisme à vos pages web.</p>
+                    <p>Introduction à JavaScript, manipulation du DOM et premiers scripts interactifs pour rendre vos sites plus vivants.</p>
+                  </div>
+                  <div class="col-lg-4 text-center order-1 order-lg-2">
+                    <img src="assets/img/tabs/tab-3.png" alt="JavaScript" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane" id="tab-4">
+                <div class="row">
+                  <div class="col-lg-8 details order-2 order-lg-1">
+                    <h3>Frameworks et Bibliothèques</h3>
+                    <p class="fst-italic">Introduction aux outils modernes.</p>
+                    <p>Découvrez Bootstrap, jQuery et d'autres technologies qui facilitent le développement web.</p>
+                  </div>
+                  <div class="col-lg-4 text-center order-1 order-lg-2">
+                    <img src="assets/img/tabs/tab-4.png" alt="Frameworks" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+              <div class="tab-pane" id="tab-5">
+                <div class="row">
+                  <div class="col-lg-8 details order-2 order-lg-1">
+                    <h3>Projet Final</h3>
+                    <p class="fst-italic">Application des connaissances acquises.</p>
+                    <p>Travaillez sur un projet web complet et mettez en pratique toutes les compétences acquises.</p>
+                  </div>
+                  <div class="col-lg-4 text-center order-1 order-lg-2">
+                    <img src="assets/img/tabs/tab-5.png" alt="Projet Final" class="img-fluid">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section><!-- Fin de la section Contenu du Cours -->
+
+  </main>
+
+{% endblock %}

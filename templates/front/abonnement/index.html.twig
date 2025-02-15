@@ -1,0 +1,120 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Abonnement{% endblock %}
+
+{% block body %}
+<style type="text/css">
+    /* Bordure autour du formulaire */
+    form {
+        border: 2px solid #7E6C8E; /* Bordure de couleur autour du formulaire */
+        padding: 20px;
+        border-radius: 8px; /* Coins arrondis */
+        font-size: 1.2rem; /* Augmente la taille de la police du formulaire */
+    }
+
+    /* Bordure autour de l'input Email */
+    input#email,
+    input[type="text"] {
+        border: 1px solid #7E6C8E; /* Bordure autour de l'input email */
+        padding: 10px;
+        border-radius: 4px; /* Coins arrondis pour l'input */
+        width: 100%; /* S'assurer qu'il prend toute la largeur */
+        font-size: 1.1rem; /* Augmente la taille de la police dans les champs */
+    }
+
+    /* Bordure autour du bouton Payer */
+    button[type="submit"] {
+        border: 2px solid #7E6C8E; /* Bordure autour du bouton */
+        padding: 10px 20px;
+        border-radius: 4px; /* Coins arrondis pour le bouton */
+        background-color: #7E6C8E; /* Couleur de fond du bouton */
+        color: white; /* Texte en blanc */
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 1.1rem; /* Augmente la taille de la police du bouton */
+    }
+
+    /* Modifier la couleur du bouton au survol */
+    button[type="submit"]:hover {
+        background-color: #6d5a77;
+        border-color: #6d5a77;
+    }
+
+    /* Espacement entre l'image et le formulaire */
+    .container {
+        display: flex;
+        gap: 30px; /* Espace entre l'image et le formulaire */
+        justify-content: center;
+    }
+
+    .col-lg-6 {
+        margin-right: 30px; /* Ajoute un peu de marge à droite pour l'image */
+    }
+</style>
+
+<div class="container mt-5">
+    <!-- Section Image avec animation -->
+    <div class="col-lg-6">
+        <div id="myCarousel" class="carousel slide carousel-fade img-details" data-bs-ride="carousel" data-bs-interval="2000">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#myCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260" class="d-block w-100" alt="Image 1">
+                </div>
+                <div class="carousel-item">
+                    <img src="https://images.pexels.com/photos/270694/pexels-photo-270694.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940" class="d-block w-100" alt="Image 2">
+                </div>
+                <div class="carousel-item">
+                    <img src="https://images.pexels.com/photos/7974/pexels-photo.jpg?auto=compress&cs=tinysrgb&dpr=2&w=500" class="d-block w-100" alt="Image 3">
+                </div>
+            </div>
+            <button class="carousel-control-prev" type="button" data-bs-target="#myCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#myCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Formulaire de paiement -->
+    <div class="col-lg-6">
+        <form>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" class="form-control" placeholder="exemple@domaine.com">
+            </div>
+
+            <div class="card p-3 border">
+                <h5 class="mb-3">💳 Bank Card</h5>
+
+                <div class="mb-3">
+                    <label for="card-number" class="form-label">Card number</label>
+                    <input type="text" id="card-number" class="form-control" placeholder="1234 1234 1234 1234">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="expiration-date" class="form-label">Date d'expiration</label>
+                        <input type="text" id="Expiration date" class="form-control" placeholder="MM / AA">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="security-code" class="form-label">Security code</label>
+                        <input type="text" id="security-code" class="form-control" placeholder="CVV">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn mt-3" style="background-color: #7E6C8E; color: white;">Payer</button>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% endblock %}
