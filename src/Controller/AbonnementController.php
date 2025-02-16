@@ -15,4 +15,16 @@ final class AbonnementController extends AbstractController
             'controller_name' => 'AbonnementController',
         ]);
     }
+
+
+
+// faire appel fel back 
+
+    #[Route('/abonnementB', name: 'app_abonnementB')]
+    public function indexB(): Response
+    {
+        return $this->render('back/abonnement/index.html.twig', [
+            'controller_name' => 'AbonnementController',
+        ]);
+    }
 }

@@ -15,4 +15,13 @@ final class GroupController extends AbstractController
             'controller_name' => 'GroupController',
         ]);
     }
+
+    // faire appel fel back 
+    #[Route('/groupB', name: 'app_groupB')]
+    public function indexGroupB(): Response
+    {
+        return $this->render('back/group/Group.html.twig', [
+            'controller_name' => 'GroupController',
+        ]);
+    }
 }

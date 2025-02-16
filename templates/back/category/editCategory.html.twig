@@ -1,0 +1,76 @@
+{% extends 'back/baseback.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('assets/backAss/css/category_form.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1 class="text-center mb-4">Modifier la catégorie</h1>
+
+        {# Afficher les messages flash en cas de succès ou d'erreur #}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success text-center">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger text-center">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <div class="form-container">
+            {{ form_start(form) }}
+
+            <div class="form-group">
+                {{ form_label(form.name, 'Nom de la catégorie'|trans) }}
+                {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.name) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.description, 'Description'|trans) }}
+                {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.description) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.created_at, 'Date de création'|trans) }}
+                {{ form_widget(form.created_at, {
+                    'widget': 'single_text',
+                    'attr': {'class': 'form-control', 'readonly': 'readonly'}
+                }) }}
+                {{ form_errors(form.created_at) }}
+            </div>
+
+            <div class="form-group form-check">
+                {{ form_widget(form.isActive, {'attr': {'class': 'form-check-input'}}) }}
+                {{ form_label(form.isActive, 'Actif'|trans, {'label_attr': {'class': 'form-check-label'}}) }}
+                {{ form_errors(form.isActive) }}
+            </div>
+
+            {# Modif du champ icon pour permettre le téléversement d'une image #}
+            <div class="form-group">
+                {{ form_label(form.icon, 'Icône (fichier image)'|trans) }}
+                {{ form_widget(form.icon, {
+                    'attr': {'class': 'form-control'}
+                }) }}
+                {# Afficher l'icône actuelle si elle existe #}
+                {% if category.icon %}
+                    <div class="mt-2">
+                        <img src="{{ asset('uploads/images/' ~ category.icon) }}" alt="Icône actuelle" class="img-thumbnail" width="100">
+                    </div>
+                {% endif %}
+                {{ form_errors(form.icon) }}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+            <a href="{{ path('category_list') }}" class="btn btn-secondary">Annuler</a>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

@@ -15,4 +15,16 @@ final class PostController extends AbstractController
             'controller_name' => 'PostController',
         ]);
     }
+
+
+            // faire appel fel back 
+
+            #[Route('/postB', name: 'app_postB')]
+     public function indexPostB(): Response
+     {
+                return $this->render('back/post/Post.html.twig', [
+                    'controller_name' => 'PostController',
+                ]);
+     }
+
 }

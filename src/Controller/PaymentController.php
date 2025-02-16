@@ -15,4 +15,16 @@ final class PaymentController extends AbstractController
             'controller_name' => 'PaymentController',
         ]);
     }
+
+
+        // faire appel fel back 
+
+        #[Route('/paymentB', name: 'app_paymentB')]
+        public function indexB(): Response
+        {
+            return $this->render('back/payment/Payment.html.twig', [
+                'controller_name' => 'PaymentController',
+            ]);
+        }
+
 }

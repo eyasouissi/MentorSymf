@@ -1,0 +1,442 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Hello IndexController!{% endblock %}
+
+{% block body %}
+
+<main class="main">
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero section dark-background">
+
+<img src="{{ asset('assets/img/hero-bg.jpg') }}" alt="" data-aos="fade-in">
+
+<div class="container">
+    <h2 data-aos="fade-up" data-aos-delay="100">Learning Today,<br>Leading Tomorrow</h2>
+<p data-aos="fade-up" data-aos-delay="200">
+    <strong>Mentor</strong> is your gateway to knowledge. <br>
+    Learn, improve, and shape your future with us!
+</p>
+
+    <div class="d-flex mt-4" data-aos="fade-up" data-aos-delay="300">
+        <a href="{{ path('app_course') }}" class="btn-get-started">Get Started</a>
+    </div>
+</div>
+
+
+    </section><!-- /Hero Section -->
+
+
+
+
+
+    
+ <!-- About Section -->
+<section id="about" class="about section">
+
+  <div class="container">
+
+    <div class="row gy-4">
+
+      <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="100">
+        <img src="assets/img/about.jpg" class="img-fluid" alt="About Mentor">
+      </div>
+
+      <div class="col-lg-6 order-2 order-lg-1 content" data-aos="fade-up" data-aos-delay="200">
+        <h3>Empowering Learning, Shaping the Future</h3>
+        <p class="fst-italic">
+          Mentor is a learning platform designed to help you achieve your educational goals. Whether you're a student, professional, or knowledge enthusiast, we provide high-quality resources to help you grow at your own pace.
+        </p>
+        <ul>
+          <li><i class="bi bi-check-circle"></i> <span>Interactive and diverse courses tailored to all levels.</span></li>
+          <li><i class="bi bi-check-circle"></i> <span>Personalized guidance to support you throughout your learning journey.</span></li>
+          <li><i class="bi bi-check-circle"></i> <span>A dedicated community that shares knowledge and experience to grow together.</span></li>
+        </ul>
+        <a href="{{ path('app_about') }}" class="read-more"><span>Learn More</span><i class="bi bi-arrow-right"></i></a>
+      </div>
+
+    </div>
+
+  </div>
+
+</section><!-- /About Section -->
+
+
+
+
+
+        <!-- Counts Section -->
+    <section id="counts" class="section counts light-background">
+
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+
+        <div class="row gy-4">
+
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item text-center w-100 h-100">
+              <span data-purecounter-start="0" data-purecounter-end="1232" data-purecounter-duration="1" class="purecounter"></span>
+              <p>Students</p>
+            </div>
+          </div><!-- End Stats Item -->
+
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item text-center w-100 h-100">
+              <span data-purecounter-start="0" data-purecounter-end="64" data-purecounter-duration="1" class="purecounter"></span>
+              <p>Courses</p>
+            </div>
+          </div><!-- End Stats Item -->
+
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item text-center w-100 h-100">
+              <span data-purecounter-start="0" data-purecounter-end="42" data-purecounter-duration="1" class="purecounter"></span>
+              <p>Events</p>
+            </div>
+          </div><!-- End Stats Item -->
+
+          <div class="col-lg-3 col-md-6">
+            <div class="stats-item text-center w-100 h-100">
+              <span data-purecounter-start="0" data-purecounter-end="24" data-purecounter-duration="1" class="purecounter"></span>
+              <p>profile</p>
+            </div>
+          </div><!-- End Stats Item -->
+
+        </div>
+
+      </div>
+
+    </section><!-- /Counts Section -->
+
+
+
+
+<!-- Why Us Section -->
+<section id="why-us" class="section why-us">
+
+  <div class="container">
+
+    <div class="row gy-4">
+
+      <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="why-box">
+          <h3>Why Choose Mentor?</h3>
+          <p>
+            At <strong>Mentor</strong>, we are committed to making learning accessible, engaging, and effective.  
+            Our platform provides high-quality courses, expert guidance, and interactive resources to help  
+            you achieve your academic and professional goals. Join us and take your learning journey to the next level!
+          </p>
+          <div class="text-center">
+            <a href="{{ path('app_course') }}" class="more-btn"><span>Learn More</span> <i class="bi bi-chevron-right"></i></a>
+          </div>
+        </div>
+      </div><!-- End Why Box -->
+
+      <div class="col-lg-8 d-flex align-items-stretch">
+        <div class="row gy-4" data-aos="fade-up" data-aos-delay="200">
+
+          <div class="col-xl-4">
+            <div class="icon-box d-flex flex-column justify-content-center align-items-center">
+              <i class="bi bi-clipboard-data"></i>
+              <h4>Personalized Learning</h4>
+              <p>Our courses adapt to your learning style, ensuring a personalized and effective experience.</p>
+            </div>
+          </div><!-- End Icon Box -->
+
+          <div class="col-xl-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="icon-box d-flex flex-column justify-content-center align-items-center">
+              <i class="bi bi-gem"></i>
+              <h4>Expert Instructors</h4>
+              <p>Learn from industry professionals and academic experts who are passionate about teaching.</p>
+            </div>
+          </div><!-- End Icon Box -->
+
+          <div class="col-xl-4" data-aos="fade-up" data-aos-delay="400">
+            <div class="icon-box d-flex flex-column justify-content-center align-items-center">
+              <i class="bi bi-inboxes"></i>
+              <h4>Flexible & Accessible</h4>
+              <p>Access high-quality courses anytime, anywhere, and at your own pace.</p>
+            </div>
+          </div><!-- End Icon Box -->
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</section><!-- /Why Us Section -->
+
+
+    <!-- Features Section -->
+<section id="features" class="features section">
+
+  <div class="container">
+
+    <div class="row gy-4">
+
+      <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="100">
+        <div class="features-item">
+          <i class="bi bi-brain" style="color: #ffbb2c;"></i>
+          <h3><a href="" class="stretched-link">Artificial Intelligence</a></h3>
+        </div>
+      </div><!-- End Feature Item -->
+
+      <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="200">
+        <div class="features-item">
+          <i class="bi bi-calculator" style="color: #5578ff;"></i>
+          <h3><a href="" class="stretched-link">Mathematics</a></h3>
+        </div>
+      </div><!-- End Feature Item -->
+
+      <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="300">
+        <div class="features-item">
+          <i class="bi bi-journal-bookmark" style="color: #e80368;"></i>
+          <h3><a href="" class="stretched-link">English Language</a></h3>
+        </div>
+      </div><!-- End Feature Item -->
+
+      <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="400">
+        <div class="features-item">
+          <i class="bi bi-file-earmark-code" style="color: #e361ff;"></i>
+          <h3><a href="" class="stretched-link">Computer Science</a></h3>
+        </div>
+      </div><!-- End Feature Item -->
+
+      <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="500">
+        <div class="features-item">
+          <i class="bi bi-briefcase" style="color: #47aeff;"></i>
+          <h3><a href="" class="stretched-link">Business Management</a></h3>
+        </div>
+      </div><!-- End Feature Item -->
+
+      <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="600">
+        <div class="features-item">
+          <i class="bi bi-person-bounding-box" style="color: #ffa76e;"></i>
+          <h3><a href="" class="stretched-link">Psychology</a></h3>
+        </div>
+      </div><!-- End Feature Item -->
+
+      <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="700">
+        <div class="features-item">
+          <i class="bi bi-paint-bucket" style="color: #11dbcf;"></i>
+          <h3><a href="" class="stretched-link">Art & Design</a></h3>
+        </div>
+      </div><!-- End Feature Item -->
+
+      <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="800">
+        <div class="features-item">
+          <i class="bi bi-bar-chart" style="color: #4233ff;"></i>
+          <h3><a href="" class="stretched-link">Economics</a></h3>
+        </div>
+      </div><!-- End Feature Item -->
+
+      <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="900">
+        <div class="features-item">
+          <i class="bi bi-geo-alt" style="color: #b2904f;"></i>
+          <h3><a href="" class="stretched-link">Geography</a></h3>
+        </div>
+      </div><!-- End Feature Item -->
+
+      <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="1000">
+        <div class="features-item">
+          <i class="bi bi-heart" style="color: #b20969;"></i>
+          <h3><a href="" class="stretched-link">Health & Fitness</a></h3>
+        </div>
+      </div><!-- End Feature Item -->
+
+      <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="1100">
+        <div class="features-item">
+          <i class="bi bi-house-door" style="color: #ff5828;"></i>
+          <h3><a href="" class="stretched-link">Architecture</a></h3>
+        </div>
+      </div><!-- End Feature Item -->
+
+      <div class="col-lg-3 col-md-4" data-aos="fade-up" data-aos-delay="1200">
+        <div class="features-item">
+          <i class="bi bi-cogs" style="color: #29cc61;"></i>
+          <h3><a href="" class="stretched-link">Engineering</a></h3>
+        </div>
+      </div><!-- End Feature Item -->
+
+    </div>
+
+  </div>
+
+</section><!-- /Features Section -->
+
+
+
+<!-- Courses Section -->
+<section id="courses" class="courses section">
+
+  <!-- Section Title -->
+  <div class="container section-title" data-aos="fade-up">
+    <h2>Courses</h2>
+    <p>Popular Courses</p>
+  </div><!-- End Section Title -->
+
+  <div class="container">
+
+    <div class="row">
+
+      <!-- Web Development Course -->
+      <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
+        <div class="course-item">
+          <img src="assets/img/course-1.jpg" class="img-fluid" alt="Web Development">
+          <div class="course-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <p class="category">Web Development</p>
+              <p class="price">$169</p>
+            </div>
+
+            <h3><a href="course-details.html">Website Design</a></h3>
+            <p class="description">Learn the fundamentals of web design and user experience. Perfect for beginners!</p>
+            <div class="trainer d-flex justify-content-between align-items-center">
+              <div class="trainer-profile d-flex align-items-center">
+                <img src="assets/img/profile/trainer-1-2.jpg" class="img-fluid" alt="Antonio">
+                <a href="" class="trainer-link">Antonio</a>
+              </div>
+              <div class="trainer-rank d-flex align-items-center">
+                <i class="bi bi-person user-icon"></i>&nbsp;50
+                &nbsp;&nbsp;
+                <i class="bi bi-heart heart-icon"></i>&nbsp;65
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End Course Item -->
+
+      <!-- Marketing Course -->
+      <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0" data-aos="zoom-in" data-aos-delay="200">
+        <div class="course-item">
+          <img src="assets/img/course-2.jpg" class="img-fluid" alt="Marketing">
+          <div class="course-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <p class="category">Marketing</p>
+              <p class="price">$250</p>
+            </div>
+
+            <h3><a href="course-details.html">Search Engine Optimization</a></h3>
+            <p class="description">Master SEO to drive traffic and improve search engine rankings for websites.</p>
+            <div class="trainer d-flex justify-content-between align-items-center">
+              <div class="trainer-profile d-flex align-items-center">
+                <img src="assets/img/profile/trainer-2-2.jpg" class="img-fluid" alt="Lana">
+                <a href="" class="trainer-link">Lana</a>
+              </div>
+              <div class="trainer-rank d-flex align-items-center">
+                <i class="bi bi-person user-icon"></i>&nbsp;35
+                &nbsp;&nbsp;
+                <i class="bi bi-heart heart-icon"></i>&nbsp;42
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End Course Item -->
+
+      <!-- Content Course -->
+      <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-lg-0" data-aos="zoom-in" data-aos-delay="300">
+        <div class="course-item">
+          <img src="assets/img/course-3.jpg" class="img-fluid" alt="Content">
+          <div class="course-content">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <p class="category">Content Creation</p>
+              <p class="price">$180</p>
+            </div>
+
+            <h3><a href="course-details.html">Copywriting</a></h3>
+            <p class="description">Become a professional copywriter and create compelling content for all platforms.</p>
+            <div class="trainer d-flex justify-content-between align-items-center">
+              <div class="trainer-profile d-flex align-items-center">
+                <img src="assets/img/profile/trainer-3-2.jpg" class="img-fluid" alt="Brandon">
+                <a href="" class="trainer-link">Brandon</a>
+              </div>
+              <div class="trainer-rank d-flex align-items-center">
+                <i class="bi bi-person user-icon"></i>&nbsp;20
+                &nbsp;&nbsp;
+                <i class="bi bi-heart heart-icon"></i>&nbsp;85
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- End Course Item -->
+
+    </div>
+
+  </div>
+
+</section><!-- /Courses Section -->
+
+
+
+    
+    <!-- Profile Index Section -->
+<section id="profile-index" class="section profile-index">
+
+  <div class="container">
+
+    <div class="row">
+
+      <!-- Tutor 1: Walter White -->
+      <div class="col-lg-4 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="100">
+        <div class="member">
+          <img src="assets/img/profile/trainer-1.jpg" class="img-fluid" alt="Walter White">
+          <div class="member-content">
+            <h4>Walter White</h4>
+            <span>Web Development</span>
+            <p>Expert in modern web technologies with a passion for clean and efficient code.</p>
+            <div class="social">
+              <a href=""><i class="bi bi-twitter-x"></i></a>
+              <a href=""><i class="bi bi-facebook"></i></a>
+              <a href=""><i class="bi bi-instagram"></i></a>
+              <a href=""><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+        </div>
+      </div><!-- End Team Member -->
+
+      <!-- Tutor 2: Sarah Jhinson -->
+      <div class="col-lg-4 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="200">
+        <div class="member">
+          <img src="assets/img/profile/trainer-2.jpg" class="img-fluid" alt="Sarah Jhinson">
+          <div class="member-content">
+            <h4>Sarah Jhinson</h4>
+            <span>Marketing</span>
+            <p>Skilled in digital marketing and SEO, Sarah teaches how to reach the right audience online.</p>
+            <div class="social">
+              <a href=""><i class="bi bi-twitter-x"></i></a>
+              <a href=""><i class="bi bi-facebook"></i></a>
+              <a href=""><i class="bi bi-instagram"></i></a>
+              <a href=""><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+        </div>
+      </div><!-- End Team Member -->
+
+      <!-- Tutor 3: William Anderson -->
+      <div class="col-lg-4 col-md-6 d-flex" data-aos="fade-up" data-aos-delay="300">
+        <div class="member">
+          <img src="assets/img/profile/trainer-3.jpg" class="img-fluid" alt="William Anderson">
+          <div class="member-content">
+            <h4>William Anderson</h4>
+            <span>Content Creation</span>
+            <p>Creative professional with expertise in writing, content creation, and storytelling.</p>
+            <div class="social">
+              <a href=""><i class="bi bi-twitter-x"></i></a>
+              <a href=""><i class="bi bi-facebook"></i></a>
+              <a href=""><i class="bi bi-instagram"></i></a>
+              <a href=""><i class="bi bi-linkedin"></i></a>
+            </div>
+          </div>
+        </div>
+      </div><!-- End Team Member -->
+
+    </div>
+
+  </div>
+
+</section><!-- /Profile Index Section -->
+
+
+</main>
+
+{% endblock %}

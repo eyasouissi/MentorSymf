@@ -15,4 +15,16 @@ final class ForumController extends AbstractController
             'controller_name' => 'ForumController',
         ]);
     }
+
+
+
+    // faire appel fel back 
+
+    #[Route('/forumB', name: 'app_forumB')]
+    public function indexForumB(): Response
+    {
+        return $this->render('back/forum/forum.html.twig', [
+            'controller_name' => 'ForumController',
+        ]);
+    }
 }

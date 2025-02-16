@@ -25,4 +25,14 @@ final class CourseController extends AbstractController
             'controller_name' => 'CourseController',
         ]);
     }
+
+// faire appel fel back 
+
+    #[Route('/courseB', name: 'app_courseB')]
+    public function indexCoursesB(): Response
+    {
+        return $this->render('back/course/course.html.twig', [
+            'controller_name' => 'CourseController',
+        ]);
+    }
 }

@@ -13,4 +13,7 @@ final class ProfilController extends AbstractController
     {
         return $this->render('front/user/profil.html.twig');
     }
+
+
+
 }

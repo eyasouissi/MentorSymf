@@ -15,4 +15,15 @@ final class EventsController extends AbstractController
             'controller_name' => 'EventsController',
         ]);
     }
+
+
+    // faire appel fel back 
+    #[Route('/eventsB', name: 'app_eventB')]
+    public function indexEventsB(): Response
+    {
+        return $this->render('back/events/Events.html.twig', [
+            'controller_name' => 'EventsController',
+        ]);
+    }
+
 }
