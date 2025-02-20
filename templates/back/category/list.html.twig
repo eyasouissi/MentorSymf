@@ -27,6 +27,16 @@
         .btn-delete:hover {
             background-color: darkred;
         }
+        .az-dashboard-nav {
+            margin-bottom: 20px;
+        }
+        .az-dashboard-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .az-dashboard-text {
+            color: #6c757d;
+        }
     </style>
 {% endblock %}
 
@@ -66,7 +76,7 @@
             <!-- Navigation Tabs -->
             <div class="az-dashboard-nav"> 
                 <nav class="nav">
-                        <a href="{{ path('category_add') }}" class="nav-link {% if app.request.attributes.get('_route') == 'category_add' %}active{% endif %}">Add Category</a>
+                    <a href="{{ path('category_add') }}" class="nav-link {% if app.request.attributes.get('_route') == 'category_add' %}active{% endif %}">Add Category</a>
                         <a href="{{ path('category_list') }}" class="nav-link {% if app.request.attributes.get('_route') == 'category_list' %}active{% endif %}">View Category</a>
                     <a class="nav-link" data-toggle="tab" href="#">charts</a>
                     <a class="nav-link" data-toggle="tab" href="#">More</a>
@@ -79,59 +89,74 @@
                     <a class="nav-link" href="#"><i class="fas fa-ellipsis-h"></i></a>
                 </nav>
             </div>
-                <!-- Category List -->
-                <div class="container mt-4">
-                    <div class="table-container">
-                        <table class="table table-hover">
-                            <thead class="thead-dark">
-                                <tr>
-                                    <th>Description</th>
-                                    <th>Date de création</th>
-                                    <th>Actif</th>
-                                    <th>Icône</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for category in categories %}
-                                    <tr>
-                                        <td>{{ category.description }}</td>
-                                        <td>{{ category.createdAt|date('d/m/Y H:i') }}</td>
-                                        <td>
-                                            {% if category.isActive %}
-                                                <span class="badge badge-success">Oui</span>
-                                            {% else %}
-                                                <span class="badge badge-danger">Non</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            {% if category.icon %}
-                                                <a href="{{ asset('uploads/images/' ~ category.icon) }}" target="_blank">
-                                                    <img src="{{ asset('uploads/images/' ~ category.icon) }}" alt="Icône" style="width: 50px; height: auto;">
-                                                </a>
-                                            {% else %}
-                                                <span class="no-icon">Aucune icône</span>
-                                            {% endif %}
-                                        </td>
-                                        <td class="actions">
-                                            <a href="{{ path('category_edit', {'id': category.id}) }}" class="btn btn-edit btn-sm">Modifier</a>
-                                            <form action="{{ path('category_delete', {'id': category.id}) }}" method="POST" style="display:inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')">
-                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
-                                                <button type="submit" class="btn btn-delete btn-sm">Supprimer</button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                {% else %}
-                                    <tr>
-                                        <td colspan="5" class="text-center">Aucune catégorie trouvée.</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
 
-            </div><!-- az-content-body -->
-        </div><!-- container -->
-    </div><!-- az-content -->
+
+            <div class="container mt-4">
+                <div class="table-container">
+                    <table class="table table-hover">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>Description</th>
+                                <th>Date de création</th>
+                                <th>Actif</th>
+                                <th>Icône</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for category in categories %}
+                                <tr>
+                                    <td>{{ category.description }}</td>
+                                    <td>{{ category.createdAt|date('d/m/Y H:i') }}</td>
+                                    <td>
+                                        {% if category.isActive %}
+                                            <span class="badge badge-success">Oui</span>
+                                        {% else %}
+                                            <span class="badge badge-danger">Non</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                       {% if category.icon %}
+                                        {% if category.icon matches '/\.(mp4|webm|ogg)$/i' %}
+                                         <!-- Affiche la vidéo -->
+                                        <a href="{{ asset('uploads/images/' ~ category.icon) }}" target="_blank">
+                                     <video width="100" height="auto" controls>
+                                       <source src="{{ asset('uploads/images/' ~ category.icon) }}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                     </a>
+                                    {% else %}
+                                     <!-- Affiche l'image -->
+                                     <a href="{{ asset('uploads/images/' ~ category.icon) }}" target="_blank">
+                                     <img src="{{ asset('uploads/images/' ~ category.icon) }}" alt="Icône" style="width: 50px; height: auto;">
+                                    </a>
+                                    {% endif %}
+                                {% else %}
+                                  <span class="no-icon">Aucune icône</span>
+                                {% endif %}
+
+                                    </td>
+                                    <td class="actions">
+                                        <a href="{{ path('category_edit', {'id': category.id}) }}" class="btn btn-edit btn-sm">Modifier</a>
+                                        <form method="POST" action="{{ path('category_delete', {'id': category.id}) }}" class="d-inline">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <button type="submit" class="btn btn-danger" onclick="return confirm('Voulez-vous vraiment supprimer cette catégorie ?');">
+                                                Supprimer
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="text-center">Aucune catégorie trouvée.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div><!-- az-content-body -->
+    </div><!-- container -->
+</div><!-- az-content -->
 {% endblock %}

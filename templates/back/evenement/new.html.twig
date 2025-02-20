@@ -1,0 +1,119 @@
+{% extends 'back/baseback.html.twig' %}
+
+{% block title %}Ajouter un Événement - Back Office{% endblock %}
+{% block body %}
+  <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
+    <!-- Inclure le plugin simpleTxtCounter -->
+    <script src="{{ asset('assets/backAss/eya/jquery-simple-txt-counter.js') }}"></script>
+   <div class="az-content az-content-dashboard">
+    <div class="container">
+        <div class="az-content-body">
+            <!-- Dashboard Title -->
+            <div class="az-dashboard-one-title">
+                <div>
+                    <h2 class="az-dashboard-title">Hi, welcome back!</h2>
+                    <p class="az-dashboard-text">Your web analytics dashboard template.</p>
+                </div>
+                <div class="az-content-header-right">
+                    <div class="media">
+                        <div class="media-body">
+                            <label>Start Date</label>
+                            <h6>Oct 10, 2018</h6>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                    <div class="media">
+                        <div class="media-body">
+                            <label>End Date</label>
+                            <h6>Oct 23, 2018</h6>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                    <div class="media">
+                        <div class="media-body">
+                            <label>Event Category</label>
+                            <h6>All Categories</h6>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                    <a href="" class="btn btn-purple">Export</a>
+                </div>
+            </div><!-- az-dashboard-one-title -->
+
+            <!-- Navigation Tabs -->
+            <div class="az-dashboard-nav"> 
+                <nav class="nav">
+                    <a href="{{ path('ajouter_annonceback') }}" class="nav-link">Add Category</a>
+                    <a href="">View Category</a>
+                    <a class="nav-link" data-toggle="tab" href="#">charts</a>
+                    <a class="nav-link" data-toggle="tab" href="#">More</a>
+                </nav>
+
+                <nav class="nav">
+                    <a class="nav-link" href="#"><i class="far fa-save"></i> Save Report</a>
+                    <a class="nav-link" href="#"><i class="far fa-file-pdf"></i> Export to PDF</a>
+                    <a class="nav-link" href="#"><i class="far fa-envelope"></i> Send to Email</a>
+                    <a class="nav-link" href="#"><i class="fas fa-ellipsis-h"></i></a>
+                </nav>
+            </div>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Ajouter un Événement</h1>
+
+       
+
+        <form action="{{ path('evenement_newback') }}" method="post" enctype="multipart/form-data">
+            {{ form_start(form) }}
+
+            <div class="form-group">
+                {{ form_label(form.titreE) }}
+                {{ form_widget(form.titreE, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.titreE) }}
+            </div>
+
+            <div class="form-group">
+                {{ form_label(form.descriptionE) }}
+                {{ form_widget(form.descriptionE, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.descriptionE) }}
+            </div>
+
+            <div class="mb-4 input-group animated-input">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                </div>
+                {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Start Date'}}) }}
+            </div>
+            {% if form.dateDebut.vars.errors|length > 0 %}
+                <div class="alert alert-danger p-2">{{ form_errors(form.dateDebut) }}</div>
+            {% endif %}
+
+            <!-- End Date Field -->
+            <div class="mb-4 input-group animated-input">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                </div>
+                {{ form_widget(form.dateFin, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'End Date'}}) }}
+            </div>
+            {% if form.dateFin.vars.errors|length > 0 %}
+                <div class="alert alert-danger p-2">{{ form_errors(form.dateFin) }}</div>
+            {% endif %}
+
+            <div class="form-group">
+                {{ form_label(form.imageE) }}
+                {{ form_widget(form.imageE, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.imageE) }}
+            </div>
+
+            <!-- Announcement Title Field -->
+            <div class="form-group">
+                {{ form_label(form.annonce) }} {# Change 'annonce' to the correct field name #}
+                {{ form_widget(form.annonce, {'attr': {'class': 'form-control'}}) }}
+                {{ form_errors(form.annonce) }}
+            </div>
+
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Ajouter l'Événement</button>
+                <a href="{{ path('evenement_indexback') }}" class="btn btn-secondary">Retour à la liste</a>
+            </div>
+
+            {{ form_end(form) }}
+        </form>
+    </div>
+</div>
+{% endblock %}

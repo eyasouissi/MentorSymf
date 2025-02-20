@@ -1,0 +1,160 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Add Evenement{% endblock %}
+
+{% block body %}
+  <main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title" data-aos="fade-up">
+      <div class="heading">
+        <div class="container">
+          <div class="row d-flex justify-content-center text-center">
+            <div class="col-lg-8">
+              <h1 class="animated-title">Add Evenement</h1>
+              <p class="mb-0 animated-subtitle">Fill in the details to add a new evenement to the platform.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <nav class="breadcrumbs">
+        <div class="container">
+          <ol>
+            <li><a href="{{ path('evenement_index') }}">Evenements</a></li>
+            <li class="current">Add Evenement</li>
+          </ol>
+        </div>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <!-- Form Section -->
+    <section id="form-section" class="form-section section" data-aos="fade-up">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="card shadow-lg p-4 rounded-lg animated-card">
+              <div class="card-body">
+                <h5 class="card-title text-center mb-4 animated-form-title">Evenement Details</h5>
+
+                {{ form_start(form) }}
+
+                <!-- Affichage des erreurs globales -->
+                {% if form.vars.errors|length > 0 %}
+                    <div class="alert alert-danger">
+                        {{ form_errors(form) }}
+                    </div>
+                {% endif %}
+
+                <!-- Title Field -->
+                <div class="mb-4 input-group animated-input">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                  </div>
+                  {{ form_widget(form.titreE, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Enter Title'}}) }}
+                </div>
+                {% if form.titreE.vars.errors|length > 0 %}
+                    <div class="alert alert-danger p-2">{{ form_errors(form.titreE) }}</div>
+                {% endif %}
+
+                <!-- Description Field -->
+                <div class="mb-4 input-group animated-input">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                  </div>
+                  {{ form_widget(form.descriptionE, {'attr': {'class': 'form-control form-control-lg', 'rows': 5, 'placeholder': 'Enter Description'}}) }}
+                </div>
+                {% if form.descriptionE.vars.errors|length > 0 %}
+                    <div class="alert alert-danger p-2">{{ form_errors(form.descriptionE) }}</div>
+                {% endif %}
+
+                <!-- Start Date Field -->
+                <div class="mb-4 input-group animated-input">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                  </div>
+                  {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Start Date'}}) }}
+                </div>
+                {% if form.dateDebut.vars.errors|length > 0 %}
+                    <div class="alert alert-danger p-2">{{ form_errors(form.dateDebut) }}</div>
+                {% endif %}
+
+                <!-- End Date Field -->
+                <div class="mb-4 input-group animated-input">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                  </div>
+                  {{ form_widget(form.dateFin, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'End Date'}}) }}
+                </div>
+                {% if form.dateFin.vars.errors|length > 0 %}
+                    <div class="alert alert-danger p-2">{{ form_errors(form.dateFin) }}</div>
+                {% endif %}
+
+                <!-- Associated Annonce Field -->
+                <div class="mb-4 input-group animated-input">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-link"></i></span>
+                  </div>
+                  {{ form_widget(form.annonce, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Associated Annonce'}}) }}
+                </div>
+                {% if form.annonce.vars.errors|length > 0 %}
+                    <div class="alert alert-danger p-2">{{ form_errors(form.annonce) }}</div>
+                {% endif %}
+
+                <!-- Image Upload -->
+                <div class="mb-4 animated-input">
+                  {{ form_label(form.imageE, 'Image', {'label_attr': {'class': 'sr-only'}}) }}
+                  <div class="custom-file">
+                    {{ form_widget(form.imageE, {'attr': {'class': 'custom-file-input', 'id': 'imageE'}}) }}
+                    <label class="custom-file-label" for="imageE">Choose Image</label>
+                  </div>
+                </div>
+                {% if form.imageE.vars.errors|length > 0 %}
+                    <div class="alert alert-danger p-2">{{ form_errors(form.imageE) }}</div>
+                {% endif %}
+
+                <!-- Submit Button -->
+                <div class="text-center mt-4">
+                  <button type="submit" class="btn btn-primary btn-lg shadow-lg animated-button">Add Evenement</button>
+                </div>
+
+                {{ form_end(form) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section><!-- /Form Section -->
+
+  </main>
+
+  <style>
+    /* Custom styles for form elements */
+    .animated-input {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .animated-input:focus-within {
+      transform: translateY(-2px);
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+    }
+    .custom-file-input:focus ~ .custom-file-label::after {
+      background-color: rgba(0, 123, 255, 0.5);
+    }
+    .input-group-text {
+      background-color: rgba(0, 123, 255, 0.1);
+      border: 1px solid rgba(0, 123, 255, 0.5);
+    }
+    .input-group input {
+      border-radius: 0.5rem;
+    }
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+      transition: background-color 0.2s ease;
+    }
+    .btn-primary:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
+  </style>
+
+{% endblock %}

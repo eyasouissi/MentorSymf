@@ -1,0 +1,104 @@
+{% extends 'front/base.html.twig' %}
+
+{% block stylesheets %}
+    <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
+    <style>
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+        }
+        .password-hint {
+            font-size: 0.8em;
+            color: #555;
+            margin-top: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-submit {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .form-submit:hover {
+            background-color: #45a049;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="main">
+        <section class="signup" data-aos="fade-up" data-aos-delay="100">
+            <div class="container">
+                <div class="signup-content">
+                    <div class="signup-form">
+                        <h2 class="form-title">Sign up</h2>
+                        {{ form_start(form, {'attr': {'class': 'register-form', 'id': 'register-form'}}) }}
+                       
+                        <div class="form-group">
+                            {{ form_widget(form.email, {'attr': {'placeholder': 'Your Email', 'class': 'form-control'}}) }}
+                            {% if form.email.vars.errors|length > 0 %}
+                                <div class="error-message">{{ form_errors(form.email) }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group">
+                            {{ form_widget(form.plainPassword, {'attr': {'placeholder': 'Password', 'class': 'form-control'}}) }}
+                            <div class="password-hint">Must be at least 6 characters long.</div>
+                            {% if form.plainPassword.vars.errors|length > 0 %}
+                                <div class="error-message">{{ form_errors(form.plainPassword) }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_widget(form.rePassword, {'attr': {'placeholder': 'Repeat Password', 'class': 'form-control'}}) }}
+                            <div class="password-hint">Must match the password.</div>
+                            {% if form.rePassword.vars.errors|length > 0 %}
+                                <div class="error-message">{{ form_errors(form.rePassword) }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_widget(form.gender, {'attr': {'class': 'form-control'}}) }}
+                            {% if form.gender.vars.errors|length > 0 %}
+                                <div class="error-message">{{ form_errors(form.gender) }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_widget(form.roles) }}
+                            {% if form.roles.vars.errors|length > 0 %}
+                                <div class="error-message">{{ form_errors(form.roles) }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_widget(form.agreeTerms, {'attr': {'class': 'agree-term'}}) }}
+                            <label for="agree-term" class="label-agree-term">
+                                <span><span></span></span>I agree to the <a href="#" class="term-service">Terms of service</a>
+                            </label>
+                            {% if form.agreeTerms.vars.errors|length > 0 %}
+                                <div class="error-message">{{ form_errors(form.agreeTerms) }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group form-button">
+                            <button type="submit" class="form-submit">Register</button>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

@@ -1,8 +1,10 @@
 <?php
 
 namespace App\Entity;
-
+use App\Entity\Courses;
 use App\Repository\CategoryRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -28,6 +30,17 @@ class Category
 
     #[ORM\Column(length: 100, nullable: true)]
     private ?string $icon = null;
+
+    /**
+     * @var Collection<int, Courses>
+     */
+    #[ORM\OneToMany(targetEntity: Courses::class, mappedBy: 'category')]
+    private Collection $courses;
+
+    public function __construct()
+    {
+        $this->courses = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -93,4 +106,43 @@ class Category
 
         return $this;
     }
+
+    /**
+     * @return Collection<int, Courses>
+     */
+    public function getCourses(): Collection
+    {
+        return $this->courses;
+    }
+
+    public function addCourse(Courses $course): static
+    {
+        if (!$this->courses->contains($course)) {
+            $this->courses->add($course);
+            $course->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCourse(Courses $course): static
+    {
+        if ($this->courses->removeElement($course)) {
+            // set the owning side to null (unless already changed)
+            if ($course->getCategory() === $this) {
+                $course->setCategory(null);
+            }
+        }
+
+        return $this;
+    }
+
+
+        // Ajouter la méthode getCoursesQueryBuilder
+        public function getCoursesQueryBuilder()
+        {
+            return $this->courses->createQueryBuilder('c')
+                ->where('c.category = :category')
+                ->setParameter('category', $this);
+        }
 }

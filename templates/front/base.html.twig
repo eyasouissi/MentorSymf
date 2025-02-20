@@ -6,413 +6,28 @@
     <title>{% block title %}{% endblock %}</title>
 
     {% block css %}
-        <link href="https://fonts.googleapis.com" rel="preconnect">
-        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&family=Poppins:wght@100;200;300;400;500;600;700;800;900&family=Raleway:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-        <!-- Vendor CSS Files -->
-        <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/vendor/aos/aos.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('assets/vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet">
-
-        <!-- Main CSS File -->
-        <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">
-       
-    <!--  This file has been downloaded from bootdey.com @bootdey on twitter -->
-    <!--  All snippets are MIT license http://bootdey.com/license -->
-    <title>Forum post list - Bootdey.com</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
-     <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-
-  <!-- Vendor CSS Files -->
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
-
-  <!-- Main CSS File -->
-  <link href="assets/css/main.css" rel="stylesheet">
-    <style type="text/css">
-
-   
-    	
-
-.page-heading {
-    border-top: 0;
-    padding: 0 10px 20px 10px;
-}
-
-.forum-post-container .media {
-  margin: 10px 10px 10px 10px;
-  padding: 20px 10px 20px 10px;
-  border-bottom: 1px solid #f1f1f1;
-}
-.forum-avatar {
-  float: left;
-  margin-right: 20px;
-  text-align: center;
-  width: 110px;
-}
-.forum-avatar .img-circle {
-  height: 48px;
-  width: 48px;
-}
-.author-info {
-  color: #676a6c;
-  font-size: 11px;
-  margin-top: 5px;
-  text-align: center;
-}
-.forum-post-info {
-  padding: 9px 12px 6px 12px;
-  background: #f9f9f9;
-  border: 1px solid #f1f1f1;
-}
-.media-body > .media {
-  background: #f9f9f9;
-  border-radius: 3px;
-  border: 1px solid #f1f1f1;
-}
-.forum-post-container .media-body .photos {
-  margin: 10px 0;
-}
-.forum-photo {
-  max-width: 140px;
-  border-radius: 3px;
-}
-.media-body > .media .forum-avatar {
-  width: 70px;
-  margin-right: 10px;
-}
-.media-body > .media .forum-avatar .img-circle {
-  height: 38px;
-  width: 38px;
-}
-.mid-icon {
-  font-size: 66px;
-}
-.forum-item {
-  margin: 10px 0;
-  padding: 10px 0 20px;
-  border-bottom: 1px solid #f1f1f1;
-}
-.views-number {
-  font-size: 24px;
-  line-height: 18px;
-  font-weight: 400;
-}
-.forum-container,
-.forum-post-container {
-  padding: 30px !important;
-}
-.forum-item small {
-  color: #999;
-}
-.forum-item .forum-sub-title {
-  color: #999;
-  margin-left: 50px;
-}
-.forum-title {
-  margin: 15px 0 15px 0;
-}
-.forum-info {
-  text-align: center;
-}
-.forum-desc {
-  color: #999;
-}
-.forum-icon {
-  float: left;
-  width: 30px;
-  margin-right: 20px;
-  text-align: center;
-}
-a.forum-item-title {
-  color: inherit;
-  display: block;
-  font-size: 18px;
-  font-weight: 600;
-}
-a.forum-item-title:hover {
-  color: inherit;
-}
-.forum-icon .fa {
-  font-size: 30px;
-  margin-top: 8px;
-  color: #9b9b9b;
-}
-.forum-item.active .fa {
-  color: #8c84a1;
-}
-.forum-item.active a.forum-item-title {
-  color: #8c84a1;
-}
-@media (max-width: 992px) {
-  .forum-info {
-    margin: 15px 0 10px 0;
-    /* Comment this is you want to show forum info in small devices */
-    display: none;
-  }
-  .forum-desc {
-    float: none !important;
-  }
-}
-
-
-
-
-
-.ibox {
-  clear: both;
-  margin-bottom: 25px;
-  margin-top: 0;
-  padding: 0;
-}
-.ibox.collapsed .ibox-content {
-  display: none;
-}
-.ibox.collapsed .fa.fa-chevron-up:before {
-  content: "\f078";
-}
-.ibox.collapsed .fa.fa-chevron-down:before {
-  content: "\f077";
-}
-.ibox:after,
-.ibox:before {
-  display: table;
-}
-.ibox-title {
-  -moz-border-bottom-colors: none;
-  -moz-border-left-colors: none;
-  -moz-border-right-colors: none;
-  -moz-border-top-colors: none;
-  background-color: #ffffff;
-  border-color: #e7eaec;
-  border-image: none;
-  border-style: solid solid none;
-  border-width: 3px 0 0;
-  color: inherit;
-  margin-bottom: 0;
-  padding: 14px 15px 7px;
-  min-height: 48px;
-}
-.ibox-content {
-  background-color: #ffffff;
-  color: inherit;
-  padding: 15px 20px 20px 20px;
-  border-color: #e7eaec;
-  border-image: none;
-  border-style: solid solid none;
-  border-width: 1px 0;
-}
-.ibox-footer {
-  color: inherit;
-  border-top: 1px solid #e7eaec;
-  font-size: 90%;
-  background: #ffffff;
-  padding: 10px 15px;
-}
-
-.message-input {
-    height: 90px !important;
-}
-.form-control, .single-line {
-    background-color: #FFFFFF;
-    background-image: none;
-    border: 1px solid #e5e6e7;
-    border-radius: 1px;
-    color: inherit;
-    display: block;
-    padding: 6px 12px;
-    transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
-    width: 100%;
-    font-size: 14px;
-}
-.text-navy {
-    color: #8c84a1;
-}
-.mid-icon {
-    font-size: 66px !important;
-}
-.m-b-sm {
-    margin-bottom: 10px;
-}
-    </style>
-
-    
-
-
- <title>bs4 forum - Bootdey.com</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" rel="stylesheet">
+        
       <!-- Favicons -->
   <link href="assets/img/favicon.png" rel="icon">
   <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
   <!-- Fonts -->
-  <link href="https://fonts.googleapis.com" rel="preconnect">
-  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="{{asset('https://fonts.googleapis.com')}}" rel="preconnect">
+  <link href="{{asset('https://fonts.gstatic.com')}}" rel="preconnect" crossorigin>
+  <link href="{{asset('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap')}}" rel="stylesheet">
+<link rel="stylesheet" href="{{asset('https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css')}}">
 
   <!-- Vendor CSS Files -->
-  <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
-  <link href="assets/vendor/aos/aos.css" rel="stylesheet">
-  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
-  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <link href="{{asset('assets/vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+  <link href="{{asset('assets/vendor/bootstrap-icons/bootstrap-icons.css')}}" rel="stylesheet">
+  <link href="{{asset('assets/vendor/aos/aos.css')}}" rel="stylesheet">
+  <link href="{{asset('assets/vendor/glightbox/css/glightbox.min.css')}}" rel="stylesheet">
+  <link href="{{asset('assets/vendor/swiper/swiper-bundle.min.css')}}" rel="stylesheet">
 
   <!-- Main CSS File -->
-  <link href="assets/css/main.css" rel="stylesheet">
-    <style type="text/css">
-    	body{
-    margin-top:20px;
-    color: #1a202c;
-    text-align: left;
-    ;    
-}
-.inner-wrapper {
-    position: relative;
-    height: calc(100vh - 3.5rem);
-    transition: transform 0.3s;
-}
-@media (min-width: 992px) {
-    .sticky-navbar .inner-wrapper {
-        height: calc(100vh - 3.5rem - 48px);
-    }
-}
+  <link href="{{asset('assets/css/main.css')}}" rel="stylesheet">
 
-.inner-main,
-.inner-sidebar {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    display: flex;
-    flex-direction: column;
-}
-.inner-sidebar {
-    left: 0;
-    width: 235px;
-    border-right: 1px solid #cbd5e0;
-    background-color: #fff;
-    z-index: 1;
-}
-.inner-main {
-    right: 0;
-    left: 235px;
-}
-.inner-main-footer,
-.inner-main-header,
-.inner-sidebar-footer,
-.inner-sidebar-header {
-    height: 3.5rem;
-    border-bottom: 1px solid #cbd5e0;
-    display: flex;
-    align-items: center;
-    padding: 0 1rem;
-    flex-shrink: 0;
-}
-.inner-main-body,
-.inner-sidebar-body {
-    padding: 1rem;
-    overflow-y: auto;
-    position: relative;
-    flex: 1 1 auto;
-}
-.inner-main-body .sticky-top,
-.inner-sidebar-body .sticky-top {
-    z-index: 999;
-}
-.inner-main-footer,
-.inner-main-header {
-    background-color: #fff;
-}
-.inner-main-footer,
-.inner-sidebar-footer {
-    border-top: 1px solid #cbd5e0;
-    border-bottom: 0;
-    height: auto;
-    min-height: 3.5rem;
-}
-@media (max-width: 767.98px) {
-    .inner-sidebar {
-        left: -235px;
-    }
-    .inner-main {
-        left: 0;
-    }
-    .inner-expand .main-body {
-        overflow: hidden;
-    }
-    .inner-expand .inner-wrapper {
-        transform: translate3d(235px, 0, 0);
-    }
-}
-
-.nav .show>.nav-link.nav-link-faded, .nav-link.nav-link-faded.active, .nav-link.nav-link-faded:active, .nav-pills .nav-link.nav-link-faded.active, .navbar-nav .show>.nav-link.nav-link-faded {
-    color: #3367b5;
-    background-color: #c9d8f0;
-}
-
-.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
-    color: #fff;
-    background-color: #467bcb;
-}
-.nav-link.has-icon {
-    display: flex;
-    align-items: center;
-}
-.nav-link.active {
-    color: #467bcb;
-}
-.nav-pills .nav-link {
-    border-radius: .25rem;
-}
-.nav-link {
-    color: #4a5568;
-}
-.card {
-    box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
-}
-
-.card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    word-wrap: break-word;
-    background-color: #fff;
-    background-clip: border-box;
-    border: 0 solid rgba(0,0,0,.125);
-    border-radius: .25rem;
-}
-
-.card-body {
-    flex: 1 1 auto;
-    min-height: 1px;
-    padding: 1rem;
-}
-.custom-modal-btn {
-    background-color: #8c84a1; /* Button background color */
-    border-color: #8c84a1;     /* Button border color */
-    color: white;              /* Button text color */
-}
-
-.modal-header  {
-    color: #8c84a1;            /* Label color */
-}
-    </style>
-
+  
 
     {% endblock %}
 </head>
@@ -429,9 +44,8 @@ a.forum-item-title:hover {
                 <ul>
                     <li><a href="{{ path('app_index') }}" class="active">Home</a></li>
                     <li><a href="{{ path('app_about') }}">About</a></li>
-                    <li><a href ="{{ path('app_event') }}"> Events</a></li>
+                    <li><a href ="{{ path('evenement_index') }}"> Events</a></li>
                     <li><a href="{{ path('category_lists') }}">Courses</a></li>
-                    <li><a href="{{ path('app_profil') }}">Profile</a></li>
             
                     <li><a href="{{ path('app_payment') }}">Pricing</a></li>
                     <li class="dropdown">
@@ -461,7 +75,14 @@ a.forum-item-title:hover {
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
             </nav>
 
-            <a class="btn-getstarted" href="{{ path('app_register') }}">Get Started</a>
+{% if app.user %}
+    <a class="btn-getstarted" href="{{ path('logout') }}">log out</a>
+        <a class="btn-getstarted" href="{{ path('profile') }}">profile</a>
+
+
+{% else %}
+    <a class="btn-getstarted" href="{{ path('login') }}">Get Started</a>
+{% endif %}
             
         </div>
     </header>
@@ -546,6 +167,16 @@ a.forum-item-title:hover {
         <script>
             AOS.init();
         </script>
+         <!-- Vendor JS Files -->
+  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="assets/vendor/php-email-form/validate.js"></script>
+  <script src="assets/vendor/aos/aos.js"></script>
+  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+
+  <!-- Main JS File -->
+  <script src="{{asset('assets/js/main.js')}}"></script>
     {% endblock %}
 </body>
 </html>

@@ -1,0 +1,28 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Ajouter un Niveau - {{ course.title }}{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <h1 class="text-center mb-4">Ajouter un Niveau au cours : {{ course.title }}</h1>
+
+   {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+
+<div class="mb-4">
+    {{ form_label(form.name) }}
+    {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+    {{ form_errors(form.name) }}
+</div>
+
+<div class="mb-4">
+    {{ form_label(form.files) }}
+    {{ form_widget(form.files, {'attr': {'class': 'form-control'}}) }}
+    {{ form_errors(form.files) }}
+</div>
+
+<button type="submit" class="btn btn-primary">Ajouter le Niveau</button>
+
+{{ form_end(form) }}
+
+</div>
+{% endblock %}

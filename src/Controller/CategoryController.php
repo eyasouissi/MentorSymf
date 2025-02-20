@@ -10,10 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Security\Csrf\CsrfToken;  // <-- Ajouter cette ligne
-use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface; // Si tu utilises le gestionnaire de tokens CSRF
 
 final class CategoryController extends AbstractController
 {
@@ -28,32 +25,37 @@ final class CategoryController extends AbstractController
     #[Route('/category/add', name: 'category_add')]
     public function addCategory(Request $request, EntityManagerInterface $entityManager): Response
     {
-        // Créer une nouvelle instance de Category
         $category = new Category();
-    
-        // Créer le formulaire
         $form = $this->createForm(CategoryType::class, $category);
-    
-        // Gérer la requête HTTP
         $form->handleRequest($request);
     
-        // Vérifier si le formulaire est soumis et valide
         if ($form->isSubmitted() && $form->isValid()) {
-            // Définir la date de création si elle n'est pas déjà remplie
-            if (!$category->getCreatedAt()) {
-                $category->setCreatedAt(new \DateTime());  // Assigner la date actuelle
+            $iconFile = $form->get('icon')->getData();
+            
+            if ($iconFile) {
+                // Crée un nom unique pour l'icône ou la vidéo
+                $filename = uniqid().'.'.$iconFile->guessExtension();
+    
+                // Déplace le fichier vers le répertoire des uploads
+                $iconFile->move(
+                    $this->getParameter('upload_directory'),  // Paramètre pour le répertoire de destination
+                    $filename
+                );
+    
+                // Enregistre le nom du fichier dans l'entité
+                $category->setIcon($filename);
             }
     
-            // Persister et enregistrer la catégorie en base de données
+            if (!$category->getCreatedAt()) {
+                $category->setCreatedAt(new \DateTime());
+            }
+    
             $entityManager->persist($category);
             $entityManager->flush();
     
-    
-            // Redirection vers la liste des catégories
             return $this->redirectToRoute('category_list');
         }
     
-        // Si le formulaire n'est pas soumis ou n'est pas valide, afficher le formulaire
         return $this->render('back/category/addCategory.html.twig', [
             'form' => $form->createView(),
         ]);
@@ -63,13 +65,11 @@ final class CategoryController extends AbstractController
     public function listCategories(CategoryRepository $categoryRepository): Response
     {
         $categories = $categoryRepository->findAll();
-    
+
         return $this->render('back/category/list.html.twig', [
             'categories' => $categories,
         ]);
     }
-    
-    
 
     #[Route('/category/{id}/edit', name: 'category_edit')]
     public function edit(Request $request, Category $category, EntityManagerInterface $entityManager): Response
@@ -78,18 +78,13 @@ final class CategoryController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Gérer l'icône si présente
             $iconFile = $form->get('icon')->getData();
             if ($iconFile) {
                 $newFilename = uniqid() . '.' . $iconFile->guessExtension();
-                $iconFile->move(
-                    $this->getParameter('images_directory'),
-                    $newFilename
-                );
+                $iconFile->move($this->getParameter('images_directory'), $newFilename);
                 $category->setIcon($newFilename);
             }
 
-            // Sauvegarder l'entité modifiée
             $entityManager->flush();
 
             return $this->redirectToRoute('category_list');
@@ -100,28 +95,24 @@ final class CategoryController extends AbstractController
             'category' => $category,
         ]);
     }
-
     #[Route('/category/{id}/delete', name: 'category_delete', methods: ['POST'])]
-    public function delete(Category $category, EntityManagerInterface $entityManager, CsrfTokenManagerInterface $csrfTokenManager, Request $request): RedirectResponse
+    public function delete($id, EntityManagerInterface $entityManager, CategoryRepository $categoryRepository): RedirectResponse
     {
-        // Récupérer le token CSRF depuis la requête
-        $csrfToken = $request->request->get('_token');
-
-        // Vérifier la validité du token CSRF
-        if (!$csrfTokenManager->isTokenValid(new CsrfToken('category_delete', $csrfToken))) {
-            throw new InvalidCsrfTokenException('Token CSRF invalide');
+        // Trouver la catégorie par ID
+        $category = $categoryRepository->find($id);
+    
+        if ($category) {
+            // Supprimer la catégorie
+            $entityManager->remove($category);
+            $entityManager->flush();
         }
-
-        // Supprimer la catégorie
-        $entityManager->remove($category);
-        $entityManager->flush();
-
-        // Message flash pour informer l'utilisateur
-        $this->addFlash('success', 'Catégorie supprimée avec succès !');
-
-        // Redirection vers la liste des catégories
-        return $this->redirectToRoute('category_list');
+    
+        // Rediriger vers la liste des catégories après la suppression
+        return $this->redirectToRoute('category_list');  // Redirection correcte
     }
+    
+    
+
 
 
 
@@ -143,11 +134,15 @@ public function listCategorie(CategoryRepository $categoryRepository): Response
 #[Route('/category/{id}', name: 'category_details')]
 public function details(Category $category): Response
 {
+    // Récupérer les cours associés à la catégorie
+    $courses = $category->getCourses(); // Assurez-vous que getCourses() est une méthode sur l'entité Category
+
     return $this->render('front/category/details.html.twig', [
         'category' => $category,
-        //'courses' => $category->getCourses(), // Une fois l'entité Course créée
+        'courses' => $courses, // Passer les cours à la vue
     ]);
 }
+
 
 
 

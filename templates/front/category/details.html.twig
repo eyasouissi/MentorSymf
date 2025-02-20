@@ -1,127 +1,180 @@
 {% extends 'front/base.html.twig' %}
 
-{% block title %}{{ category.name }} - Details{% endblock %}
+{% block title %}{{ category.name }} - Détails{% endblock %}
 
 {% block body %}
 <main class="main">
 
- <!-- Page Title -->
-    <div class="page-title" data-aos="fade">
-        <div class="heading">
-            <div class="container">
-                <div class="row d-flex justify-content-center text-center">
-                    <div class="col-lg-8 d-flex align-items-center">
-                        <div class="category-icon" style="margin-right: 84px;">
-                            <img src="{{ asset('uploads/images/' ~ category.icon) }}" alt="{{ category.name }}" style="width: 124px; height: auto; border-radius: 31px;">
-                        </div>
-    <div>
-        <h1 style="font-size: 2.9rem; margin-top: -10px;">{{ category.name }}</h1> <!-- Titre de la catégorie avec styles -->
-        <p class="mb-0" style="font-size: 0.9rem;">{{ category.description }}</p> <!-- Description plus petite -->
-    </div>
+    <!-- Hero Section -->
+    <section class="category-hero position-relative d-flex align-items-center">
+        <div class="container text-center">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="category-icon mb-3">
+                        {% set iconPath = asset('uploads/images/' ~ category.icon) %}
+                        {% if category.icon matches '/\\.(jpg|jpeg|png|gif)$/i' %}
+                            <img src="{{ iconPath }}" alt="{{ category.name }}" class="img-fluid rounded-circle shadow-lg" style="width: 120px; height: 120px; object-fit: cover;">
+                        {% elseif category.icon matches '/\\.(mp4|webm|ogg)$/i' %}
+                            <video width="150" height="auto" controls class="img-fluid rounded shadow-lg">
+                                <source src="{{ iconPath }}" type="video/mp4">
+                                Votre navigateur ne supporte pas la balise vidéo.
+                            </video>
+                        {% else %}
+                            <p class="text-light">Type de fichier non supporté</p>
+                        {% endif %}
                     </div>
+                    <h1 class="text-white fw-bold">{{ category.name }}</h1>
+                    <p class="text-light fs-5">{{ category.description }}</p>
                 </div>
             </div>
         </div>
-        <nav class="breadcrumbs">
-            <div class="container">
-                <ol>
-                    <li><a href="{{ path('app_index') }}">Home</a></li>
-                    <li><a href="{{ path('category_lists') }}">Categories</a></li>
-                    <li class="current">{{ category.name }}</li>
-                </ol>
-            </div>
-        </nav>
-    </div><!-- End Page Title -->
+    </section>
 
-    <!-- Courses Section -->
-    <section id="courses" class="courses section">
-
-      <div class="container">
-
-        <div class="row">
-
-          <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
-            <div class="course-item">
-              <img src="assets/img/course-1.jpg" class="img-fluid" alt="...">
-              <div class="course-content">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <p class="category">Web Development</p>
-                  <p class="price">$169</p>
-                </div>
-
-                <h3><a href="{{ path('app_details') }}">Website Design</a></h3>
-                <p class="description">Learn the fundamentals of creating responsive and user-friendly websites. This course will teach you the essential techniques and tools to start designing professional websites.</p>
-                <div class="trainer d-flex justify-content-between align-items-center">
-                  <div class="trainer-profile d-flex align-items-center">
-                    <img src="assets/img/profile/trainer-1-2.jpg" class="img-fluid" alt="">
-                    <a href="" class="trainer-link">Antonio</a>
-                  </div>
-                  <div class="trainer-rank d-flex align-items-center">
-                    <i class="bi bi-person user-icon"></i>&nbsp;50
-                    &nbsp;&nbsp;
-                    <i class="bi bi-heart heart-icon"></i>&nbsp;65
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> <!-- End Course Item-->
-
-          <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-md-0" data-aos="zoom-in" data-aos-delay="200">
-            <div class="course-item">
-              <img src="assets/img/course-2.jpg" class="img-fluid" alt="...">
-              <div class="course-content">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <p class="category">Marketing</p>
-                  <p class="price">$250</p>
-                </div>
-
-                <h3><a href="{{ path('app_details') }}">Search Engine Optimization</a></h3>
-                <p class="description">Master the techniques needed to improve your website’s visibility and ranking on search engines. This course covers all the essential aspects of SEO, including on-page and off-page strategies.</p>
-                  <div class="trainer-profile d-flex align-items-center">
-                    <img src="assets/img/profile/trainer-2-2.jpg" class="img-fluid" alt="...">
-                    <a href="" class="trainer-link">Lana</a>
-                  </div>
-                  <div class="trainer-rank d-flex align-items-center">
-                    <i class="bi bi-person user-icon"></i>&nbsp;35
-                    &nbsp;&nbsp;
-                    <i class="bi bi-heart heart-icon"></i>&nbsp;42
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> <!-- End Course Item-->
-
-          <div class="col-lg-4 col-md-6 d-flex align-items-stretch mt-4 mt-lg-0" data-aos="zoom-in" data-aos-delay="300">
-            <div class="course-item">
-              <img src="assets/img/course-3.jpg" class="img-fluid" alt="...">
-              <div class="course-content">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <p class="category">Content</p>
-                  <p class="price">$180</p>
-                </div>
-
-                <h3><a href="{{ path('app_details') }}">Copywriting</a></h3>
-                <p class="description">Learn the art of persuasive writing with a focus on creating compelling content that converts. This course covers copywriting strategies for websites, advertisements, and more.</p>
-                <div class="trainer d-flex justify-content-between align-items-center">
-                  <div class="trainer-profile d-flex align-items-center">
-                    <img src="assets/img/profile/trainer-3-2.jpg" class="img-fluid" alt="...">
-                    <a href="" class="trainer-link">Brandon</a>
-                  </div>
-                  <div class="trainer-rank d-flex align-items-center">
-                    <i class="bi bi-person user-icon"></i>&nbsp;20
-                    &nbsp;&nbsp;
-                    <i class="bi bi-heart heart-icon"></i>&nbsp;85
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div> <!-- End Course Item-->
-
+    <!-- Breadcrumbs -->
+    <nav class="breadcrumbs bg-light py-3">
+        <div class="container">
+            <ol class="breadcrumb justify-content-center mb-0">
+                <li class="breadcrumb-item"><a href="{{ path('app_index') }}">Accueil</a></li>
+                <li class="breadcrumb-item"><a href="{{ path('category_lists') }}">Catégories</a></li>
+                <li class="breadcrumb-item active">{{ category.name }}</li>
+            </ol>
         </div>
+    </nav>
 
-      </div>
+    <!-- Ajouter un Cours -->
+    <div class="text-center my-4">
+        <a href="{{ path('create_course', {'id': category.id}) }}" class="btn btn-lg btn-primary shadow-sm px-4">➕ Ajouter un Cours</a>
+    </div>
 
-    </section><!-- /Courses Section -->
+    <!-- Section Cours -->
+    <section id="courses" class="courses section py-5">
+        <div class="container">
+            <div id="course-list" class="row g-4">
+                {% for course in courses %}
+                    <div class="col-lg-4 col-md-6 course-item">
+                        <div class="course-card card border-0 shadow-sm">
+                            <div class="card-body text-center">
+                                <h5 class="card-title fw-bold mb-2">{{ course.title }}</h5>
+                                <p class="card-text text-muted">{{ course.description|length > 100 ? course.description|slice(0, 100) ~ '...' : course.description }}</p>
+                                <a href="{{ path('course_details', {'id': course.id}) }}" class="btn btn-outline-primary rounded-pill px-3">Voir Détails</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
 
+            <!-- Pagination Controls -->
+            <div class="pagination-controls text-center my-4">
+                <button id="prev-btn" class="btn btn-outline-secondary" disabled>Précédent</button>
+                <span id="page-number" class="mx-3">Page 1</span>
+                <button id="next-btn" class="btn btn-outline-secondary">Suivant</button>
+            </div>
+        </div>
+    </section>
 </main>
+
+<script>
+    // Récupérer tous les cours
+    const courses = document.querySelectorAll('.course-item');
+    const coursesPerPage = 6;  // Nombre de cours à afficher par page
+    let currentPage = 1;
+    const totalPages = Math.ceil(courses.length / coursesPerPage);
+
+    // Fonction pour afficher les cours de la page actuelle
+    function displayCourses(page) {
+        const start = (page - 1) * coursesPerPage;
+        const end = start + coursesPerPage;
+        
+        // Masquer tous les cours
+        courses.forEach((course, index) => {
+            course.style.display = 'none';
+            if (index >= start && index < end) {
+                course.style.display = 'block';  // Afficher seulement les cours de la page actuelle
+            }
+        });
+
+        // Afficher la page actuelle
+        document.getElementById('page-number').textContent = `Page ${page}`;
+
+        // Désactiver les boutons si on est à la première ou dernière page
+        document.getElementById('prev-btn').disabled = (page === 1);
+        document.getElementById('next-btn').disabled = (page === totalPages);
+    }
+
+    // Gérer les boutons Précédent et Suivant
+    document.getElementById('prev-btn').addEventListener('click', () => {
+        if (currentPage > 1) {
+            currentPage--;
+            displayCourses(currentPage);
+        }
+    });
+
+    document.getElementById('next-btn').addEventListener('click', () => {
+        if (currentPage < totalPages) {
+            currentPage++;
+            displayCourses(currentPage);
+        }
+    });
+
+    // Initialiser l'affichage des cours
+    displayCourses(currentPage);
+</script>
+
+<style>
+    /* Hero Section */
+    .category-hero {
+        background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url("https://source.unsplash.com/1600x900/?education,learning") center/cover no-repeat;
+        padding: 80px 0;
+        color: white;
+    }
+
+    /* Breadcrumbs */
+    .breadcrumbs {
+        font-size: 1rem;
+    }
+
+    /* Course Card */
+    .course-card {
+        border-radius: 12px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Pagination Controls */
+    .pagination-controls {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .btn-outline-secondary {
+        font-size: 1rem;
+        padding: 8px 16px;
+    }
+
+    .btn-outline-secondary:disabled {
+        opacity: 0.5;
+    }
+
+    .mx-3 {
+        font-size: 1.2rem;
+    }
+
+    /* Button Hover Effects */
+    .btn-primary {
+        background-color: #007bff;
+        border: none;
+        transition: background-color 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+</style>
+
 {% endblock %}

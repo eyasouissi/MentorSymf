@@ -1,0 +1,37 @@
+{% extends 'front/base.html.twig' %}
+
+{% block body %}
+<div class="container mt-5">
+    <h2>Modifier le profil</h2>
+    
+    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+        <div class="form-group">
+            {{ form_label(form.name) }}
+            {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.email) }}
+            {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.bio) }}
+            {{ form_widget(form.bio, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.speciality) }}
+            {{ form_widget(form.speciality, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.pfp) }}
+            {{ form_widget(form.pfp, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <div class="form-group">
+            {{ form_label(form.diplome) }}
+            {{ form_widget(form.diplome, {'attr': {'class': 'form-control'}}) }}
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('profile') }}" class="btn btn-secondary mt-3">Annuler</a>
+</div>
+{% endblock %}

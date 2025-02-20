@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Registration | Your App Name</title>
+  <link rel="stylesheet" href="{{ asset('assets/css/registration.css') }}">
+</head>
+<body>
+  <div class="wrapper">
+    {{ form_start(studentRegistrationForm, { 'attr': { 'class': 'glassmorphism-form', 'novalidate': 'novalidate' } }) }}
+    <h2>Register as Student</h2>
+
+    {# Name Field #}
+    <div class="input-field {{ form_errors(studentRegistrationForm.name) ? 'has-error' }}">
+      {{ form_widget(studentRegistrationForm.name, { 'attr': { 'class': 'form-control', 'placeholder': 'Enter your name' } }) }}
+    </div>
+    {% if form_errors(studentRegistrationForm.name) %}
+      <div class="form-error">
+        {{ form_errors(studentRegistrationForm.name) }}
+      </div>
+    {% endif %}
+
+    {# Email Field #}
+    <div class="input-field {{ form_errors(studentRegistrationForm.email) ? 'has-error' }}">
+      {{ form_widget(studentRegistrationForm.email, { 'attr': { 'class': 'form-control', 'placeholder': 'Enter your email' } }) }}
+    </div>
+    {% if form_errors(studentRegistrationForm.email) %}
+      <div class="form-error">
+        {{ form_errors(studentRegistrationForm.email) }}
+      </div>
+    {% endif %}
+
+    {# Password Field #}
+    <div class="input-field {{ form_errors(studentRegistrationForm.plainPassword) ? 'has-error' }}">
+      {{ form_widget(studentRegistrationForm.plainPassword, { 'attr': { 'class': 'form-control', 'placeholder': 'Enter your password' } }) }}
+    </div>
+    {% if form_errors(studentRegistrationForm.plainPassword) %}
+      <div class="form-error">
+        {{ form_errors(studentRegistrationForm.plainPassword) }}
+      </div>
+    {% endif %}
+
+    {# Gender Field #}
+    <div class="input-field {{ form_errors(studentRegistrationForm.gender) ? 'has-error' }}">
+      {{ form_widget(studentRegistrationForm.gender, { 'attr': { 'class': 'form-control', 'placeholder': 'Select your gender' } }) }}
+    </div>
+    {% if form_errors(studentRegistrationForm.gender) %}
+      <div class="form-error">
+        {{ form_errors(studentRegistrationForm.gender) }}
+      </div>
+    {% endif %}
+
+    {# Age Field #}
+    <div class="input-field {{ form_errors(studentRegistrationForm.age) ? 'has-error' }}">
+      {{ form_widget(studentRegistrationForm.age, { 'attr': { 'class': 'form-control', 'placeholder': 'Enter your age' } }) }}
+    </div>
+    {% if form_errors(studentRegistrationForm.age) %}
+      <div class="form-error">
+        {{ form_errors(studentRegistrationForm.age) }}
+      </div>
+    {% endif %}
+
+    {# Country Field #}
+    <div class="input-field {{ form_errors(studentRegistrationForm.country) ? 'has-error' }}">
+      {{ form_widget(studentRegistrationForm.country, { 'attr': { 'class': 'form-control', 'placeholder': 'Select your country' } }) }}
+    </div>
+    {% if form_errors(studentRegistrationForm.country) %}
+      <div class="form-error">
+        {{ form_errors(studentRegistrationForm.country) }}
+      </div>
+    {% endif %}
+
+    {# Submit Button #}
+    <button type="submit" class="btn">Register</button>
+
+    {# Link Back to Registration Choice #}
+    <div class="register">
+      <p>Or choose another registration type <a href="{{ path('registration_choice') }}">here</a></p>
+    </div>
+    {{ form_end(studentRegistrationForm) }}
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const inputs = document.querySelectorAll('.input-field input, .input-field select');
+      inputs.forEach(input => {
+        if (input.value.trim() !== '') {
+          input.classList.add('filled');
+        }
+        input.addEventListener('input', function () {
+          if (input.value.trim() !== '') {
+            input.classList.add('filled');
+          } else {
+            input.classList.remove('filled');
+          }
+        });
+        input.addEventListener('focus', function () {
+          input.classList.add('filled');
+        });
+        input.addEventListener('blur', function () {
+          if (input.value.trim() === '') {
+            input.classList.remove('filled');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

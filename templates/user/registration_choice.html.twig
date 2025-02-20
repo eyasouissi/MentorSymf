@@ -1,0 +1,28 @@
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register | Your App Name</title>
+  <link rel="stylesheet" href="{{ asset('assets/css/registration.css') }}">
+
+</head>
+<body>
+  <div class="wrapper">
+    <div class="glassmorphism-form">
+      <h2>Register</h2>
+      <p>Please choose your registration type:</p>
+      <div class="register-options">
+        <a href="{{path('student_register')}}" class="btn">Register as Student</a>
+        <a href="{{path('tutor_register')}}" class="btn">Register as Tutor</a>
+      </div>
+      <div class="login-link">
+        <p>Already have an account? <a href="{{path('login')}}">Login</a></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

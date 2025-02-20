@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tutor Registration | Your App Name</title>
+  <link rel="stylesheet" href="{{ asset('assets/css/registration.css') }}">
+</head>
+<body>
+  <div class="wrapper">
+    <h2>Register as Tutor</h2>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+    {{ form_start(tutorRegistrationForm, { 'attr': { 'class': 'glassmorphism-form', 'novalidate': 'novalidate' } }) }}
+
+    {# Name Field #}
+    <div class="input-field {{ form_errors(tutorRegistrationForm.name) ? 'has-error' }}">
+      {{ form_widget(tutorRegistrationForm.name, { 'attr': { 'class': 'form-control', 'placeholder': 'Enter your name' } }) }}
+    </div>
+    {% if form_errors(tutorRegistrationForm.name) %}
+      <div class="form-error">
+        {{ form_errors(tutorRegistrationForm.name) }}
+      </div>
+    {% endif %}
+
+    {# Email Field #}
+    <div class="input-field {{ form_errors(tutorRegistrationForm.email) ? 'has-error' }}">
+      {{ form_widget(tutorRegistrationForm.email, { 'attr': { 'class': 'form-control', 'placeholder': 'Enter your email' } }) }}
+    </div>
+    {% if form_errors(tutorRegistrationForm.email) %}
+      <div class="form-error">
+        {{ form_errors(tutorRegistrationForm.email) }}
+      </div>
+    {% endif %}
+
+    {# Password Field #}
+    <div class="input-field {{ form_errors(tutorRegistrationForm.plainPassword) ? 'has-error' }}">
+      {{ form_widget(tutorRegistrationForm.plainPassword, { 'attr': { 'class': 'form-control', 'placeholder': 'Enter your password' } }) }}
+    </div>
+    {% if form_errors(tutorRegistrationForm.plainPassword) %}
+      <div class="form-error">
+        {{ form_errors(tutorRegistrationForm.plainPassword) }}
+      </div>
+    {% endif %}
+
+    {# Speciality Field (added) #}
+    <div class="input-field {{ form_errors(tutorRegistrationForm.speciality) ? 'has-error' }}">
+      {{ form_widget(tutorRegistrationForm.speciality, { 'attr': { 'class': 'form-control', 'placeholder': 'Enter your speciality' } }) }}
+    </div>
+    {% if form_errors(tutorRegistrationForm.speciality) %}
+      <div class="form-error">
+        {{ form_errors(tutorRegistrationForm.speciality) }}
+      </div>
+    {% endif %}
+
+    {# Diploma Upload Field (optional) #}
+    <div class="input-field {{ form_errors(tutorRegistrationForm.diplome) ? 'has-error' }}">
+      {{ form_widget(tutorRegistrationForm.diplome, { 'attr': { 'class': 'form-control' } }) }}
+    </div>
+    {% if form_errors(tutorRegistrationForm.diplome) %}
+      <div class="form-error">
+        {{ form_errors(tutorRegistrationForm.diplome) }}
+      </div>
+    {% endif %}
+
+    {# Gender Field #}
+    <div class="input-field {{ form_errors(tutorRegistrationForm.gender) ? 'has-error' }}">
+      {{ form_widget(tutorRegistrationForm.gender, { 'attr': { 'class': 'form-control' } }) }}
+    </div>
+    {% if form_errors(tutorRegistrationForm.gender) %}
+      <div class="form-error">
+        {{ form_errors(tutorRegistrationForm.gender) }}
+      </div>
+    {% endif %}
+
+    {# Age Field #}
+    <div class="input-field {{ form_errors(tutorRegistrationForm.age) ? 'has-error' }}">
+      {{ form_widget(tutorRegistrationForm.age, { 'attr': { 'class': 'form-control' } }) }}
+    </div>
+    {% if form_errors(tutorRegistrationForm.age) %}
+      <div class="form-error">
+        {{ form_errors(tutorRegistrationForm.age) }}
+      </div>
+    {% endif %}
+
+    {# Country Field #}
+    <div class="input-field {{ form_errors(tutorRegistrationForm.country) ? 'has-error' }}">
+      {{ form_widget(tutorRegistrationForm.country, { 'attr': { 'class': 'form-control' } }) }}
+    </div>
+    {% if form_errors(tutorRegistrationForm.country) %}
+      <div class="form-error">
+        {{ form_errors(tutorRegistrationForm.country) }}
+      </div>
+    {% endif %}
+
+    {# Submit Button #}
+    <button type="submit" class="btn">Register</button>
+
+    {# Link Back to Registration Choice #}
+    <div class="register">
+      <p>Or choose another registration type <a href="{{ path('registration_choice') }}">here</a></p>
+    </div>
+    {{ form_end(tutorRegistrationForm) }}
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const inputs = document.querySelectorAll('.input-field input, .input-field select');
+      inputs.forEach(input => {
+        if (input.value.trim() !== '') {
+          input.classList.add('filled');
+        }
+        input.addEventListener('input', function () {
+          if (input.value.trim() !== '') {
+            input.classList.add('filled');
+          } else {
+            input.classList.remove('filled');
+          }
+        });
+        input.addEventListener('focus', function () {
+          input.classList.add('filled');
+        });
+        input.addEventListener('blur', function () {
+          if (input.value.trim() === '') {
+            input.classList.remove('filled');
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

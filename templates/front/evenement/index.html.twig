@@ -1,0 +1,79 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Evenements{% endblock %}
+
+{% block body %}
+<main class="main">
+    <!-- Page Title -->
+    <div class="page-title" data-aos="fade-up">
+        <div class="heading">
+            <div class="container">
+                <div class="row d-flex justify-content-center text-center">
+                    <div class="col-lg-8">
+                        <h1 class="animated-title">Evenements List</h1>
+                        <p class="mb-0 animated-subtitle">Here are all the available evenements.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div><!-- End Page Title -->
+
+    <!-- Buttons to Add Event and Annonce -->
+    <div class="container mb-4">
+       <div class="container mb-4">
+       <br>
+    <div class="d-flex justify-content-center gap-4 mb-4">
+    <a href="{{ path('evenement_new') }}" class="btn btn-info btn-lg">Ajouter un Événement</a>
+    <a href="{{ path('ajouter_annonce') }}" class="btn btn-warning btn-lg">Ajouter une Annonce</a>
+</div>
+
+</div>
+
+    </div>
+
+    <!-- Evenements Section -->
+    <section id="evenements-section" class="evenements-section section" data-aos="fade-up">
+        <div class="container">
+            <div class="row">
+                {% for evenement in evenements %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card shadow-lg">
+                            {% if evenement.getImagePath() %}
+                                <img src="{{ asset(evenement.getImagePath()) }}" class="card-img-top" alt="{{ evenement.titreE }}" />
+                            {% else %}
+                                <img src="{{ asset('/uploads/default.jpg') }}" class="card-img-top" alt="Default Image" />
+                            {% endif %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{ evenement.titreE }}</h5>
+                                <p class="card-text">{{ evenement.descriptionE }}</p>
+                                <p class="card-text"><strong>Start Date:</strong> {{ evenement.dateDebut|date('Y-m-d H:i') }}</p>
+                                <p class="card-text"><strong>End Date:</strong> {{ evenement.dateFin|date('Y-m-d H:i') }}</p>
+                                
+                                <!-- Affichage du titre de l'annonce associée -->
+                              {% if evenement.annonce is not null %}
+    <p class="card-text"><strong>Associated Annonce Title:</strong> {{ evenement.annonce.titreA }}</p>
+{% else %}
+    <p class="card-text"><strong>Associated Annonce Title:</strong> None</p>
+{% endif %}
+
+
+                                <a href="{{ path('evenement_edit', { id: evenement.id }) }}" class="btn btn-warning">Modifier</a>
+
+                                <!-- Formulaire de suppression -->
+                                <form method="post" action="{{ path('evenement_delete', { id: evenement.id }) }}" onsubmit="return confirm('Are you sure you want to delete this event?');" class="d-inline">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ evenement.id) }}">
+                                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-12">
+                        <p class="text-center">No evenements found.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section><!-- /Evenements Section -->
+</main>
+{% endblock %}

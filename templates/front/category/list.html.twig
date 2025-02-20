@@ -1,98 +1,156 @@
 {% extends 'front/base.html.twig' %}
 
-{% block title %}Categories{% endblock %}
+{% block title %}Catégories{% endblock %}
 
 {% block body %}
 <main class="main">
 
-    <!-- Page Title -->
-    <div class="page-title" data-aos="fade">
-      <div class="heading">
+    <!-- Hero Section -->
+    <section class="categories-hero position-relative d-flex align-items-center">
+        <div class="container text-center">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h1 class="text-white fw-bold">Catégories</h1>
+                    <p class="text-light fs-5">Explorez différentes catégories de cours disponibles sur notre plateforme.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section Catégories -->
+    <section id="categories" class="categories section py-5">
         <div class="container">
-          <div class="row d-flex justify-content-center text-center">
-            <div class="col-lg-8">
-              <h1>Categories</h1>
-              <p class="mb-0">Explore different categories of courses available on our platform.</p>
+            <div class="owl-carousel category-carousel">
+                
+                {% for category in categories %}
+                <div class="category-card card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <h3 class="fw-bold">
+                            <a href="{{ path('category_details', {'id': category.id}) }}" class="text-decoration-none text-dark">
+                                {{ category.name }}
+                            </a>
+                        </h3>
+                        <p class="text-muted">{{ category.description|length > 100 ? category.description|slice(0, 100) ~ '...' : category.description }}</p>
+                        <a href="{{ path('category_details', {'id': category.id}) }}" class="btn btn-outline-primary rounded-pill px-3">Voir les cours</a>
+                    </div>
+                </div>
+                {% endfor %}
+
             </div>
-          </div>
         </div>
-      </div>
-    </div><!-- End Page Title -->
-
-    <!-- Categories Section -->
-    <section id="categories" class="categories section">
-      <div class="container">
-        <div class="row">
-
-          {% for category in categories %}
-          <div class="col-lg-4 col-md-6 d-flex align-items-stretch" data-aos="zoom-in" data-aos-delay="100">
-            <div class="category-container">
-              <div class="category-header">
-                <h3><a href="{{ path('category_details', {'id': category.id}) }}">{{ category.name }}</a></h3>
-              </div>
-              <div class="category-body">
-                <p class="description">{{ category.description|length > 100 ? category.description|slice(0, 100) ~ '...' : category.description }}</p>
-              </div>
-              <div class="category-footer">
-                <a href="{{ path('category_details', {'id': category.id}) }}" class="btn btn-primary">Voir les cours</a>
-              </div>
-            </div>
-          </div> <!-- End Category Item -->
-          {% endfor %}
-
-        </div>
-      </div>
-    </section><!-- /Categories Section -->
+    </section>
 
 </main>
 
+<!-- Owl Carousel CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css">
+
+<!-- Owl Carousel JavaScript -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
+
+<script>
+  $(document).ready(function(){
+      $(".category-carousel").owlCarousel({
+          loop: true,
+          margin: 20,
+          nav: true,
+          dots: false,
+          autoplay: true,
+          autoplayTimeout: 4000,
+          autoplayHoverPause: true,
+          responsive: {
+              0: { items: 1 },
+              600: { items: 2 },
+              1000: { items: 3 }
+          }
+      });
+  });
+</script>
+
 <style>
-  .category-container {
-    background-color: #f8f9fa; /* Couleur de fond */
-    border: 1px solid #dee2e6; /* Bordure */
-    border-radius: 8px; /* Coins arrondis */
-    padding: 20px; /* Espacement interne */
-    transition: transform 0.3s; /* Animation de transformation */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
+    /* Hero Section */
+    .categories-hero {
+        background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url("https://source.unsplash.com/1600x900/?education,learning") center/cover no-repeat;
+        padding: 80px 0;
+        color: white;
+    }
 
-  .category-container:hover {
-    transform: scale(1.05); /* Zoom effect on hover */
-  }
+/* Category Card */
+.category-card {
+    border-radius: 12px;
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    min-height: 220px;
+    background: white;
+    border: 2px solid #f0f0f0;  /* Ajout d'une bordure claire */
+    margin: 10px; /* Espacement entre les cartes */
+}
 
-  .category-header h3 {
-    font-size: 1.5rem; /* Size of the category title */
-    margin-bottom: 10px; /* Space below the title */
-  }
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2); /* Ombre plus marquée */
+}
 
-  .category-body {
-    flex-grow: 1; /* Allow the body to grow */
-  }
+.category-card .card-body {
+    padding: 15px;
+    background-color: #f8f9fa;  /* Légère couleur de fond pour distinguer le contenu */
+    border-radius: 10px;
+}
 
-  .description {
-    color: #6c757d; /* Description text color */
-    font-size: 1rem; /* Size of the description text */
-    margin-bottom: 15px; /* Space below the description */
-  }
+/* Modifier la couleur de fond du bouton pour plus de contraste */
+.btn-outline-primary {
+    border-color: #007bff;
+    color: #007bff;
+    transition: 0.3s;
+}
 
-  .category-footer {
-    text-align: right; /* Align button to the right */
-  }
+.btn-outline-primary:hover {
+    background-color: #007bff;
+    color: white;
+}
 
-  .btn-primary {
-    background-color: #007bff; /* Primary button color */
-    color: white; /* Button text color */
-    border: none; /* Remove border */
-    padding: 10px 15px; /* Button padding */
-    border-radius: 5px; /* Rounded corners */
-    text-decoration: none; /* Remove underline */
-  }
+/* Augmenter l'espacement entre les éléments du carousel */
+.owl-carousel .owl-item {
+    margin-right: 20px;
+}
 
-  .btn-primary:hover {
-    background-color: #0056b3; /* Darker shade on hover */
-  }
+
+    .btn-outline-primary {
+        border-color: #007bff;
+        color: #007bff;
+        transition: 0.3s;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #007bff;
+        color: white;
+    }
+
+    /* Owl Carousel */
+    .owl-nav button {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.4) !important;
+        color: white !important;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+    }
+
+    .owl-nav .owl-prev {
+        left: -45px;
+    }
+
+    .owl-nav .owl-next {
+        right: -45px;
+    }
+
+    .owl-nav button:hover {
+        background: rgba(0, 0, 0, 0.7) !important;
+    }
 </style>
 
 {% endblock %}

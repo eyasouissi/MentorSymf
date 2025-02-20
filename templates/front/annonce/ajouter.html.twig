@@ -1,0 +1,228 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Add Annonce{% endblock %}
+
+{% block body %}
+  <main class="main">
+
+    <!-- Page Title -->
+    <div class="page-title" data-aos="fade-up">
+      <div class="heading">
+        <div class="container">
+          <div class="row d-flex justify-content-center text-center">
+            <div class="col-lg-8">
+              <h1 class="animated-title">Add Annonce</h1>
+              <p class="mb-0 animated-subtitle">Fill in the details to add a new annonce to the platform.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <nav class="breadcrumbs">
+        <div class="container">
+          <ol>
+            <li><a href="{{ path('app_annonces') }}">Annonces</a></li>
+            <li class="current">Add Annonce</li>
+          </ol>
+        </div>
+      </nav>
+    </div><!-- End Page Title -->
+
+    <!-- Form Section -->
+    <section id="form-section" class="form-section section" data-aos="fade-up">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-lg-8">
+            <div class="card shadow-lg p-4 rounded-lg animated-card">
+              <div class="card-body">
+                <h5 class="card-title text-center mb-4 animated-form-title">Annonce Details</h5>
+
+                {{ form_start(form) }}
+
+                <!-- Title Field -->
+                            <div class="mb-4 input-group animated-input">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-heading"></i></span>
+                                </div>
+                                {{ form_widget(form.titre_a, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Enter Title'}}) }}
+                            </div>
+                            {% if form.titre_a.vars.errors|length > 0 %}
+                                <div class="alert alert-danger p-2">{{ form_errors(form.titre_a) }}</div>
+                            {% endif %}
+
+                            <!-- Description Field -->
+                            <div class="mb-4 input-group animated-input">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-pencil-alt"></i></span>
+                                </div>
+                                {{ form_widget(form.description_a, {'attr': {'class': 'form-control form-control-lg', 'rows': 5, 'placeholder': 'Enter Description'}}) }}
+                            </div>
+                            {% if form.description_a.vars.errors|length > 0 %}
+                                <div class="alert alert-danger p-2">{{ form_errors(form.description_a) }}</div>
+                            {% endif %}
+
+                <!-- Image Upload -->
+                <div class="mb-4 animated-input">
+                  {{ form_label(form.image_a, 'Image', {'label_attr': {'class': 'sr-only'}}) }}
+                  <div class="custom-file">
+                    {{ form_widget(form.image_a, {'attr': {'class': 'custom-file-input'}}) }}
+                    <label class="custom-file-label" for="image_a">Choose Image</label>
+                  </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center mt-4">
+                  <button type="submit" class="btn btn-primary btn-lg shadow-lg animated-button">Add Annonce</button>
+                </div>
+
+                {{ form_end(form) }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section><!-- /Form Section -->
+
+  </main>
+
+  <style>
+    /* Custom styles for better design */
+    .animated-title {
+      font-size: 36px;
+      font-weight: bold;
+      color: #343a40;
+      animation: fadeInDown 1.5s ease-in-out;
+    }
+
+    .animated-subtitle {
+      font-size: 18px;
+      color: #6c757d;
+      animation: fadeInUp 1.5s ease-in-out;
+    }
+
+    /* Form card */
+    .animated-card {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      animation: slideInUp 1s ease-in-out;
+    }
+
+    .card-body {
+      padding: 40px;
+    }
+
+    /* Form inputs */
+    .form-control-lg {
+      height: 50px;
+      font-size: 18px;
+      border-radius: 10px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .form-control-lg:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+    }
+
+    .form-section {
+      padding: 80px 0;
+    }
+
+    /* Custom File Upload */
+    .custom-file-input:lang(en)~.custom-file-label::after {
+      content: "Choose file";
+    }
+
+    /* Button styling */
+    .animated-button {
+      background-color: #007bff;
+      border-color: #007bff;
+      font-size: 18px;
+      padding: 12px 30px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      animation: pulse 2s infinite;
+    }
+
+    .animated-button:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 123, 255, 0.4);
+    }
+
+    /* Animation for form title */
+    @keyframes fadeInDown {
+      0% {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideInUp {
+      0% {
+        opacity: 0;
+        transform: translateY(50px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* Input Group Icons */
+    .input-group-text {
+      background-color: #f1f1f1;
+      border-radius: 10px 0 0 10px;
+      color: #007bff;
+      transition: background-color 0.3s ease;
+    }
+
+    .input-group-prepend .input-group-text i {
+      font-size: 18px;
+    }
+
+    .animated-input {
+      animation: fadeInLeft 1s ease-in-out;
+    }
+
+    @keyframes fadeInLeft {
+      0% {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+  </style>
+
+{% endblock %}

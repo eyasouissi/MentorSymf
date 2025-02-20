@@ -9,18 +9,6 @@
     <div class="container">
         <h1 class="text-center mb-4">Modifier la catégorie</h1>
 
-        {# Afficher les messages flash en cas de succès ou d'erreur #}
-        {% for message in app.flashes('success') %}
-            <div class="alert alert-success text-center">
-                {{ message }}
-            </div>
-        {% endfor %}
-
-        {% for message in app.flashes('error') %}
-            <div class="alert alert-danger text-center">
-                {{ message }}
-            </div>
-        {% endfor %}
 
         <div class="form-container">
             {{ form_start(form) }}

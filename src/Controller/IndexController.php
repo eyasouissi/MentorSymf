@@ -13,6 +13,7 @@ final class IndexController extends AbstractController
     {
         return $this->render('front/index/index.html.twig', [
             'controller_name' => 'IndexController',
+            
         ]);
     }
 

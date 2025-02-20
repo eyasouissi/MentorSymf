@@ -1,0 +1,63 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Create a New Course{% endblock %}
+
+{% block body %}
+    <div class="container py-5">
+        <h1 class="text-center mb-5">Create a New Course</h1>
+
+        {# Start the form with enctype for file uploads #}
+        {{ form_start(form, { 'attr': {'enctype': 'multipart/form-data'}, 'action': path('create_course', {'id': category.id}) }) }}
+
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <label for="course_title" class="form-label">Course Title</label>
+                {{ form_widget(form.title, { 'attr': {'id': 'course_title', 'class': 'form-control'} }) }}
+                {{ form_errors(form.title) }} {# Display errors if any #}
+            </div>
+            <div class="col-md-6">
+                {{ form_row(form.category) }}
+                {{ form_errors(form.category) }}
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label for="course_description" class="form-label">Course Description</label>
+            {{ form_widget(form.description, { 'attr': {'id': 'course_description', 'class': 'form-control ckeditor'} }) }}
+            {{ form_errors(form.description) }} {# Display errors for description if any #}
+        </div>
+
+        <div class="mb-4">
+            <label for="course_createdAt" class="form-label">Creation Date</label>
+            {{ form_widget(form.createdAt, { 'attr': {'id': 'course_createdAt', 'class': 'form-control'} }) }}
+            {{ form_errors(form.createdAt) }}
+        </div>
+
+        <div class="mb-4">
+            <label for="course_numberOfLevels" class="form-label">Number of Levels</label>
+            {{ form_widget(form.numberOfLevels, { 'attr': {'id': 'course_numberOfLevels', 'class': 'form-control'} }) }}
+            {{ form_errors(form.numberOfLevels) }}
+        </div>
+
+       
+        {# Submit button #}
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary btn-lg">Create Course</button>
+        </div>
+
+        {{ form_end(form) }}
+    </div>
+
+    {# CKEditor script for the description field #}
+    <script src="https://cdn.ckeditor.com/ckeditor5/36.0.1/classic/ckeditor.js"></script>
+    <script>
+        ClassicEditor
+            .create(document.querySelector('.ckeditor'), {
+                toolbar: ['bold', 'italic', 'link', 'blockQuote', 'undo', 'redo'],  // Keep only necessary buttons
+                removePlugins: ['List', 'Table'],  // Remove list and table plugins
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    </script>
+{% endblock %}
