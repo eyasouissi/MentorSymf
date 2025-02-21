@@ -1,0 +1,62 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Group Index{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="mb-4">Group List</h1>
+
+        <table class="table table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Group ID</th>
+                    <th>Description</th>
+                    <th>Creator</th>
+                    <th>Status</th>
+                    <th>Creation Date</th>
+                    <th>Image</th>
+                    <th>Meeting Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for group in groups %}
+                <tr>
+                    <td>{{ group.id }}</td>
+                    <td>{{ group.idGroup }}</td>
+                    <td>{{ group.descriptionGroup|default('No description') }}</td>
+                    <td>{{ group.nomCreateur }}</td>
+                    <td>
+                        <span class="badge {% if group.statut == 'public' %}bg-success{% else %}bg-secondary{% endif %}">
+                            {{ group.statut }}
+                        </span>
+                    </td>
+                    <td>{{ group.dateCreationGroup ? group.dateCreationGroup|date('Y-m-d') : 'N/A' }}</td>
+                    <td>
+                        {% if group.image %}
+                            <img src="{{ asset('uploads/' ~ group.image) }}" alt="Group Image" class="img-thumbnail" width="60">
+                        {% else %}
+                            No Image
+                        {% endif %}
+                    </td>
+                    <td>{{ group.dateMeet ? group.dateMeet|date('Y-m-d') : 'N/A' }}</td>
+                    
+                    <td>
+                        <a href="{{ path('app_group_show', {'id': group.id}) }}" class="btn btn-sm btn-info">View</a>
+                        <a href="{{ path('app_group_edit', {'id': group.id}) }}" class="btn btn-sm btn-warning">Edit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="10" class="text-center">No records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('app_group_new') }}" class="btn btn-primary">Create New Group</a>
+        <a href="{{ path('app_project_add') }}" class="btn btn-secondary">Create New Project</a>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,137 @@
+{% extends 'back/baseback.html.twig' %}
+
+{% block body %}
+<div class="az-content az-content-dashboard">
+    <div class="container">
+        <div class="az-content-body">
+            <!-- Dashboard Title -->
+            <div class="az-dashboard-one-title">
+                <div>
+                    <h2 class="az-dashboard-title">Edit Payment</h2>
+                    <p class="az-dashboard-text">Manage payment details for your subscriptions.</p>
+                </div>
+            </div><!-- az-dashboard-one-title -->
+
+            <!-- Navigation Tabs -->
+            <div class="az-dashboard-nav"> 
+                <nav class="nav">
+                    <a href="{{ path('app_abonnement_back') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_abonnement_back' %}active{% endif %}">Add</a>
+                    <a href="{{ path('app_list_abonnement') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_list_abonnement' %}active{% endif %}">List</a>
+                    <a class="nav-link" href="#">More</a>
+                </nav>
+
+                <nav class="nav">
+                    <a class="nav-link" href="#"><i class="far fa-save"></i> Save Report</a>
+                    <a class="nav-link" href="#"><i class="far fa-file-pdf"></i> Export to PDF</a>
+                    <a class="nav-link" href="#"><i class="far fa-envelope"></i> Send to Email</a>
+                </nav>
+            </div>
+
+            <!-- Payment Form -->
+            <h3>Edit Payment</h3>
+
+            {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+            <!-- id_user with error handling -->
+            <div class="form-group">
+                {{ form_label(form.id_user) }}
+                {{ form_widget(form.id_user, {
+                    'attr': {
+                        'class': form.id_user.vars.errors|length > 0 ? 'form-control is-invalid' : 'form-control'
+                    }
+                }) }}
+                {% if form.id_user.vars.errors|length > 0 %}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.id_user) }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- id_offre with error handling -->
+            <div class="form-group">
+                {{ form_label(form.id_offre) }}
+                {{ form_widget(form.id_offre, {
+                    'attr': {
+                        'class': form.id_offre.vars.errors|length > 0 ? 'form-control is-invalid' : 'form-control'
+                    }
+                }) }}
+                {% if form.id_offre.vars.errors|length > 0 %}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.id_offre) }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Email with error handling -->
+            <div class="form-group">
+                {{ form_label(form.yourEmail) }}
+                {{ form_widget(form.yourEmail, {
+                    'attr': {
+                        'class': form.yourEmail.vars.errors|length > 0 ? 'form-control is-invalid' : 'form-control'
+                    }
+                }) }}
+                {% if form.yourEmail.vars.errors|length > 0 %}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.yourEmail) }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Card Number with error handling -->
+           {% if not isCardNumberSet %}
+    <div class="form-group">
+        {{ form_label(form.card_num) }}
+        {{ form_widget(form.card_num, {
+            'attr': {
+                'class': form.card_num.vars.errors|length > 0 ? 'form-control is-invalid' : 'form-control'
+            }
+        }) }}
+        {% if form.card_num.vars.errors|length > 0 %}
+            <div class="invalid-feedback">
+                {{ form_errors(form.card_num) }}
+            </div>
+        {% endif %}
+    </div>
+{% else %}
+    <div class="form-group">
+        <label for="masked_card_num">Card Number</label>
+        <input type="text" class="form-control" value="**** **** **** {{ paiement.getMaskedCardNum() }}" disabled>
+    </div>
+{% endif %}
+            <!-- Expiration Date with error handling -->
+            <div class="form-group">
+                {{ form_label(form.Date_expiration) }}
+                {{ form_widget(form.Date_expiration, {
+                    'attr': {
+                        'class': form.Date_expiration.vars.errors|length > 0 ? 'form-control is-invalid' : 'form-control'
+                    }
+                }) }}
+                {% if form.Date_expiration.vars.errors|length > 0 %}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.Date_expiration) }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- CVV with error handling -->
+            <div class="form-group">
+                {{ form_label(form.cvv) }}
+                {{ form_widget(form.cvv, {
+                    'attr': {
+                        'class': form.cvv.vars.errors|length > 0 ? 'form-control is-invalid' : 'form-control'
+                    }
+                }) }}
+                {% if form.cvv.vars.errors|length > 0 %}
+                    <div class="invalid-feedback">
+                        {{ form_errors(form.cvv) }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

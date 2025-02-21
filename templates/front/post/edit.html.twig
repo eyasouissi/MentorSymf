@@ -1,0 +1,134 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Edit Post{% endblock %}
+
+{% block body %}
+    <h1 class="page-title">Edit Post</h1>
+
+    <div class="form-container">
+        {{ form_start(form) }}
+            <div class="form-group">
+                <label for="content">Content</label>
+                {{ form_row(form.content) }}
+            </div>
+
+            <!-- Show current photo if exists -->
+            {% if post.photo %}
+                <div class="form-group">
+                    <label>Current Photo</label>
+                    <img src="{{ asset('uploads/posts/' ~ post.photo) }}" alt="Post Image" class="post-image">
+                </div>
+                <div class="form-group">
+                    {{ form_row(form.remove_photo) }}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="photo">Upload a new photo</label>
+                {{ form_row(form.photo) }}
+            </div>
+
+            
+        {{ form_end(form) }}
+
+        <!-- Display Updated At Date -->
+        {% if post.updatedAt %}
+            <p class="updated-text">Last updated: {{ post.updatedAt|date('Y-m-d H:i:s') }}</p>
+        {% endif %}
+
+        <!-- Cancel button -->
+        <a href="{{ path('app_post', {'forumId': post.forum.id}) }}" class="btn btn-secondary">Cancel</a>
+    </div>
+
+    <style>
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: block;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .post-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #8c84a1;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color:rgb(77, 98, 120);
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #fff;
+            text-decoration: none;
+            padding: 10px 20px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .updated-text {
+            margin-top: 15px;
+            font-size: 0.9rem;
+            color: #555;
+            text-align: center;
+        }
+    </style>
+{% endblock %}

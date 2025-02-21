@@ -1,0 +1,156 @@
+{% extends 'front/base.html.twig' %}
+
+{% block body %}
+
+<style type="text/css">
+    /* Bordure autour du formulaire */
+    form {
+        border: 2px solid rgba(126, 108, 142, 0.3);
+        padding: 30px;
+        border-radius: 8px;
+        font-size: 1.5rem;
+        width: 100%;
+        max-width: 600px; /* Élargir le formulaire */
+    }
+
+    /* Champs de formulaire */
+    input,
+    select,
+    textarea {
+        border: 1px solid rgba(126, 108, 142, 0.3);
+        padding: 12px;
+        border-radius: 4px;
+        width: 100%;
+        font-size: 1.4rem;
+    }
+
+    /* Labels */
+    label {
+        font-size: 1.4rem;
+        font-weight: bold;
+    }
+
+    /* Messages d'erreur */
+    .form-error-message {
+        color: red;
+        font-size: 1.2rem;
+        margin-top: 5px;
+    }
+
+    /* Bouton Payer */
+    button[type="submit"] {
+        border: 2px solid rgba(126, 108, 142, 0.3);
+        padding: 12px 24px;
+        border-radius: 6px;
+        background-color: #7E6C8E;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        font-size: 1.5rem;
+        width: 100%;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #6d5a77;
+        border-color: #6d5a77;
+    }
+
+    /* Centrage */
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: row;
+        gap: 30px;
+    }
+
+    /* Carte bancaire */
+    .card p,
+    .card h5 {
+        font-size: 1.4rem;
+    }
+</style>
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Section Image -->
+        <div class="col-lg-6">
+            <img src="{{ asset('uploads/images/im.jpg') }}" class="d-block w-100" alt="Image fixe">
+        </div>
+
+        <!-- Formulaire de paiement -->
+        <div class="col-lg-6">
+            {{ form_start(f, {'attr': {'novalidate': 'novalidate'}}) }}
+
+            {% if not f.vars.valid %}
+                <div class="alert alert-danger">
+                    Le formulaire contient des erreurs. Merci de vérifier vos informations.
+                </div>
+            {% endif %}
+
+            <div class="mb-3">
+                <label for="user" class="form-label">User</label>
+                {{ form_widget(f.id_user, {'attr': {'class': 'form-control'}}) }}
+                {% for error in f.id_user.vars.errors %}
+                    <div class="form-error-message">{{ error.message }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                <label for="id_offre" class="form-label">Offre</label>
+                {{ form_widget(f.id_offre, {'attr': {'class': 'form-control'}}) }}
+                {% for error in f.id_offre.vars.errors %}
+                    <div class="form-error-message">{{ error.message }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                <label for="yourEmail" class="form-label">Email</label>
+                {{ form_widget(f.yourEmail, {'attr': {'class': 'form-control', 'placeholder': 'exemple@domaine.com'}}) }}
+                {% for error in f.yourEmail.vars.errors %}
+                    <div class="form-error-message">{{ error.message }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="card p-3 border">
+                <h5 class="mb-3">💳 Bank Card</h5>
+
+                <div class="mb-3">
+                    <label for="card-number" class="form-label">Card number</label>
+                    {{ form_widget(f.card_num, {'attr': {'class': 'form-control', 'id': 'card-number', 'placeholder': '1234 1234 1234 1234'}}) }}
+                    {% for error in f.card_num.vars.errors %}
+                        <div class="form-error-message">{{ error.message }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="expiration-date" class="form-label">Date d'expiration</label>
+                        {{ form_widget(f.Date_expiration, {'attr': {'class': 'form-control', 'id': 'expiration-date', 'placeholder': 'MM / AA'}}) }}
+                        {% for error in f.Date_expiration.vars.errors %}
+                            <div class="form-error-message">{{ error.message }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="security-code" class="form-label">Security code</label>
+                        {{ form_widget(f.cvv, {'attr': {'class': 'form-control', 'id': 'security-code', 'placeholder': 'CVV'}}) }}
+                        {% for error in f.cvv.vars.errors %}
+                            <div class="form-error-message">{{ error.message }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <button type="submit">Payer</button>
+            </div>
+
+            {{ form_end(f) }}
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+{% endblock %}

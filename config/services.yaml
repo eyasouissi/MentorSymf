@@ -4,11 +4,16 @@ parameters:
     diploma_directory: '%kernel.project_dir%/public/uploads/Diplomas'
     upload_directory: '%kernel.project_dir%/public/uploads/images'
     pfp_upload_directory: '%kernel.project_dir%/public/uploads/pfp'
+    uploadsDirectory: '%kernel.project_dir%/public/uploads/events'
+    post_photos_directory: '%kernel.project_dir%/public/uploads/photos'
+
 
 services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+        
 
     # Makes classes in src/ available as services
     # This creates a service per class whose id is the fully-qualified class name
@@ -29,3 +34,5 @@ services:
         autowire: true
         autoconfigure: true
         public: true
+
+    

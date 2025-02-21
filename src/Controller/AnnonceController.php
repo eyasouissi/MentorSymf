@@ -79,7 +79,7 @@ final class AnnonceController extends AbstractController
     
                 try {
                     // Move the file to the directory where images are stored
-                    $image->move($params->get('upload_directory'), $fileName);
+                    $image->move($params->get('uploadsDirectory'), $fileName);
                     $annonce->setImageA($fileName);  // Set the image filename in the entity
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Erreur lors du téléchargement de l\'image.');

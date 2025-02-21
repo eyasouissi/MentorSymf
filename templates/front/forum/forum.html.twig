@@ -2,337 +2,270 @@
 
 {% block body %}
 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+
+<style>
+    /* Scroll container styling */
+    .scroll-container {
+        max-height: 400px;  /* Adjust the height as needed */
+        overflow-y: auto;
+        padding-right: 10px; /* Optional: to account for the scrollbar */
+    }
+
+    /* Right sidebar styling */
+    .sidebar-container {
+        padding: 15px;
+    }
+
+    .topics-container, .stats-container {
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .topics-container h4,
+    .stats-container h4 {
+        margin-top: 0;
+    }
+
+    .topic-bubble {
+        display: inline-block;
+        padding: 5px 10px;
+        background: #eee;
+        margin: 3px;
+        border-radius: 15px;
+        cursor: pointer;
+        font-size: 0.9em;
+    }
+
+    .topic-bubble.active {
+        background: #ddd;
+        font-weight: bold;
+    }
+
+    /* Animated Eye SVG styles */
+    @keyframes movePupil {
+        0% { transform: translate(0, 0); }
+        50% { transform: translate(3px, 0); }
+        100% { transform: translate(0, 0); }
+    }
+    .pupil {
+        animation: movePupil 2s infinite;
+        transform-origin: center;
+    }
+
+    /* Smooth search bar animation */
+    #searchInput {
+        transition: all 0.5s ease-in-out; /* Updated for smoother transition */
+        width: 0;
+        opacity: 0;
+        display: none;
+    }
+
+    /* Search icon rotation */
+    #searchIcon {
+        transition: transform 0.3s ease; /* Smooth rotation */
+    }
+
+    /* Forum item styling */
+    .forum-item {
+        position: relative;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        margin-bottom: 15px;
+    }
+
+    .forum-item .forum-stats {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        font-size: 0.8em;
+        color: #666;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .forum-item .forum-stats svg {
+        width: 16px;
+        height: 16px;
+    }
+</style>
+
 <div class="container" data-aos="fade-up" data-aos-delay="100">
-    
-<div class="row">
-    <div class="col-lg-12">
-        <div class="wrapper wrapper-content animated fadeInRight">
-            <div class="row gy-4" style="justify-content: center;"> <!-- Centering the content -->
-                <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="100">
-                    <img src="assets/img/forum.png" class="img-fluid" alt="" style="display: block; margin: auto;"> <!-- Centering the image -->
-                </div>
-            </div>
-            <div class="ibox-content m-b-sm border-bottom">
-                <div class="p-xs">
-                    <div class="pull-left m-r-md">
-                        <i class="fa fa-globe text-navy mid-icon"></i>
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="wrapper wrapper-content animated fadeInRight">
+                <!-- Header Section -->
+                <div class="row gy-4" style="justify-content: center;">
+                    <!-- Forum Info Section -->
+                    <div class="col-lg-12 text-center">
+                        <h2 style="margin-bottom: 10px;">Welcome to our forum</h2>
+                        <!-- Description -->
+                        <span>Feel free to choose the topic you're interested in.</span>
                     </div>
-                    <h2 style="margin-bottom: 10px;">Welcome to our forum</h2> <!-- Added margin-bottom for spacing -->
-                    <span>Feel free to choose the topic you're interested in.</span>
-                </div>
-                
-            </div>
-            
 
-            <div class="ibox-content forum-container">
+                    <!-- Image Section -->
+                    <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="100">
+                        <img src="assets/img/forum.png" class="img-fluid" alt="" style="display: block; margin: auto;">
+                    </div>
 
-                <div class="forum-title">
-                    <div class="pull-right forum-desc">
-                        <samll>Total posts: 320,800</samll>
-                    </div>
-                    <h3>General subjects</h3>
-                </div>
-
-                <div class="forum-item active">
-                    <div class="row">
-                        <div class="col-md-9">
-                            <div class="forum-icon">
-                                <i class="fa fa-shield"></i>
-                            </div>
-                            <a href="/post" class="forum-item-title">General Discussion</a>
-                            <div class="forum-sub-title">Talk about sports, entertainment, music, movies, your favorite color, talk about enything.</div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                1216
-                            </span>
-                            <div>
-                                <small>Views</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                368
-                            </span>
-                            <div>
-                                <small>Topics</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                140
-                            </span>
-                            <div>
-                                <small>Posts</small>
-                            </div>
+                    <!-- Search Bar Section -->
+                    <div class="col-lg-12 text-center" style="margin-top: 20px;">
+                        <div style="display: flex; justify-content: center; align-items: center;">
+                            <input id="searchInput" type="text" placeholder="Search forums..." 
+                                style="padding: 8px 12px; font-size: 14px; border: 2px solid #ddd; 
+                                        border-radius: 20px; width: 300px; background-color: #f4f4f4;" 
+                                onkeyup="filterForums()">
+                            <svg id="searchIcon" width="24" height="24" xmlns="http://www.w3.org/2000/svg" 
+                                style="cursor: pointer; transition: transform 0.3s ease;" fill="none" 
+                                stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" 
+                                stroke-linecap="round" stroke-linejoin="round" onclick="toggleSearch()">
+                                <path d="M21 21l-6-6M9 4a5 5 0 1 1 0 10 5 5 0 0 1 0-10z"></path>
+                            </svg>
                         </div>
                     </div>
                 </div>
-                <div class="forum-item">
-                    <div class="row">
-                        <div class="col-md-9">
-                            <div class="forum-icon">
-                                <i class="fa fa-bolt"></i>
-                            </div>
-                            <a href="forum_post.html" class="forum-item-title">Introductions</a>
-                            <div class="forum-sub-title">New to the community? Please stop by, say hi and tell us a bit about yourself. </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                890
-                            </span>
-                            <div>
-                                <small>Views</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                120
-                            </span>
-                            <div>
-                                <small>Topics</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                154
-                            </span>
-                            <div>
-                                <small>Posts</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="forum-item active">
-                    <div class="row">
-                        <div class="col-md-9">
-                            <div class="forum-icon">
-                                <i class="fa fa-calendar"></i>
-                            </div>
-                            <a href="forum_post.html" class="forum-item-title">Announcements</a>
-                            <div class="forum-sub-title">This forum features announcements from the community staff. If there is a new post in this forum, please check it out. </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                680
-                            </span>
-                            <div>
-                                <small>Views</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                124
-                            </span>
-                            <div>
-                                <small>Topics</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                61
-                            </span>
-                            <div>
-                                <small>Posts</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="forum-item">
-                    <div class="row">
-                        <div class="col-md-9">
-                            <div class="forum-icon">
-                                <i class="fa fa-star"></i>
-                            </div>
-                            <a href="forum_post.html" class="forum-item-title">Staff Discussion</a>
-                            <div class="forum-sub-title">This forum is for private, staff member only discussions, usually pertaining to the community itself. </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                1450
-                            </span>
-                            <div>
-                                <small>Views</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                652
-                            </span>
-                            <div>
-                                <small>Topics</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                572
-                            </span>
-                            <div>
-                                <small>Posts</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="forum-title">
-                    <div class="pull-right forum-desc">
-                        <samll>Total posts: 17,800,600</samll>
-                    </div>
-                    <h3>Other subjects</h3>
-                </div>
-
-                <div class="forum-item">
-                    <div class="row">
-                        <div class="col-md-9">
-                            <div class="forum-icon">
-                                <i class="fa fa-clock-o"></i>
-                            </div>
-                            <a href="forum_post.html" class="forum-item-title">Lorem Ipsum is simply dummy text. </a>
-                            <div class="forum-sub-title">Various versions have evolved over the years, sometimes by accident, sometimes on purpose passage of Lorem Ipsum (injected humour and the like).</div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                1516
-                            </span>
-                            <div>
-                                <small>Views</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                238
-                            </span>
-                            <div>
-                                <small>Topics</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                180
-                            </span>
-                            <div>
-                                <small>Posts</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="forum-item">
-                    <div class="row">
-                        <div class="col-md-9">
-                            <div class="forum-icon">
-                                <i class="fa fa-bomb"></i>
-                            </div>
-                            <a href="forum_post.html" class="forum-item-title">There are many variations of passages</a>
-                            <div class="forum-sub-title"> If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the . </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                1766
-                            </span>
-                            <div>
-                                <small>Views</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                321
-                            </span>
-                            <div>
-                                <small>Topics</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                42
-                            </span>
-                            <div>
-                                <small>Posts</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="forum-item">
-                    <div class="row">
-                        <div class="col-md-9">
-                            <div class="forum-icon">
-                                <i class="fa fa-bookmark"></i>
-                            </div>
-                            <a href="forum_post.html" class="forum-item-title">The standard chunk of Lorem Ipsum</a>
-                            <div class="forum-sub-title">Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet.</div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                765
-                            </span>
-                            <div>
-                                <small>Views</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                90
-                            </span>
-                            <div>
-                                <small>Topics</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                11
-                            </span>
-                            <div>
-                                <small>Posts</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="forum-item">
-                    <div class="row">
-                        <div class="col-md-9">
-                            <div class="forum-icon">
-                                <i class="fa fa-ambulance"></i>
-                            </div>
-                            <a href="forum_post.html" class="forum-item-title">Lorem Ipsum, you need to be sure there</a>
-                            <div class="forum-sub-title">Internet tend to repeat predefined chunks as necessary, making this the</div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                2550
-                            </span>
-                            <div>
-                                <small>Views</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                122
-                            </span>
-                            <div>
-                                <small>Topics</small>
-                            </div>
-                        </div>
-                        <div class="col-md-1 forum-info">
-                            <span class="views-number">
-                                92
-                            </span>
-                            <div>
-                                <small>Posts</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
 </div>
+
+{# Gather public forums and compute unique topics #}
+{% set publicForums = [] %}
+{% for forum in forums %}
+    {% if forum.isPublic %}
+        {% set publicForums = publicForums|merge([forum]) %}
+    {% endif %}
+{% endfor %}
+
+{% set allTopics = [] %}
+{% for forum in publicForums %}
+    {% set topics = forum.topics ? forum.topics|split(',') : [] %}
+    {% for topic in topics %}
+        {% set trimmedTopic = topic|trim %}
+        {% if trimmedTopic not in allTopics %}
+            {% set allTopics = allTopics|merge([trimmedTopic]) %}
+        {% endif %}
+    {% endfor %}
+{% endfor %}
+
+{# Compute overall stats (assuming each forum has a "likes" property) #}
+{% set totalPosts = 0 %}
+{% set totalLikes = 0 %}
+{% for forum in publicForums %}
+    {% set totalPosts = totalPosts + forum.totalposts %}
+    {% set totalLikes = totalLikes + (forum.likes|default(0)) %}
+{% endfor %}
+
+<!-- Main Content Row: Forum List (left) & Sidebar (right) -->
+<div class="ibox-content forum-container">
+    <div class="container">
+        <div class="row">
+            <!-- Left Column: Forum List -->
+            <div class="col-lg-9">
+                <div class="scroll-container">
+                    {% for forum in publicForums %}
+                        {# Add a data attribute for topics to facilitate filtering #}
+                        <div class="forum-item" 
+                             data-title="{{ forum.title|lower }}" 
+                             data-views="{{ forum.views }}" 
+                             data-posts="{{ forum.totalposts }}"
+                             data-topics="{{ forum.topics|lower }}">
+                            <div class="forum-title">
+                                <h3 style="margin: 0;">
+                                    <a href="{{ path('app_post', {'forumId': forum.id}) }}" style="text-decoration: none; color: inherit;">
+                                        <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 5px;" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 3C6.48 3 2 6.48 2 10s4.48 7 10 7c2.44 0 4.7-.88 6.44-2.34L22 20l-2.67-6.67C18.7 12.88 20 10.44 20 10c0-3.52-4.48-7-8-7zm0 12c-3.31 0-6-2.69-6-6s2.69-6 6-6s6 2.69 6 6s-2.69 6-6 6z"/>
+                                        </svg>
+                                        {{ forum.title }}
+                                    </a>
+                                </h3>
+                                <p class="forum-description" style="margin: 5px 0 10px 0; color: #666;">{{ forum.description|raw }}</p>
+                                
+                                {% if forum.topics %}
+                                    <div class="forum-topics" style="display: flex; align-items: center; margin-bottom: 10px; flex-wrap: wrap;">
+                                        <svg width="16" height="16" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 5px;" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M4 4h16v2H4zm0 4h16v2H4zm0 4h16v2H4zm0 4h16v2H4zm0 4h16v2H4z"/>
+                                        </svg>
+                                        <strong>Topics:</strong>
+                                        <span style="margin-left: 5px; font-size: 0.9em;">
+                                            {% for topic in forum.topics|split(',') %}
+                                                <span style="margin-right: 5px;">{{ topic|trim }}</span>{% if not loop.last %},{% endif %}
+                                            {% endfor %}
+                                        </span>
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Forum Stats (Views & Posts) with SVG Icons -->
+                            <div class="forum-stats">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                    <path d="M16 8s-3 5-8 5-8-5-8-5 3-5 8-5 8 5 8 5z"/>
+                                    <path d="M8 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6z"/>
+                                </svg>
+                                <span>{{ forum.views }} Views</span>
+                                <span>&nbsp;|&nbsp;</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
+                                    <path d="M14 1H2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h10l3 3V2a1 1 0 0 0-1-1z"/>
+                                </svg>
+                                <span>{{ forum.totalposts }} Posts</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Right Column: Sidebar with Topics & Stats -->
+            <div class="col-lg-3">
+                <div class="sidebar-container">
+                    <div class="topics-container">
+                        <h4>Popular Topics</h4>
+                        {% for topic in allTopics|slice(0, 10) %}  {# Show top 10 topics #}
+                            <span class="topic-bubble">{{ topic }}</span>
+                        {% endfor %}
+                    </div>
+
+                    <div class="stats-container">
+                        <h4>Forum Stats</h4>
+                        <p>Total Posts: {{ totalPosts }}</p>
+                        <p>Total Likes: {{ totalLikes }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
+<script>
+    let searchVisible = false;
+    function toggleSearch() {
+        searchVisible = !searchVisible;
+        const searchInput = document.getElementById("searchInput");
+        const searchIcon = document.getElementById("searchIcon");
+        if (searchVisible) {
+            searchInput.style.display = "block";
+            setTimeout(() => searchInput.focus(), 100);
+            searchIcon.style.transform = "rotate(90deg)"; /* Icon rotation on open */
+        } else {
+            searchInput.style.width = '0';
+            searchInput.style.opacity = '0';
+            setTimeout(() => searchInput.style.display = "none", 500);
+            searchIcon.style.transform = "rotate(0deg)"; /* Reset rotation */
+        }
+    }
 
-<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script src="https://netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<script type="text/javascript">
-	
+    function filterForums() {
+        const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+        const forumItems = document.querySelectorAll(".forum-item");
+        forumItems.forEach((forumItem) => {
+            const forumTitle = forumItem.dataset.title;
+            const forumTopics = forumItem.dataset.topics;
+            if (forumTitle.includes(searchTerm) || forumTopics.includes(searchTerm)) {
+                forumItem.style.display = "block";
+            } else {
+                forumItem.style.display = "none";
+            }
+        });
+    }
 </script>
-</body>
 {% endblock %}

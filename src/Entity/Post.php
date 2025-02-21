@@ -5,7 +5,12 @@ namespace App\Entity;
 use App\Repository\PostRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
+/**
+ * @ORM\Entity(repositoryClass=PostRepository::class)
+ */
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
 {
@@ -15,9 +20,14 @@ class Post
     private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'posts')]
-    private ?forum $forum = null;
+    private ?Forum $forum = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Content cannot be empty.")]
+    #[Assert\Length(
+        max: 2000,
+        maxMessage: "Content cannot exceed 2000 characters."
+    )]
     private ?string $content = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -27,10 +37,10 @@ class Post
     private ?\DateTimeInterface $updatedAt = null;
 
     #[ORM\Column]
-    private ?int $likes = null;
+    private ?int $likes = 0;
 
-    #[ORM\Column(nullable: true)]
-    private ?array $attachement = null;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $photo = null;
 
     public function getId(): ?int
     {
@@ -40,19 +50,17 @@ class Post
     public function setId(int $id): static
     {
         $this->id = $id;
-
         return $this;
     }
 
-    public function getForum(): ?forum
+    public function getForum(): ?Forum
     {
         return $this->forum;
     }
 
-    public function setForum(?forum $forum): static
+    public function setForum(?Forum $forum): static
     {
         $this->forum = $forum;
-
         return $this;
     }
 
@@ -64,7 +72,6 @@ class Post
     public function setContent(string $content): static
     {
         $this->content = $content;
-
         return $this;
     }
 
@@ -76,7 +83,6 @@ class Post
     public function setCreatedAt(\DateTimeInterface $createdAt): static
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
@@ -88,7 +94,6 @@ class Post
     public function setUpdatedAt(\DateTimeInterface $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
-
         return $this;
     }
 
@@ -100,19 +105,36 @@ class Post
     public function setLikes(int $likes): static
     {
         $this->likes = $likes;
-
         return $this;
     }
 
-    public function getAttachement(): ?array
+    public function getPhoto(): ?string
     {
-        return $this->attachement;
+        return $this->photo;
     }
 
-    public function setAttachement(?array $attachement): static
+    public function setPhoto(?string $photo): static
     {
-        $this->attachement = $attachement;
-
+        $this->photo = $photo;
         return $this;
+    }
+
+    // Custom validation logic for content
+    public static function validateContent($value, ExecutionContextInterface $context)
+    {
+        // Ensure content is not empty
+        if (empty($value)) {
+            $context->buildViolation('Content cannot be empty.')
+                ->atPath('content')
+                ->addViolation();
+        }
+
+        // Check word count (limit to 200 words)
+        $wordCount = str_word_count($value);
+        if ($wordCount > 200) {
+            $context->buildViolation('Content must be limited to 200 words.')
+                ->atPath('content')
+                ->addViolation();
+        }
     }
 }

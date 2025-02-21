@@ -1,0 +1,74 @@
+
+{% extends 'front/base.html.twig' %}
+
+
+
+{% block stylesheets %}
+   
+    <link rel="stylesheet" href="{{ asset('assets/backAss/css/category_form.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="az-content az-content-dashboard">
+    <div class="container">
+        <div class="az-content-body">
+            <!-- Dashboard Title -->
+            <div class="az-dashboard-one-title">
+                <div>
+                    <h2 class="az-dashboard-title">Hi, welcome back!</h2>
+                    <p class="az-dashboard-text">Your web analytics dashboard template.</p>
+                </div>
+                <div class="az-content-header-right">
+                    <div class="media">
+                        <div class="media-body">
+                            <label>Start Date</label>
+                            <h6>Oct 10, 2018</h6>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                    <div class="media">
+                        <div class="media-body">
+                            <label>End Date</label>
+                            <h6>Oct 23, 2018</h6>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                    <div class="media">
+                        <div class="media-body">
+                            <label>Event Category</label>
+                            <h6>All Categories</h6>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                    <a href="" class="btn btn-purple">Export</a>
+                </div>
+            </div><!-- az-dashboard-one-title -->
+
+            <!-- Navigation Tabs -->
+            <div class="az-dashboard-nav"> 
+                <nav class="nav">
+                    <a href="{{ path('app_add_offre') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_add_offre' %}active{% endif %}">Add Offre</a>
+                     <!--   <a href="{{ path('category_list') }}" class="nav-link {% if app.request.attributes.get('_route') == 'category_list' %}active{% endif %}">View </a> -->
+                    <a class="nav-link" data-toggle="tab" href="#">charts</a>
+                    <a class="nav-link" data-toggle="tab" href="#">More</a>
+                </nav>
+
+                <nav class="nav">
+                    <a class="nav-link" href="#"><i class="far fa-save"></i> Save Report</a>
+                    <a class="nav-link" href="#"><i class="far fa-file-pdf"></i> Export to PDF</a>
+                    <a class="nav-link" href="#"><i class="far fa-envelope"></i> Send to Email</a>
+                    <a class="nav-link" href="#"><i class="fas fa-ellipsis-h"></i></a>
+                </nav>
+            </div>
+
+            <!-- Category Form Section -->
+            <div class="form-container">
+                <h1>Ajouter un offre</h1>
+
+                {# Formulaire #}
+                {{form_start(f, {'attr': {'novalidate': 'novalidate'}}) }}
+                    {{ form_widget(f) }}
+                    <button type="submit" class="btn btn-primary">Enregistrer</button>
+                {{ form_end(f) }}
+            </div>
+        </div><!-- az-content-body -->
+    </div><!-- container -->
+</div><!-- az-content -->
+{% endblock %}

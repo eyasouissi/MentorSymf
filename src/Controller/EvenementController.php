@@ -64,7 +64,7 @@ class EvenementController extends AbstractController
 
                 try {
                     // Move the file to the designated directory
-                    $file->move($this->getParameter('upload_directory'), $filename);
+                    $file->move($this->getParameter('uploadsDirectory'), $filename);
                     $evenement->setImageE($filename); // Set the filename for the entity
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Erreur lors du téléchargement de l\'image. Veuillez réessayer.');
@@ -115,7 +115,7 @@ class EvenementController extends AbstractController
 
                 try {
                     // Move the file to the designated directory
-                    $file->move($this->getParameter('upload_directory'), $filename);
+                    $file->move($this->getParameter('uploadsDirectory'), $filename);
                     $evenement->setImageE($filename); // Set the filename for the entity
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Erreur lors du téléchargement de l\'image. Veuillez réessayer.');
@@ -163,7 +163,7 @@ class EvenementController extends AbstractController
             if ($file) {
                 $filename = uniqid() . '.' . $file->guessExtension();
                 try {
-                    $file->move($this->getParameter('upload_directory'), $filename);
+                    $file->move($this->getParameter('uploadsDirectory'), $filename);
                     $evenement->setImageE($filename); // Update the filename in the entity
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Erreur lors du téléchargement de l\'image. Veuillez réessayer.');
@@ -194,7 +194,7 @@ public function editback(Request $request, Evenement $evenement, EntityManagerIn
         if ($file) {
             $filename = uniqid() . '.' . $file->guessExtension();
             try {
-                $file->move($this->getParameter('upload_directory'), $filename);
+                $file->move($this->getParameter('uploadsDirectory'), $filename);
                 $evenement->setImageE($filename); // Update the filename in the entity
             } catch (FileException $e) {
                 $this->addFlash('error', 'Erreur lors du téléchargement de l\'image. Veuillez réessayer.');

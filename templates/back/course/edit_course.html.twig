@@ -1,0 +1,53 @@
+{% extends 'back/baseback.html.twig' %}
+
+{% block title %}Edit Course{% endblock %}
+
+{% block body %}
+<div class="container py-5">
+    <h1 class="text-center mb-4">Edit Course</h1>
+
+    <div class="card p-4 shadow">
+        <!-- Formulaire de modification -->
+        {{ form_start(form) }}
+
+ <!-- Titre du cours -->
+            <div class="mb-3">
+                {{ form_label(form.title) }}
+                {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <!-- Catégorie -->
+            <div class="mb-3">
+                {{ form_label(form.category) }}
+                {{ form_widget(form.category, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <!-- Description du cours (ajouté) -->
+            <div class="mb-3">
+                {{ form_label(form.description) }}
+                {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <!-- Nombre de niveaux -->
+            <div class="mb-3">
+                {{ form_label(form.numberOfLevels) }}
+                {{ form_widget(form.numberOfLevels, {'attr': {'class': 'form-control'}}) }}
+            </div>
+
+            <!-- Affichage de la date de création -->
+            <div class="mb-3">
+                <label>Date de création</label>
+<input type="text" class="form-control" value="{{ course.createdAt|date('d/m/Y') }}" readonly>
+            </div>
+
+            <!-- Actions de soumission -->
+            <div class="d-flex justify-content-between">
+                <button type="submit" class="btn btn-success">Update</button>
+                <a href="{{ path('admin_courses_list') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+
+
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}

@@ -1,60 +1,67 @@
 {% extends 'back/baseback.html.twig' %}
 
-{% block title %}Hello AdminController!{% endblock %}
-
+{% block title %}Admin Dashboard{% endblock %}
 
 {% block body %}
-
-
-
 <div class="az-content az-content-dashboard">
-      <div class="container">
+    <div class="container">
         <div class="az-content-body">
-          <div class="az-dashboard-one-title">
-            <div>
-              <h2 class="az-dashboard-title">Hi, welcome back!</h2>
-              <p class="az-dashboard-text">Your web analytics dashboard template.</p>
+            <div class="az-dashboard-one-title">
+                <div>
+                    <h2 class="az-dashboard-title">Hi, welcome back!</h2>
+                    <p class="az-dashboard-text">Your web analytics dashboard template.</p>
+                </div>
             </div>
-            <div class="az-content-header-right">
-              <div class="media">
-                <div class="media-body">
-                  <label>Start Date</label>
-                  <h6>Oct 10, 2018</h6>
-                </div><!-- media-body -->
-              </div><!-- media -->
-              <div class="media">
-                <div class="media-body">
-                  <label>End Date</label>
-                  <h6>Oct 23, 2018</h6>
-                </div><!-- media-body -->
-              </div><!-- media -->
-              <div class="media">
-                <div class="media-body">
-                  <label>Event Category</label>
-                  <h6>All Categories</h6>
-                </div><!-- media-body -->
-              </div><!-- media -->
-              <a href="" class="btn btn-purple">Export</a>
+
+            <div class="az-dashboard-nav"> 
+                <nav class="nav">
+                    <a class="nav-link active" data-toggle="tab" href="#">Overview</a>
+                    <a class="nav-link" data-toggle="tab" href="#">Audiences</a>
+                    <a class="nav-link" data-toggle="tab" href="#">Demographics</a>
+                </nav>
             </div>
-          </div><!-- az-dashboard-one-title -->
 
-          <div class="az-dashboard-nav"> 
-            <nav class="nav">
-              <a class="nav-link active" data-toggle="tab" href="#">Overview</a>
-              <a class="nav-link" data-toggle="tab" href="#">Audiences</a>
-              <a class="nav-link" data-toggle="tab" href="#">Demographics</a>
-              <a class="nav-link" data-toggle="tab" href="#">More</a>
-            </nav>
-
-            <nav class="nav">
-              <a class="nav-link" href="#"><i class="far fa-save"></i> Save Report</a>
-              <a class="nav-link" href="#"><i class="far fa-file-pdf"></i> Export to PDF</a>
-              <a class="nav-link" href="#"><i class="far fa-envelope"></i>Send to Email</a>
-              <a class="nav-link" href="#"><i class="fas fa-ellipsis-h"></i></a>
-            </nav>
-          </div>
-
-         
-           
-         
+            <h3 class="mt-4">User Overview</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Rôle</th>
+                        <th>Bio</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ user.id }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                            {% if 'ROLE_ADMIN' in user.roles %} Admin
+                            {% elseif 'ROLE_TUTOR' in user.roles %} Tutor
+                            {% elseif 'ROLE_ENTREPRISE' in user.roles %} Entreprise
+                            {% else %} Étudiant {% endif %}
+                        </td>
+                        <td>{{ user.bio|default('N/A') }}</td>
+                       <td>
+    <a href="{{ path('admin_edit_user', {'id': user.id}) }}" class="btn btn-warning btn-sm">Edit</a>
+    <form method="post" action="{{ path('admin_delete_user', {'id': user.id}) }}" style="display:inline;">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">Delete</button>
+    </form>
+</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">Aucun utilisateur trouvé.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

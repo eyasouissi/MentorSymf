@@ -1,0 +1,119 @@
+{% extends 'back/baseback.html.twig' %}
+{% block title %}Abonnement{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <!-- Lightbox2 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <!-- Lightbox2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+
+    <div class="az-content az-content-dashboard">
+        <div class="container">
+            <div class="az-content-body">
+                <!-- Dashboard Title -->
+                <div class="az-dashboard-one-title">
+                    <div>
+                        <h2 class="az-dashboard-title">Hi, welcome back!</h2>
+                        <p class="az-dashboard-text">Your web analytics dashboard template.</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <div class="az-dashboard-nav"> 
+                    <nav class="nav">
+                        <a href="{{ path('app_abonnement_back') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_abonnement_back' %}active{% endif %}">Add</a>
+                        <a href="{{ path('app_list_abonnement') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_list_abonnement' %}active{% endif %}">List</a>
+                        <a class="nav-link" data-toggle="tab" href="#">Charts</a>
+                    </nav>
+                </div>
+
+                <h2>List of Payments</h2>
+
+                <!-- Search Input -->
+                <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search by email...">
+
+                <!-- Sorting Dropdown -->
+                <select id="sortSelect" class="form-control mb-3">
+                    <option value="">Sort by Offer</option>
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Offer</th>
+                                <th>Card Number</th>
+                                <th>Expiration Date</th>
+                                <th>CVV</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paiementsTableBody">
+                            {% for paiement in paiements %}
+                                <tr>
+                                    <td>{{ paiement.yourEmail }}</td>
+                                    <td>{{ paiement.idOffre ? paiement.idOffre.nomOffre : 'N/A' }}</td>
+                                    <td>{{ paiement.getMaskedCardNum() ? paiement.getMaskedCardNum()  }}</td>
+                                    <td>{{ paiement.dateExpiration ? paiement.dateExpiration|date('Y-m-d') : 'N/A' }}</td>
+                                    <td>{{ paiement.cvv }}</td>
+                                    <td>
+                                        <a href="{{ path('app_edit_abonnement', {'id': paiement.idPaiement}) }}" class="btn btn-warning">Edit</a> 
+                                        <a href="{{ path('app_delete_abonnement', {'id': paiement.idPaiement}) }}" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a> 
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let searchInput = document.getElementById("searchInput");
+        let sortSelect = document.getElementById("sortSelect");
+        let paiementsTableBody = document.getElementById("paiementsTableBody");
+        let debounceTimer;
+
+        function fetchPaiements() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                let searchQuery = searchInput.value.trim();
+                let sortOption = sortSelect.value;
+
+                fetch(`/list_abonnement?search=${encodeURIComponent(searchQuery)}&sort=${sortOption}`, { 
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' } 
+                })
+                .then(response => response.json())
+                .then(data => {
+                    let rows = data.paiements.map(paiement => `
+                        <tr>
+                            <td>${paiement.yourEmail}</td>
+                            <td>${paiement.offre}</td>
+<td><?= $paiement->getMaskedCardNum() ?></td>
+                            <td>${paiement.Date_expiration}</td>
+                            <td>${paiement.cvv}</td>
+                            <td>
+                                <a href="/edit_abonnement/${paiement.id_paiement}" class="btn btn-warning">Edit</a>
+                                <a href="/delete_abonnement/${paiement.id_paiement}" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                            </td>
+                        </tr>
+                    `);
+                    paiementsTableBody.innerHTML = rows.join('');
+                });
+
+            }, 300); // Délai pour éviter trop de requêtes
+        }
+
+        searchInput.addEventListener("input", fetchPaiements);
+        sortSelect.addEventListener("change", fetchPaiements);
+    });
+    </script>
+
+</div>
+{% endblock %}

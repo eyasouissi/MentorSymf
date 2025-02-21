@@ -1,0 +1,136 @@
+{% extends 'back/baseback.html.twig' %}
+
+{% block body %}
+
+<div class="container mt-4">
+    <!-- Lightbox2 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <!-- Lightbox2 CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+
+    <div class="az-content az-content-dashboard">
+        <div class="container">
+            <div class="az-content-body">
+                <!-- Dashboard Title -->
+                <div class="az-dashboard-one-title">
+                    <div>
+                        <h2 class="az-dashboard-title">Hi, welcome back!</h2>
+                        <p class="az-dashboard-text">Your web analytics dashboard template.</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <div class="az-dashboard-nav"> 
+                    <nav class="nav">
+                        <a href="{{ path('app_add_offre') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_add_offre' %}active{% endif %}">Add Offer</a>
+                        <a href="{{ path('offre_list') }}" class="nav-link {% if app.request.attributes.get('_route') == 'offre_list' %}active{% endif %}">List</a>
+                    </nav>
+                </div>
+
+                <h2>List of Offers</h2>
+
+                <!-- Search Input -->
+                <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search by offer name...">
+
+                <!-- Sorting Dropdown -->
+                <select id="sortSelect" class="form-control mb-3">
+                    <option value="">Sort by price</option>
+                    <option value="asc">Lowest Price</option>
+                    <option value="desc">Highest Price</option>
+                </select>
+
+                <div class="table-container">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Image</th>
+                                <th>Price</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="offersTableBody">
+                            {% for o in offres %}
+                                <tr>
+                                    <td>{{ o.getNomOffre() }}</td>
+                                    <td>
+                                        {% if o.getImageOffre() %}
+                                            <a href="{{ asset('uploads/' ~ o.getImageOffre()) }}" data-lightbox="offer-image">
+                                                <img src="{{ asset('uploads/' ~ o.getImageOffre()) }}" alt="Offer Image"
+                                                    class="img-thumbnail" style="width: 50px; height: 50px;">
+                                            </a>
+                                        {% else %}
+                                            No image available
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ o.getPrix() }}</td>
+                                    <td>{{ o.getDateDebut()|date('Y-m-d') }}</td>
+                                    <td>{{ o.getDateFin()|date('Y-m-d') }}</td>
+                                    <td>{{ o.getDescription() }}</td>
+                                    <td>
+                                        <a href="{{ path('app_edit_offre', {'id': o.getIdOffre()}) }}" class="btn btn-warning">Edit</a>
+                                        <br></br>
+                                        <a href="{{ path('app_delete_offre', {'id': o.getIdOffre()}) }}" class="btn btn-danger delete-offre" data-id="{{ o.getIdOffre() }}">Delete</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let searchInput = document.getElementById("searchInput");
+    let sortSelect = document.getElementById("sortSelect");
+    let offersTableBody = document.getElementById("offersTableBody");
+    let debounceTimer;
+
+    function fetchOffers() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            let searchQuery = searchInput.value.trim();
+            let sortOption = sortSelect.value;
+            
+            fetch(`/offre_list?search=${encodeURIComponent(searchQuery)}&sort=${sortOption}`, { 
+                headers: { 'X-Requested-With': 'XMLHttpRequest' } 
+            })
+            .then(response => response.json())
+            .then(data => {
+                let rows = data.offres.map(offer => `
+                    <tr>
+                        <td>${offer.nom_offre}</td>
+                        <td>
+                            ${offer.image_offre ? 
+                                `<a href="${offer.image_offre}" data-lightbox="offer-image">
+                                    <img src="${offer.image_offre}" class="img-thumbnail" style="width: 50px; height: 50px;">
+                                </a>` 
+                                : "No image available"}
+                        </td>
+                        <td>${offer.prix}</td>
+                        <td>${offer.date_debut}</td>
+                        <td>${offer.date_fin || ''}</td>
+                        <td>${offer.description}</td>
+                        <td>
+                            <a href="/edit_offre/${offer.id_offre}" class="btn btn-warning">Edit</a>
+                            <a href="/delete_offre/${offer.id_offre}" class="btn btn-danger delete-offre" data-id="${offer.id_offre}">Delete</a>
+                        </td>
+                    </tr>
+                `);
+                offersTableBody.innerHTML = rows.join('');
+            });
+        }, 300);
+    }
+
+    searchInput.addEventListener("input", fetchOffers);
+    sortSelect.addEventListener("change", fetchOffers);
+});
+</script>
+
+{% endblock %}

@@ -47,7 +47,7 @@ class TutorRegistrationController extends AbstractController
             );
 
             $user->setRoles(['ROLE_TUTOR']);
-            $user->setDateCreation(new \DateTime());
+            $user->setDateCreation(new \DateTimeImmutable());
 
             // Handle diploma upload
             $diplomeFile = $form->get('diplome')->getData();
@@ -106,7 +106,7 @@ class TutorRegistrationController extends AbstractController
             $mailer->send($email);
 
             $this->addFlash('success', 'Registration successful. Please check your email to verify your account.');
-            return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('login');
         }
 
         return $this->render('user/tutor_registration.html.twig', [

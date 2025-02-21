@@ -17,6 +17,11 @@ security:
             lazy: true
             provider: app_user_provider
             custom_authenticator: App\Security\LoginFormAuthenticator
+
+            entry_point: form_login
+            form_login:
+                login_path: login
+                check_path: login
             logout:
                 path: logout             # Path to logout
                 target: app_index # After logging out, redirect to login page

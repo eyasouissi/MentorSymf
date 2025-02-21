@@ -145,5 +145,4 @@ public function details(Category $category): Response
 
 
 
-
 }

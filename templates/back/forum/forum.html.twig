@@ -1,54 +1,194 @@
-{% extends 'back/base.html.twig' %}
+{% extends 'back/baseback.html.twig' %}
 
 {% block body %}
 <div class="az-content az-content-dashboard">
-      <div class="container">
+    <div class="container">
         <div class="az-content-body">
-          <div class="az-dashboard-one-title">
-            <div>
-              <h2 class="az-dashboard-title">Hi, welcome back!</h2>
-              <p class="az-dashboard-text">Your web analytics dashboard template.</p>
+            <div class="az-dashboard-one-title">
+                <div>
+                    <h2 class="az-dashboard-title">Hi, welcome back!</h2>
+                    <p class="az-dashboard-text">Your web analytics dashboard template.</p>
+                </div>
+            </div><!-- az-dashboard-one-title -->
+
+            <div class="az-dashboard-nav">
+                <nav class="nav">
+                    <a class="nav-link active" data-toggle="tab" href="#">Overview</a>
+                    <a class="nav-link" data-toggle="tab" href="#">Audiences</a>
+                    <a class="nav-link" data-toggle="tab" href="#">Demographics</a>
+                    <a class="nav-link" data-toggle="tab" href="#">More</a>
+                </nav>
+                <nav class="nav">
+                    <a class="nav-link" href="#"><i class="far fa-save"></i> Save Report</a>
+                    <a class="nav-link" href="#"><i class="far fa-file-pdf"></i> Export to PDF</a>
+                    <a class="nav-link" href="#"><i class="far fa-envelope"></i>Send to Email</a>
+                    <a class="nav-link" href="#"><i class="fas fa-ellipsis-h"></i></a>
+                </nav>
             </div>
-            <div class="az-content-header-right">
-              <div class="media">
-                <div class="media-body">
-                  <label>Start Date</label>
-                  <h6>Oct 10, 2018</h6>
-                </div><!-- media-body -->
-              </div><!-- media -->
-              <div class="media">
-                <div class="media-body">
-                  <label>End Date</label>
-                  <h6>Oct 23, 2018</h6>
-                </div><!-- media-body -->
-              </div><!-- media -->
-              <div class="media">
-                <div class="media-body">
-                  <label>Event Category</label>
-                  <h6>All Categories</h6>
-                </div><!-- media-body -->
-              </div><!-- media -->
-              <a href="" class="btn btn-purple">Export</a>
+
+            <div class="az-dashboard-nav">
+                {% if form is defined %}
+                    <h1>{{ form.vars.value.id ? 'Edit Forum' : 'Create New Forum' }}</h1>
+
+                    {{ form_start(form, {'attr': {'id': 'forumForm', 'novalidate': 'novalidate'}}) }}
+                        <div class="form-group">
+                            {{ form_label(form.title) }}
+                            {{ form_widget(form.title, {'attr': {'class': form.title.vars.errors|length > 0 ? 'is-invalid form-control' : 'form-control', 'oninput': 'capitalizeFirstLetter(this)'}}) }}
+                            {% for error in form.title.vars.errors %}
+                                <div class="invalid-feedback">{{ error.message }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.description) }}
+                            {{ form_widget(form.description, {'attr': {'class': form.description.vars.errors|length > 0 ? 'is-invalid ckeditor' : 'ckeditor'}}) }}
+                            {% for error in form.description.vars.errors %}
+                                <div class="invalid-feedback">{{ error.message }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.isPublic) }}
+                            {{ form_widget(form.isPublic) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.createdAt) }}
+                            {{ form_widget(form.createdAt, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.updatedAt) }}
+                            {{ form_widget(form.updatedAt, {'attr': {'class': form.updatedAt.vars.errors|length > 0 ? 'is-invalid' : ''}}) }}
+                            {% for error in form.updatedAt.vars.errors %}
+                                <div class="invalid-feedback">{{ error.message }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.topics) }}
+                            {{ form_widget(form.topics, {'attr': {'class': form.topics.vars.errors|length > 0 ? 'is-invalid form-control' : 'form-control'}}) }}
+                            {% for error in form.topics.vars.errors %}
+                                <div class="invalid-feedback">{{ error.message }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary mb-2">Save</button>
+                    {{ form_end(form) }}
+
+                    <a href="{{ path('app_forumB') }}" class="btn btn-secondary mt-3">Back to list</a>
+
+                    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+                    <script>
+                        CKEDITOR.replace('forum_description');
+                        // JavaScript function to capitalize the first letter of the title
+                        function capitalizeFirstLetter(input) {
+                            let value = input.value;
+                            input.value = value.charAt(0).toUpperCase() + value.slice(1);
+                        }
+                    </script>
+                {% elseif forum is defined %}
+                    <h1>Forum Details</h1>
+
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Topics</th>
+                                <th>Created At</th>
+                                <th>Updated At</th>
+                                <th>Views</th>
+                                <th>Total Posts</th>
+                                <th>Visibility</th> <!-- Added new column for visibility -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ forum.id }}</td>
+                                <td>{{ forum.title }}</td>
+                                <td>{{ forum.description|raw }}</td>
+                                <td>{{ forum.topics|join(', ') }}</td>
+                                <td>{{ forum.createdAt|date('Y-m-d H:i') }}</td>
+                                <td>{{ forum.updatedAt|date('Y-m-d H:i') }}</td>
+                                <td>{{ forum.views is not defined ? 0 : forum.views }}</td>
+                                <td>{{ forum.totalPosts is not defined ? 0 : forum.totalPosts }}</td>
+                                <td>
+                                    {% if forum.isPublic %}
+                                        <!-- Eye SVG for public forums -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                            <path d="M8 3c3.084 0 5.92 2.174 6.92 5.065-.989 2.842-3.784 4.935-6.92 4.935-3.084 0-5.92-2.174-6.92-5.065C2.08 5.174 4.916 3 8 3zm0 2C6.346 5 4.835 6.348 4.204 8c.631 1.652 2.142 3 3.796 3s3.165-1.348 3.796-3C11.165 6.348 9.654 5 8 5z"/>
+                                        </svg>
+                                    {% else %}
+                                        <!-- Crossed Eye SVG for non-public forums (new one) -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-eye-off" viewBox="0 0 16 16">
+                                            <path d="M11.742 9.906c-.548-.537-1.377-.786-2.486-.786-1.115 0-2.062.22-2.806.65-1.388-.946-2.936-1.607-4.646-1.91.69-.73 1.5-1.338 2.462-1.75.254.11.485.254.687.398C7.707 7.44 8.81 7.5 10 7.5c1.49 0 2.864-.7 3.758-1.938C13.952 5.08 12.587 4 11 4c-.465 0-.914.097-1.344.264-.292-.667-.769-1.268-1.365-1.776C8.62 2.41 7.318 2 6 2 2.62 2 0 5.1 0 8c0 .06.013.13.016.191-.003.078.016.156.016.242 0 0 .018.2.077.428a9.525 9.525 0 0 0 3.634-.888c.204.62.469 1.191.75 1.674.162-.029.325-.056.49-.078.823-.107 1.63-.221 2.478-.413 1.025.623 2.367.985 3.787.985 1.684 0 3.213-.317 4.575-.888.312-.081.634-.172.97-.275a8.929 8.929 0 0 0 1.832-.632zM7.732 11.268a4.622 4.622 0 0 0 1.162-.604c.7-.484 1.404-.97 2.065-1.455-.393.01-.785.022-1.182.022-.327 0-.653-.005-.98-.017-.156.01-.313.025-.47.046-.444.086-.868.176-1.286.268-.545-.655-1.129-1.187-1.74-1.672z"/>
+                                        </svg>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <a href="{{ path('app_forumB') }}" class="btn btn-primary mt-3">Back to list</a>
+                {% else %}
+                    <h1>Forum Index</h1>
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Topics</th>
+                                <th>Created At</th>
+                                <th>Updated At</th>
+                                <th>Views</th>
+                                <th>Total Posts</th>
+                                <th>Visibility</th> <!-- Added new column for visibility -->
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for forum in forums %}
+                                <tr>
+                                    <td>{{ forum.id }}</td>
+                                    <td>{{ forum.title }}</td>
+                                    <td>{{ forum.description|raw }}</td>
+                                    <td>{{ forum.topics|join(', ') }}</td>
+                                    <td>{{ forum.createdAt|date('Y-m-d H:i') }}</td>
+                                    <td>{{ forum.updatedAt|date('Y-m-d H:i') }}</td>
+                                    <td>{{ forum.views is not defined ? 0 : forum.views }}</td>
+                                    <td>{{ forum.totalPosts is not defined ? 0 : forum.totalPosts }}</td>
+                                    <td>
+                                        {% if forum.isPublic %}
+                                            <!-- Updated Eye SVG for public forums -->
+                                            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd">
+                                                <path d="M12.01 20c-5.065 0-9.586-4.211-12.01-8.424 2.418-4.103 6.943-7.576 12.01-7.576 5.135 0 9.635 3.453 11.999 7.564-2.241 4.43-6.726 8.436-11.999 8.436zm-10.842-8.416c.843 1.331 5.018 7.416 10.842 7.416 6.305 0 10.112-6.103 10.851-7.405-.772-1.198-4.606-6.595-10.851-6.595-6.116 0-10.025 5.355-10.842 6.584zm10.832-4.584c2.76 0 5 2.24 5 5s-2.24 5-5 5-5-2.24-5-5 2.24-5 5-5zm0 1c2.208 0 4 1.792 4 4s-1.792 4-4 4-4-1.792-4-4 1.792-4 4-4z"/>
+                                            </svg>
+                                        {% else %}
+                                            <!-- Updated Crossed Eye SVG for non-public forums -->
+                                            <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd">
+                                                <path d="M8.137 15.147c-.71-.857-1.146-1.947-1.146-3.147 0-2.76 2.241-5 5-5 1.201 0 2.291.435 3.148 1.145l1.897-1.897c-1.441-.738-3.122-1.248-5.035-1.248-6.115 0-10.025 5.355-10.842 6.584.529.834 2.379 3.527 5.113 5.428l1.865-1.865zm6.294-6.294c-.673-.53-1.515-.853-2.44-.853-2.207 0-4 1.792-4 4 0 .923.324 1.765.854 2.439l5.586-5.586zm7.56-6.146l-19.292 19.293-.708-.707 3.548-3.548c-2.298-1.612-4.234-3.885-5.548-6.169 2.418-4.103 6.943-7.576 12.01-7.576 2.065 0 4.021.566 5.782 1.501l3.501-3.501.707.707zm-2.465 3.879l-.734.734c2.236 1.619 3.628 3.604 4.061 4.274-.739 1.303-4.546 7.406-10.852 7.406-1.425 0-2.749-.368-3.951-.938l-.748.748c1.475.742 3.057 1.19 4.699 1.19 5.274 0 9.758-4.006 11.999-8.436-1.087-1.891-2.63-3.637-4.474-4.978zm-3.535 5.414c0-.554-.113-1.082-.317-1.562l.734-.734c.361.69.583 1.464.583 2.296 0 2.759-2.24 5-5 5-.832 0-1.604-.223-2.295-.583l.734-.735c.48.204 1.007.318 1.561.318 2.208 0 4-1.792 4-4z"/>
+                                            </svg>
+                                        {% endif %}
+                                    </td>
+
+                                    <td>
+                                        <a href="{{ path('app_forum_show', {'id': forum.id}) }}" class="btn btn-info btn-sm mr-2">Show</a>
+                                        <a href="{{ path('app_forum_edit', {'id': forum.id}) }}" class="btn btn-warning btn-sm mr-2">Edit</a>
+                                        <form method="post" action="{{ path('app_forum_delete', {'id': forum.id}) }}" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this forum?');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ forum.id) }}">
+                                            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <a href="{{ path('app_forum_new') }}" class="btn btn-primary mt-3">Create new</a>
+                {% endif %}
             </div>
-          </div><!-- az-dashboard-one-title -->
-
-          <div class="az-dashboard-nav"> 
-            <nav class="nav">
-              <a class="nav-link active" data-toggle="tab" href="#">Overview</a>
-              <a class="nav-link" data-toggle="tab" href="#">Audiences</a>
-              <a class="nav-link" data-toggle="tab" href="#">Demographics</a>
-              <a class="nav-link" data-toggle="tab" href="#">More</a>
-            </nav>
-
-            <nav class="nav">
-              <a class="nav-link" href="#"><i class="far fa-save"></i> Save Report</a>
-              <a class="nav-link" href="#"><i class="far fa-file-pdf"></i> Export to PDF</a>
-              <a class="nav-link" href="#"><i class="far fa-envelope"></i>Send to Email</a>
-              <a class="nav-link" href="#"><i class="fas fa-ellipsis-h"></i></a>
-            </nav>
-          </div>
-
-         
-
-
+        </div>
+    </div>
+</div>
 {% endblock %}

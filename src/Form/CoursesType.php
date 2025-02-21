@@ -1,8 +1,4 @@
 <?php
-// src/Form/CoursesType.php
-
-// src/Form/CoursesType.php
-
 namespace App\Form;
 
 use Symfony\Component\Form\AbstractType;
@@ -41,6 +37,7 @@ class CoursesType extends AbstractType
                 'choice_label' => 'name',
                 'placeholder' => 'Select a Category',
                 'label' => 'Category',
+                'disabled' => $options['data'] && $options['data']->getId() !== null,
             ])
             ->add('numberOfLevels', ChoiceType::class, [
                 'label' => 'Number of Levels',
@@ -53,7 +50,6 @@ class CoursesType extends AbstractType
                 ],
                 'mapped' => false, 
             ]);
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -7,6 +7,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
@@ -25,19 +26,14 @@ class ProfileType extends AbstractType
                 'label' => 'Email',
                 'attr' => ['class' => 'form-control']
             ])
-            ->add('bio', TextType::class, [
+            ->add('bio', TextareaType::class, [
                 'label' => 'Bio',
                 'required' => false,
                 'attr' => ['class' => 'form-control']
             ])
-            ->add('speciality', TextType::class, [
-                'label' => 'Spécialité',
-                'required' => false,
-                'attr' => ['class' => 'form-control']
-            ])
-            ->add('pfp', FileType::class, [ // Ajout du champ photo de profil
+            ->add('pfp', FileType::class, [
                 'label' => 'Photo de profil',
-                'mapped' => false, // Ne pas lier directement à l'entité
+                'mapped' => false, 
                 'required' => false,
                 'constraints' => [
                     new File([
@@ -47,34 +43,41 @@ class ProfileType extends AbstractType
                     ])
                 ],
                 'attr' => ['class' => 'form-control']
-            ])
-            ->add('diplome', FileType::class, [ // Correction : FileType au lieu de TextType
-                'label' => 'Diplôme (PDF ou Word)',
-                'mapped' => false,
-                'required' => false,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '5M',
-                        'mimeTypes' => [
-                            'application/pdf', 
-                            'application/msword', 
-                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                        ],
-                        'mimeTypesMessage' => 'Seuls les fichiers PDF et Word sont acceptés.',
-                    ])
-                ],
-                'attr' => ['class' => 'form-control']
-            ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Enregistrer',
-                'attr' => ['class' => 'btn btn-primary']
             ]);
+
+        // Tutor-specific fields
+        if ($options['userType'] === 'tutor') {
+            $builder
+                ->add('speciality', TextType::class, [
+                    'label' => 'Spécialité',
+                    'required' => false,
+                    'attr' => ['class' => 'form-control']
+                ])
+                ->add('diplome', FileType::class, [
+                    'label' => 'Diplôme (PDF ou Word)',
+                    'mapped' => false,
+                    'required' => false,
+                    'constraints' => [
+                        new File([
+                            'maxSize' => '5M',
+                            'mimeTypes' => [
+                                'application/pdf',
+                                'application/msword',
+                                'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                            ],
+                            'mimeTypesMessage' => 'Seuls les fichiers PDF et Word sont acceptés.',
+                        ])
+                    ],
+                    'attr' => ['class' => 'form-control']
+                ]);
+        }
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'userType' => null, // Optional user type for tutor fields
         ]);
     }
 }

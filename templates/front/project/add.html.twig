@@ -1,0 +1,73 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Add New Project{% endblock %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1>Add New Project</h1>
+
+        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data', 'novalidate': 'novalidate'}}) }}
+        
+        <!-- Project Title -->
+        <div class="mb-3">
+            {{ form_label(form.titre) }}
+            {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <!-- Project Description -->
+        <div class="mb-3">
+            {{ form_label(form.description_project) }}
+            {{ form_widget(form.description_project, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <!-- Star Rating -->
+        <div class="star-rating">
+            {% for i in 1..5 %}
+                <span data-value="{{ i }}" class="star">★</span>
+            {% endfor %}
+        </div>
+        <input type="hidden" id="project_difficulty" name="difficulty" value="{{ form.difficulte.vars.value }}">
+
+        <!-- Trumbowyg Editor -->
+        <div class="mb-3">
+            <textarea class="" name="project_description"></textarea>
+        </div>
+
+        <!-- File Upload Field -->
+        <div class="mb-3">
+            {{ form_label(form.fichier_pdf) }}
+            {{ form_widget(form.fichier_pdf, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-success">Save Project</button>
+        </div>
+
+        {{ form_end(form) }}
+        
+        <a href="{{ path('app_project_index') }}" class="btn btn-secondary">Back to Project List</a>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.26.0/trumbowyg.min.js"></script>
+    <script>
+        // Initialize Trumbowyg Editor
+        $(document).ready(function() {
+            $('.editor').trumbowyg();
+        });
+
+        // Handle Star Rating Click
+        $('.star-rating .star').on('click', function() {
+            var rating = $(this).data('value');
+            $('#project_difficulty').val(rating);
+
+            $('.star').removeClass('active');
+            $(this).prevAll().addClass('active');
+            $(this).addClass('active');
+        });
+    </script>
+{% endblock %}

@@ -1,370 +1,496 @@
 {% extends 'front/base.html.twig' %}
 
+{% block title %}Forum - {{ forum.title }}{% endblock %}
+
 {% block body %}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css" integrity="sha256-46r060N2LrChLLb5zowXQ72/iKKNiw/lAmygmHExk/o=" crossorigin="anonymous" />
-<div class="container" data-aos="fade-up" data-aos-delay="100">
-<div class="main-body p-0">
+ <!-- Displaying the centered GIF image below the menu -->
+    <div style="text-align: center; margin-top: 20px;">
+        <img src="{{ asset('assets/img/post.gif') }}" alt="Post GIF" />
+    </div>
+<div class="container">
+    <h1>{{ forum.title }}</h1>
 
-<body>
-   
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-2/css/all.min.css" integrity="sha256-46r060N2LrChLLb5zowXQ72/iKKNiw/lAmygmHExk/o=" crossorigin="anonymous" />
-<div class="container" data-aos="fade-up" data-aos-delay="100">
-<div class="main-body p-0">
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="alert alert-danger">{{ message }}</div>
+    {% endfor %}
 
-<body>
+    <hr>
 
-
-
-
-    <div class="inner-wrapper">
-        <!-- Inner sidebar -->
-        <div class="inner-sidebar">
-            <!-- Inner sidebar header -->
-            <div class="inner-sidebar-header justify-content-center">
-                <button class="btn btn-primary has-icon btn-block" type="button" data-toggle="modal" data-target="#threadModal" style="background-color: #8c84a1; border-color: #8c84a1; color: white;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus mr-2">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                    NEW DISCUSSION
-                </button>
-            </div>
-            <!-- /Inner sidebar header -->
-
-            <!-- Inner sidebar body -->
-            <div class="inner-sidebar-body p-0">
-                <div class="p-3 h-100" data-simplebar="init">
-                    <div class="simplebar-wrapper" style="margin: -16px;">
-                        <div class="simplebar-height-auto-observer-wrapper"><div class="simplebar-height-auto-observer"></div></div>
-                        <div class="simplebar-mask">
-                            <div class="simplebar-offset" style="right: 0px; bottom: 0px;">
-                                <div class="simplebar-content-wrapper" style="height: 100%; overflow: hidden scroll;">
-                                    <div class="simplebar-content" style="padding: 16px;">
-                                        <nav class="nav nav-pills nav-gap-y-1 flex-column">
-                                            <a href="javascript:void(0)" class="nav-link nav-link-faded has-icon active">All Threads</a>
-                                            <a href="javascript:void(0)" class="nav-link nav-link-faded has-icon">Popular this week</a>
-                                            <a href="javascript:void(0)" class="nav-link nav-link-faded has-icon">Popular all time</a>
-                                            <a href="javascript:void(0)" class="nav-link nav-link-faded has-icon">Solved</a>
-                                            <a href="javascript:void(0)" class="nav-link nav-link-faded has-icon">Unsolved</a>
-                                            <a href="javascript:void(0)" class="nav-link nav-link-faded has-icon">No replies yet</a>
-                                        </nav>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="simplebar-placeholder" style="width: 234px; height: 292px;"></div>
-                    </div>
-                    <div class="simplebar-track simplebar-horizontal" style="visibility: hidden;"><div class="simplebar-scrollbar" style="width: 0px; display: none;"></div></div>
-                    <div class="simplebar-track simplebar-vertical" style="visibility: visible;"><div class="simplebar-scrollbar" style="height: 151px; display: block; transform: translate3d(0px, 0px, 0px);"></div></div>
-                </div>
-            </div>
-            <!-- /Inner sidebar body -->
-             
-        </div>
-        <!-- /Inner sidebar -->
-
-        <!-- Inner main -->
-        <div class="inner-main">
-            <!-- Inner main header -->
-            <div class="inner-main-header">
-                <a class="nav-link nav-icon rounded-circle nav-link-faded mr-3 d-md-none" href="#" data-toggle="inner-sidebar"><i class="material-icons">arrow_forward_ios</i></a>
-                <select class="custom-select custom-select-sm w-auto mr-1">
-                    <option selected="">Latest</option>
-                    <option value="1">Popular</option>
-                    <option value="3">Solved</option>
-                    <option value="3">Unsolved</option>
-                    <option value="3">No Replies Yet</option>
-                </select>
-                <span class="input-icon input-icon-sm ml-auto w-auto">
-                    <input type="text" class="form-control form-control-sm bg-gray-200 border-gray-200 shadow-none mb-4 mt-4" placeholder="Search forum" />
-                </span>
-            </div>
-
-            <div class="wrapper wrapper-content animated fadeInRight">
-                <div class="row gy-4" style="justify-content: center;"> <!-- Centering the content -->
-                    <div class="col-lg-6 order-1 order-lg-2" data-aos="fade-up" data-aos-delay="100">
-                        <img src="assets/img/post.gif" class="img-fluid" alt="Forum Image" style="display: block; margin: auto;"> <!-- Centering the image -->
-                    </div>
-                </div>
-            </div>
+ <!-- Create Post Section -->
+<div class="create-post-container">
+    <h2>Create a New Post</h2>
+    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data', 'class': 'create-post-form'}}) }}
+        <div class="form-group">
+            {{ form_widget(form.content, {
+                'attr': {
+                    'class': form.content.vars.errors|length > 0 ? 'form-control is-invalid' : 'form-control'
+                }
+            }) }}
+            <small id="word-count" class="form-text text-muted">Word count: 0</small> <!-- Display word count -->
             
-            <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.1/aos.js"></script>
-            <script>
-                AOS.init(); // Initialize AOS
-            </script>
-            <!-- New Post Form -->
-<div class="post-form" style="text-align: right; background: transparent;">
-    <div class="input-group" style="max-width: 400px; margin: auto; position: relative;">
-        <textarea class="form-control" rows="2" placeholder="What's on your mind?" style="height: auto; padding-right: 60px;"></textarea>
+            <!-- Manually render errors for content field once -->
+            {% if form.content.vars.errors|length > 0 %}
+                <div class="text-danger">
+                    {% for error in form.content.vars.errors %}
+                        <p>{{ error.message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
         
-        <!-- SVG Icons Container -->
-        <div style="position: absolute; bottom: 5px; right: 5px; display: flex; align-items: center; gap: 3px;">
-            <!-- File Upload SVG Icon (Smaller) -->
-            <label class="btn btn-icon" for="file-upload" style="cursor: pointer;">
-                <input type="file" id="file-upload" style="display: none;" />
-                <svg fill="#000000" height="20px" width="20px" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
-                     viewBox="0 0 509.371 509.371" xml:space="preserve">
-                    <g>
-                        <g>
-                            <path d="M452.758,36.265c-48.354-48.354-127.045-48.354-175.399,0L62.657,250.967c-6.777,6.778-6.777,17.764,0,24.541
-                                c6.786,6.777,17.764,6.777,24.541,0L301.9,60.815c34.825-34.816,91.492-34.816,126.316,0
-                                c16.879,16.87,26.164,39.302,26.164,63.158c0,23.864-9.285,46.288-26.164,63.158L158.392,456.956
-                                c-23.621,23.63-62.073,23.63-85.695,0c-23.621-23.639-23.63-62.074,0-85.704l217.591-217.591
-                                c12.427-12.418,32.638-12.435,45.091,0c12.427,12.418,12.427,32.647,0,45.082L172.902,361.212c-6.777,6.777-6.777,17.764,0,24.541
-                                c6.786,6.778,17.764,6.778,24.55,0l162.469-162.469c25.956-25.964,25.956-68.209,0-94.165c-25.964-25.982-68.209-25.964-94.173,0
-                                l-217.6,217.591c-37.159,37.15-37.159,97.618,0,134.786c18.588,18.588,42.991,27.874,67.402,27.874s48.814-9.294,67.393-27.874
-                                l269.815-269.824c23.439-23.422,36.335-54.567,36.335-87.7C489.092,90.841,476.197,59.696,452.758,36.265z"/>
-                        </g>
-                    </g>
+        <div class="form-group upload-container">
+            {{ form_row(form.photo, {'attr': {'class': 'form-control d-none', 'id': 'post_photo'}}) }}
+            <label for="post_photo" class="upload-label">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="20" height="20">
+                    <path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"></path>
+                    <path d="M13 9h-2V7h-2v2H7v2h2v2h2v-2h2z"></path>
                 </svg>
+                <span id="file-name">Choose a photo</span>
             </label>
-            <!-- Post Button SVG (Black) -->
-            <div style="cursor: pointer;">
-                <svg class="svg-icon" style="width: 24px; height: 24px; vertical-align: middle; fill: black; overflow: hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M948.535261 157.451008c-6.249331-4.759397-14.545274-6.083555-22.019503-3.510964L78.525448 414.560784c-8.849552 3.022847-14.976086 10.93198-15.541975 20.046568-0.566912 9.121751 4.547573 17.691941 12.955056 21.725814l296.857035 142.537344-4.567016 141.646044c-0.274246 8.582469 4.433986 16.575514 12.183484 20.665669 7.730055 4.105504 17.194614 3.581572 24.416086-1.331321l134.167722-69.479421c10.55438-7.167237 13.146415-21.316491 5.78782-31.597649-7.356548-10.280134-21.869077-12.821003-32.429597-5.638417l-96.110965 43.62559 3.579525-111.074771c0.283456-8.895601-4.792143-17.138332-12.984732-21.069875L146.277528 439.512059l761.503541-231.072773-79.214133 598.96977L627.830075 688.215374c-11.083429-6.408967-25.365714-2.817162-31.900547 7.977695-6.55223 10.788717-2.889817 24.697495 8.18338 31.082926l232.486982 137.498584c3.647063 2.100848 7.749498 3.165086 11.855002 3.165086 3.6399 0 7.275707-0.829901 10.621918-2.494821 7.111978-3.551896 11.855002-10.411117 12.57848-18.163685l85.769432-669.892053C958.131827 169.703053 954.787662 162.191986 948.535261 157.451008zM848.26865 272.582165c-9.102309-8.849552-23.844058-8.837272-32.937157 0.041956L471.917096 565.148477c-9.083889 8.873088-9.064446 23.245424 0.049119 32.094976 4.547573 4.418636 10.491958 6.630001 16.442484 6.630001 5.968945 0 11.938913-2.225691 16.488533-6.671956l343.422583-292.52538C857.397564 295.807123 857.383238 281.43888 848.26865 272.582165z" />
-                </svg>
-            </div>
         </div>
-    </div>
+
+    {{ form_end(form) }}
 </div>
+    <hr>
 
-            
-            <!-- /Inner main header -->
+ <h2>Posts</h2>
+<div class="posts-container">
+    {% if posts is empty %}
+        <p>No posts yet.</p>
+    {% else %}
+        {% for post in posts|reverse %}
+            <div class="card mb-3" id="post-{{ post.id }}">
+                <div class="card-body">
+                    <div class="post-content" id="post-content-{{ post.id }}">
+                        <p class="card-text">{{ post.content }}</p>
+                        {% if post.photo %}
+                            <img src="{{ asset('uploads/photos/' ~ post.photo) }}" class="img-fluid" style="max-width: 200px;">
+                        {% endif %}
+                        <p class="text-muted">Posted on {{ post.createdAt|date('Y-m-d H:i') }}</p>
+                    </div>
 
-            <!-- Inner main body -->
-            
-            <!-- Forum List -->
-            <div class="inner-main-body p-2 p-sm-3 collapse forum-content show">
-                <div class="card mb-2">
-                    <div class="card-body p-2 p-sm-3">
-                        <div class="media forum-item">
-                            <a href="#" data-toggle="collapse" data-target=".forum-content"><img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="mr-3 rounded-circle" width="50" alt="User" /></a>
-                            <div class="media-body">
-                                <h6><a href="#" data-toggle="collapse" data-target=".forum-content" class="text-body">Realtime fetching data</a></h6>
-                                <p class="text-secondary">
-                                    lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet
-                                </p>
-                                <p class="text-muted"><a href="javascript:void(0)">drewdan</a> replied <span class="text-secondary font-weight-bold">13 minutes ago</span></p>
-                            </div>
-                            <div class="text-muted small text-center align-self-center">
-                                <span class="d-none d-sm-inline-block"><i class="far fa-eye"></i> 19</span>
-                                <span><i class="far fa-comment ml-2"></i> 3</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card mb-2">
-                    <div class="card-body p-2 p-sm-3">
-                        <div class="media forum-item">
-                            <a href="#" data-toggle="collapse" data-target=".forum-content"><img src="https://bootdey.com/img/Content/avatar/avatar2.png" class="mr-3 rounded-circle" width="50" alt="User" /></a>
-                            <div class="media-body">
-                                <h6><a href="#" data-toggle="collapse" data-target=".forum-content" class="text-body">Laravel 7 database backup</a></h6>
-                                <p class="text-secondary">
-                                    lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet
-                                </p>
-                                <p class="text-muted"><a href="javascript:void(0)">jlrdw</a> replied <span class="text-secondary font-weight-bold">3 hours ago</span></p>
-                            </div>
-                            <div class="text-muted small text-center align-self-center">
-                                <span class="d-none d-sm-inline-block"><i class="far fa-eye"></i> 18</span>
-                                <span><i class="far fa-comment ml-2"></i> 1</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card mb-2">
-                    <div class="card-body p-2 p-sm-3">
-                        <div class="media forum-item">
-                            <a href="#" data-toggle="collapse" data-target=".forum-content"><img src="https://bootdey.com/img/Content/avatar/avatar3.png" class="mr-3 rounded-circle" width="50" alt="User" /></a>
-                            <div class="media-body">
-                                <h6><a href="#" data-toggle="collapse" data-target=".forum-content" class="text-body">Http client post raw content</a></h6>
-                                <p class="text-secondary">
-                                    lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet
-                                </p>
-                                <p class="text-muted"><a href="javascript:void(0)">ciungulete</a> replied <span class="text-secondary font-weight-bold">7 hours ago</span></p>
-                            </div>
-                            <div class="text-muted small text-center align-self-center">
-                                <span class="d-none d-sm-inline-block"><i class="far fa-eye"></i> 32</span>
-                                <span><i class="far fa-comment ml-2"></i> 2</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card mb-2">
-                    <div class="card-body p-2 p-sm-3">
-                        <div class="media forum-item">
-                            <a href="#" data-toggle="collapse" data-target=".forum-content"><img src="https://bootdey.com/img/Content/avatar/avatar4.png" class="mr-3 rounded-circle" width="50" alt="User" /></a>
-                            <div class="media-body">
-                                <h6><a href="#" data-toggle="collapse" data-target=".forum-content" class="text-body">Top rated filter not working</a></h6>
-                                <p class="text-secondary">
-                                    lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet
-                                </p>
-                                <p class="text-muted"><a href="javascript:void(0)">bugsysha</a> replied <span class="text-secondary font-weight-bold">11 hours ago</span></p>
-                            </div>
-                            <div class="text-muted small text-center align-self-center">
-                                <span class="d-none d-sm-inline-block"><i class="far fa-eye"></i> 49</span>
-                                <span><i class="far fa-comment ml-2"></i> 9</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card mb-2">
-                    <div class="card-body p-2 p-sm-3">
-                        <div class="media forum-item">
-                            <a href="#" data-toggle="collapse" data-target=".forum-content"><img src="https://bootdey.com/img/Content/avatar/avatar5.png" class="mr-3 rounded-circle" width="50" alt="User" /></a>
-                            <div class="media-body">
-                                <h6><a href="#" data-toggle="collapse" data-target=".forum-content" class="text-body">Create a delimiter field</a></h6>
-                                <p class="text-secondary">
-                                    lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet
-                                </p>
-                                <p class="text-muted"><a href="javascript:void(0)">jackalds</a> replied <span class="text-secondary font-weight-bold">12 hours ago</span></p>
-                            </div>
-                            <div class="text-muted small text-center align-self-center">
-                                <span class="d-none d-sm-inline-block"><i class="far fa-eye"></i> 65</span>
-                                <span><i class="far fa-comment ml-2"></i> 10</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card mb-2">
-                    <div class="card-body p-2 p-sm-3">
-                        <div class="media forum-item">
-                            <a href="#" data-toggle="collapse" data-target=".forum-content"><img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="mr-3 rounded-circle" width="50" alt="User" /></a>
-                            <div class="media-body">
-                                <h6><a href="#" data-toggle="collapse" data-target=".forum-content" class="text-body">One model 4 tables</a></h6>
-                                <p class="text-secondary">
-                                    lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet
-                                </p>
-                                <p class="text-muted"><a href="javascript:void(0)">bugsysha</a> replied <span class="text-secondary font-weight-bold">14 hours ago</span></p>
-                            </div>
-                            <div class="text-muted small text-center align-self-center">
-                                <span class="d-none d-sm-inline-block"><i class="far fa-eye"></i> 45</span>
-                                <span><i class="far fa-comment ml-2"></i> 4</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card mb-2">
-                    <div class="card-body p-2 p-sm-3">
-                        <div class="media forum-item">
-                            <a href="#" data-toggle="collapse" data-target=".forum-content"><img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="mr-3 rounded-circle" width="50" alt="User" /></a>
-                            <div class="media-body">
-                                <h6><a href="#" data-toggle="collapse" data-target=".forum-content" class="text-body">Auth attempt returns false</a></h6>
-                                <p class="text-secondary">
-                                    lorem ipsum dolor sit amet lorem ipsum dolor sit amet lorem ipsum dolor sit amet
-                                </p>
-                                <p class="text-muted"><a href="javascript:void(0)">michaeloravec</a> replied <span class="text-secondary font-weight-bold">18 hours ago</span></p>
-                            </div>
-                            <div class="text-muted small text-center align-self-center">
-                                <span class="d-none d-sm-inline-block"><i class="far fa-eye"></i> 70</span>
-                                <span><i class="far fa-comment ml-2"></i> 3</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-            <!-- /Forum List -->
+                    <div class="post-actions">
+                        <!-- Like Button -->
+                        <button class="like-btn" data-post-id="{{ post.id }}">
+                            <!-- SVG for Like -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 105.01" width="20" height="20">
+                                <path class="cls-1" d="M4,43.36H32.37a4,4,0,0,1,4,4V101a4,4,0,0,1-4,4H4a4,4,0,0,1-4-4V47.39a4,4,0,0,1,4-4ZM62.16,6.3A7.36,7.36,0,0,1,66.23.65,8.14,8.14,0,0,1,71.79.34a15.36,15.36,0,0,1,5.3,2.71A26.21,26.21,0,0,1,86.81,21.9a57.41,57.41,0,0,1-.12,8.35q-.25,2.94-.76,6.15h20.2a21.58,21.58,0,0,1,9.1,2.33,14.7,14.7,0,0,1,5.6,4.92,12.55,12.55,0,0,1,2,7.51,18.1,18.1,0,0,1-1.82,6.93,21.82,21.82,0,0,1,.54,8.38,9.7,9.7,0,0,1-2.78,5.68,25.22,25.22,0,0,1-1.4,9.43,19.81,19.81,0,0,1-4.5,7,28.37,28.37,0,0,1-.9,5A17.3,17.3,0,0,1,109.5,99h0c-3.43,4.84-6.17,4.73-10.51,4.55-.61,0-1.26,0-2.26,0H57.39a19.08,19.08,0,0,1-8.86-1.78,21.13,21.13,0,0,1-7-6.06L41,94V48.15l2-.53c5.08-1.37,9.07-5.71,12.16-10.9a75.8,75.8,0,0,0,7-16.64V6.82l.06-.52Zm6.32-.78a2.15,2.15,0,0,0-1,1.57V20.46l-.12.77a82.31,82.31,0,0,1-7.61,18.24C56.4,45.09,52,49.91,46.37,52.14V93.07A14.6,14.6,0,0,0,50.93,97a14.14,14.14,0,0,0,6.46,1.21H96.73c.7,0,1.61,0,2.47.08,2.57.1,4.2.17,5.94-2.29h0a12.34,12.34,0,0,0,1.71-3.74,24.86,24.86,0,0,0,.79-5l.83-1.77a14.89,14.89,0,0,0,3.9-5.75,21.18,21.18,0,0,0,1-8.67l-.1-1.6,1.36-.84a4.09,4.09,0,0,0,1.64-3,17.44,17.44,0,0,0-.68-7.12l.21-1.94A13.12,13.12,0,0,0,117.51,51a7.29,7.29,0,0,0-1.17-4.38,9.53,9.53,0,0,0-3.59-3.12A16,16,0,0,0,106,41.77H79.51l.6-3.18a85.93,85.93,0,0,0,1.22-8.79,51,51,0,0,0,.13-7.55,20.76,20.76,0,0,0-7.62-15,10.15,10.15,0,0,0-3.41-1.79,3,3,0,0,0-2,0ZM22.64,85.3a5.13,5.13,0,1,1-5.13,5.13,5.13,5.13,0,0,1,5.13-5.13Z"/>
+                            </svg>
+                            <span class="like-count">{{ post.likes|default(0) }}</span>
+                        </button>
 
-            <!-- Forum Detail -->
-            <div class="inner-main-body p-2 p-sm-3 collapse forum-content">
-                <a href="#" class="btn btn-light btn-sm mb-3 has-icon" data-toggle="collapse" data-target=".forum-content"><i class="fa fa-arrow-left mr-2"></i>Back</a>
-                <div class="card mb-2">
-                    <div class="card-body">
-                        <div class="media forum-item">
-                            <a href="javascript:void(0)" class="card-link">
-                                <img src="https://bootdey.com/img/Content/avatar/avatar1.png" class="rounded-circle" width="50" alt="User" />
-                                <small class="d-block text-center text-muted">Newbie</small>
-                            </a>
-                            <div class="media-body ml-3">
-                                <a href="javascript:void(0)" class="text-secondary">Mokrani</a>
-                                <small class="text-muted ml-2">1 hour ago</small>
-                                <h5 class="mt-1">Realtime fetching data</h5>
-                                <div class="mt-3 font-size-sm">
-                                    <p>Hellooo :)</p>
-                                    <p>
-                                        I'm newbie with laravel and i want to fetch data from database in realtime for my dashboard anaytics and i found a solution with ajax but it dosen't work if any one have a simple solution it will be
-                                        helpful
-                                    </p>
-                                    <p>Thank</p>
-                                </div>
-                            </div>
-                            <div class="text-muted small text-center">
-                                <span class="d-none d-sm-inline-block"><i class="far fa-eye"></i> 19</span>
-                                <span><i class="far fa-comment ml-2"></i> 3</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card mb-2">
-                    <div class="card-body">
-                        <div class="media forum-item">
-                            <a href="javascript:void(0)" class="card-link">
-                                <img src="https://bootdey.com/img/Content/avatar/avatar2.png" class="rounded-circle" width="50" alt="User" />
-                                <small class="d-block text-center text-muted">Pro</small>
-                            </a>
-                            <div class="media-body ml-3">
-                                <a href="javascript:void(0)" class="text-secondary">drewdan</a>
-                                <small class="text-muted ml-2">1 hour ago</small>
-                                <div class="mt-3 font-size-sm">
-                                    <p>What exactly doesn't work with your ajax calls?</p>
-                                    <p>Also, WebSockets are a great solution for realtime data on a dashboard. Laravel offers this out of the box using broadcasting</p>
-                                </div>
-                                <button class="btn btn-xs text-muted has-icon"><i class="fa fa-heart" aria-hidden="true"></i>1</button>
-                                <a href="javascript:void(0)" class="text-muted small">Reply</a>
-                            </div>
-                        </div>
+                       <!-- Edit Button -->
+<a href="{{ path('post_edit', {'forumId': forum.id, 'id': post.id}) }}" class="edit-btn">
+    <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 121.51" width="20" height="20">
+        <title>Edit</title>
+        <path d="M28.66,1.64H58.88L44.46,16.71H28.66a13.52,13.52,0,0,0-9.59,4l0,0a13.52,13.52,0,0,0-4,9.59v76.14H91.21a13.5,13.5,0,0,0,9.59-4l0,0a13.5,13.5,0,0,0,4-9.59V77.3l15.07-15.74V92.85a28.6,28.6,0,0,1-8.41,20.22l0,.05a28.58,28.58,0,0,1-20.2,8.39H11.5a11.47,11.47,0,0,1-8.1-3.37l0,0A11.52,11.52,0,0,1,0,110V30.3A28.58,28.58,0,0,1,8.41,10.09L8.46,10a28.58,28.58,0,0,1,20.2-8.4ZM73,76.47l-29.42,6,4.25-31.31L73,76.47ZM57.13,41.68,96.3.91A2.74,2.74,0,0,1,99.69.38l22.48,21.76a2.39,2.39,0,0,1-.19,3.57L82.28,67,57.13,41.68Z"/>
+    </svg>
+</a>
+
+<!-- Copy Button -->
+<button class="copy-btn" onclick="copyText()">
+    <!-- Copy Icon SVG -->
+    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+         x="0px" y="0px" width="20" height="20" viewBox="0 0 115.77 122.88" 
+         style="enable-background:new 0 0 115.77 122.88" xml:space="preserve">
+        <style type="text/css">
+            .st0{fill-rule:evenodd;clip-rule:evenodd;}
+        </style>
+        <g>
+            <path class="st0" d="M89.62,13.96v7.73h12.19h0.01v0.02c3.85,0.01,7.34,1.57,9.86,4.1c2.5,2.51,4.06,5.98,4.07,9.82h0.02v0.02 
+                 v73.27v0.01h-0.02c-0.01,3.84-1.57,7.33-4.1,9.86c-2.51,2.5-5.98,4.06-9.82,4.07v0.02h-0.02h-61.7H40.1v-0.02 
+                 c-3.84-0.01-7.34-1.57-9.86-4.1c-2.5-2.51-4.06-5.98-4.07-9.82h-0.02v-0.02V92.51H13.96h-0.01v-0.02c-3.84-0.01-7.34-1.57-9.86-4.1 
+                 c-2.5-2.51-4.06-5.98-4.07-9.82H0v-0.02V13.96v-0.01h0.02c0.01-3.85,1.58-7.34,4.1-9.86c2.51-2.5,5.98-4.06,9.82-4.07V0h0.02h61.7 
+                 h0.01v0.02c3.85,0.01,7.34,1.57,9.86,4.1c2.5,2.51,4.06,5.98,4.07,9.82h0.02V13.96L89.62,13.96z M79.04,21.69v-7.73v-0.02h0.02 
+                 c0-0.91-0.39-1.75-1.01-2.37c-0.61-0.61-1.46-1-2.37-1v0.02h-0.01h-61.7h-0.02v-0.02c-0.91,0-1.75,0.39-2.37,1.01 
+                 c-0.61,0.61-1,1.46-1,2.37h0.02v0.01v64.59v0.02h-0.02c0,0.91,0.39,1.75,1.01,2.37c0.61,0.61,1.46,1,2.37,1v-0.02h0.01h12.19V35.65 
+                 v-0.01h0.02c0.01-3.85,1.58-7.34,4.1-9.86c2.51-2.5,5.98-4.06,9.82-4.07v-0.02h0.02H79.04L79.04,21.69z M105.18,108.92V35.65v-0.02 
+                 h0.02c0-0.91-0.39-1.75-1.01-2.37c-0.61-0.61-1.46-1-2.37-1v0.02h-0.01h-61.7h-0.02v-0.02c-0.91,0-1.75,0.39-2.37,1.01 
+                 c-0.61,0.61-1,1.46-1,2.37h0.02v0.01v73.27v0.02h-0.02c0,0.91,0.39,1.75,1.01,2.37c0.61,0.61,1.46,1,2.37,1v-0.02h0.01h61.7h0.02 
+                 v0.02c0.91,0,1.75-0.39,2.37-1.01c0.61-0.61,1-1.46,1-2.37h-0.02V108.92L105.18,108.92z"/>
+        </g>
+    </svg>
+</button>
+
+
+                        <!-- Delete Button -->
+<a href="{{ path('app_post_delete', {'forumId': forum.id, 'postId': post.id}) }}" class="delete-btn"
+   onclick="return confirm('Are you sure you want to delete this post?');">
+    <!-- New Delete Icon SVG -->
+    <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+         x="0px" y="0px" width="20" height="20" viewBox="0 0 121.31 122.876" 
+         enable-background="new 0 0 121.31 122.876" xml:space="preserve">
+        <g>
+            <path fill-rule="evenodd" clip-rule="evenodd" 
+                  d="M90.914,5.296c6.927-7.034,18.188-7.065,25.154-0.068 c6.961,6.995,6.991,18.369,0.068,25.397L85.743,61.452l30.425,30.855c6.866,6.978,6.773,18.28-0.208,25.247 
+                     c-6.983,6.964-18.21,6.946-25.074-0.031L60.669,86.881L30.395,117.58c-6.927,7.034-18.188,7.065-25.154,0.068 
+                     c-6.961-6.995-6.992-18.369-0.068-25.397l30.393-30.827L5.142,30.568c-6.867-6.978-6.773-18.28,0.208-25.247 
+                     c6.983-6.963,18.21-6.946,25.074,0.031l30.217,30.643L90.914,5.296L90.914,5.296z"/>
+        </g>
+    </svg>
+</a>
+
                     </div>
                 </div>
             </div>
-            <!-- /Forum Detail -->
-
-            <!-- /Inner main body -->
-        </div>
-        <!-- /Inner main -->
-    </div>
-
-   
-<!-- New Thread Modal -->
-<div class="modal fade" id="threadModal" tabindex="-1" role="dialog" aria-labelledby="threadModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <form>
-                <div class="modal-header d-flex align-items-center">
-                    <h6 class="modal-title mb-0" id="threadModalLabel">New Discussion</h6>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="threadTitle">Title</label>
-                        <input type="text" class="form-control" id="threadTitle" placeholder="Enter title" autofocus="" />
-                    </div>
-                    <textarea class="form-control summernote" style="display: none;"></textarea>
-
-                    <div class="custom-file form-control-sm mt-3" style="max-width: 300px;">
-                        <input type="file" class="custom-file-input" id="customFile" multiple="" />
-                        <label class="custom-file-label" for="customFile">Attachment</label>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn custom-modal-btn">Post</button> <!-- Custom class applied -->
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-</div>
+        {% endfor %}
+    {% endif %}
 </div>
 
-<script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript">
-	
+
+
+
+
+<!-- Custom CSS -->
+<style>
+    .create-post-container {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .create-post-form .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .posts-container {
+    max-height: 500px; /* Adjust height as needed */
+    overflow-y: auto; /* Enables vertical scrolling */
+}
+
+    .post-content {
+        padding: 15px;
+        background: #fff;
+        border-radius: 10px;
+    }
+    .post-actions {
+        display: flex;
+        gap: 10px;
+    }
+  .like-btn {
+    fill: #8c84a1;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    transition: color 0.3s, transform 0.3s; /* Add smooth transitions */
+}
+
+.like-btn:hover {
+    color: blue; /* Turns the icon color blue when hovered */
+    transform: scale(1.1); /* Slightly enlarges the icon on hover */
+}
+
+.like-btn svg {
+    fill: #8c84a1;
+}
+
+.like-btn .like-count {
+    font-size: 1.1em;
+    transition: color 0.3s; /* Smooth transition for like count color */
+}
+
+.like-btn:hover .like-count {
+    color: blue; /* Changes the like count color to blue on hover */
+}
+
+    /* Create Post Section */
+.create-post-container {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.create-post-container h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.create-post-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Content field */
+.create-post-form .form-group {
+    position: relative;
+}
+
+.create-post-form .form-control {
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.create-post-form .form-control.is-invalid {
+    border-color: #dc3545;
+    background-color: #f8d7da;
+}
+
+.create-post-form .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
+    outline: none;
+}
+
+/* Word count text */
+#word-count {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+/* Error message styling */
+.create-post-form .text-danger {
+    font-size: 14px;
+    color: #dc3545;
+}
+
+/* Upload container */
+.upload-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+
+
+/* Hidden input file */
+.upload-container input[type="file"] {
+    display: none;
+}
+
+.delete-btn svg {
+    fill: #8c84a1; /* Default color for delete button */
+}
+
+.delete-btn:hover svg {
+    fill: red; /* Turns red when hovered */
+}
+
+.delete-btn {
+    cursor: pointer;
+    transition: transform 0.3s, fill 0.3s;
+}
+
+.delete-btn:hover {
+    transform: scale(1.1); /* Enlarges the delete button on hover */
+}
+
+/* General Post Actions Styles */
+.post-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Button Styles */
+.post-actions button,
+.post-actions a {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    transition: background 0.3s, transform 0.3s;
+}
+
+/* Hover effects */
+.post-actions button:hover,
+.post-actions a:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
+}
+
+/* Like Button */
+.like-btn {
+    color: #007bff;
+    font-size: 16px;
+}
+
+/* Copy Button */
+.copy-btn {
+    color: #28a745;
+    font-size: 16px;
+    display: inline-flex; /* Ensures proper alignment with the SVG */
+    justify-content: center;
+    align-items: center;
+}
+
+.copy-btn svg {
+    fill: #8c84a1;
+    width: 20px; /* Ensures the SVG has a consistent size */
+    height: 20px; /* Ensures the SVG has a consistent size */
+    transition: fill 0.3s, transform 0.3s; /* Added transform transition for smooth scaling */
+}
+
+.copy-btn:hover svg {
+    fill: #218838;
+    transform: scale(1.1); /* Added scaling effect on hover */
+}
+
+/* Edit Button */
+.edit-btn {
+    color: #8c84a1;
+    font-size: 16px;
+    display: inline-flex; /* Ensures the button's content is centered */
+    justify-content: center;
+    align-items: center;
+    cursor: pointer; /* Makes the button clickable */
+}
+
+/* SVG for Edit */
+.edit-btn svg {
+    fill: #8c84a1;
+    width: 20px; /* Ensures consistent size */
+    height: 20px; /* Ensures consistent size */
+    transition: fill 0.3s, transform 0.3s; /* Adds smooth transition effects */
+    vertical-align: middle; /* Aligns the SVG properly with text */
+}
+
+/* Hover effect for Edit Button */
+.edit-btn:hover svg {
+    fill: #e0a800; /* Change color on hover */
+    transform: scale(1.1); /* Slight scale-up effect */
+}
+
+
+
+
+/* Optional: Add spacing around the buttons */
+.post-actions button,
+.post-actions a {
+    margin-left: 8px;
+}
+
+
+
+/* The overlay that covers the entire page */
+.modal-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
+    z-index: 1000; /* Make sure it appears above other content */
+    align-items: center;
+    justify-content: center;
+    overflow: auto; /* Allow scrolling inside the modal if needed */
+}
+
+/* Modal content */
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* Close button */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+</style>
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+
+        // Word count logic
+        const contentField = document.querySelector('textarea[name="post[content]"]');
+        const wordCountElement = document.getElementById('word-count');
+        if (contentField) {
+            contentField.addEventListener('input', function () {
+                const wordCount = contentField.value.split(/\s+/).filter(Boolean).length;
+                wordCountElement.textContent = `Word count: ${wordCount}`;
+            });
+        }
+
+        // Like functionality
+        document.querySelectorAll('.like-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const postId = this.getAttribute('data-post-id');
+                const likeCountElement = this.querySelector('.like-count');
+
+                fetch(`/posts/like/${postId}`, {
+                    method: 'POST'
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.success) {
+                          likeCountElement.textContent = data.newLikeCount;
+                      }
+                  });
+            });
+        });
+
+        // File upload handling
+        const fileInput = document.getElementById('post_photo');
+        const fileNameLabel = document.getElementById('file-name');
+        if (fileInput) {
+            fileInput.addEventListener('change', function () {
+                const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : 'Choose a photo';
+                fileNameLabel.textContent = fileName;
+            });
+        }
+
+        // Dropdown menu for more options
+        const buttons = document.querySelectorAll(".more-options-btn");
+        buttons.forEach(button => {
+            button.addEventListener("click", function () {
+                const postId = button.dataset.postId;
+                const dropdown = document.getElementById("dropdown-" + postId);
+
+                // Toggle the dropdown visibility
+                dropdown.classList.toggle("show-dropdown");
+            });
+        });
+
+        // Close the dropdown if clicked outside
+        document.addEventListener("click", function (event) {
+            if (!event.target.closest(".post-actions")) {
+                const dropdowns = document.querySelectorAll(".dropdown-menu");
+                dropdowns.forEach(dropdown => {
+                    dropdown.classList.remove("show-dropdown");
+                });
+            }
+        });
+
+        
+    });
+
+    function copyText() {
+    navigator.clipboard.writeText("Your text to copy").then(() => {
+        alert("Copied to clipboard!");
+    }).catch(err => {
+        console.error("Failed to copy: ", err);
+    });
+}
 </script>
-</body>
+{% endblock %}
+
+
+
+
 {% endblock %}

@@ -1,0 +1,179 @@
+{% extends 'back/baseback.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .form-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            font-weight: 600;
+            color: #333;
+        }
+        .form-control {
+            border-radius: 5px;
+            padding: 15px;
+            font-size: 14px;
+            width: 100%;
+            background-color: #f7f7f7;
+            border: 1px solid #ddd;
+        }
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            font-size: 16px;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .form-error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+        .word-count {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
+    <script src="{{ asset('assets/backAss/eya/jquery-simple-txt-counter.js') }}"></script>
+
+     <div class="az-content az-content-dashboard">
+    <div class="container">
+        <div class="az-content-body">
+            <!-- Dashboard Title -->
+            <div class="az-dashboard-one-title">
+                <div>
+                    <h2 class="az-dashboard-title">Hi, welcome back!</h2>
+                    <p class="az-dashboard-text">Your web analytics dashboard template.</p>
+                </div>
+                <div class="az-content-header-right">
+                    <div class="media">
+                        <div class="media-body">
+                            <label>Start Date</label>
+                            <h6>Oct 10, 2018</h6>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                    <div class="media">
+                        <div class="media-body">
+                            <label>End Date</label>
+                            <h6>Oct 23, 2018</h6>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                    <div class="media">
+                        <div class="media-body">
+                            <label>Event Category</label>
+                            <h6>All Categories</h6>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                    <a href="" class="btn btn-purple">Export</a>
+                </div>
+            </div><!-- az-dashboard-one-title -->
+
+            <!-- Navigation Tabs -->
+            <div class="az-dashboard-nav"> 
+                <nav class="nav">
+                    <a href="{{ path('CourseBack') }}" class="nav-link {% if app.request.attributes.get('_route') == 'CourseBack' %}active{% endif %}">Add Course</a>
+                    <a href="{{ path('admin_courses_list') }}" class="nav-link {% if app.request.attributes.get('_route') == 'admin_courses_list' %}active{% endif %}">View Courses</a>
+                    <a class="nav-link" data-toggle="tab" href="#">charts</a>
+                    <a class="nav-link" data-toggle="tab" href="#">More</a>
+                </nav>
+
+                <nav class="nav">
+                    <a class="nav-link" href="#"><i class="far fa-save"></i> Save Report</a>
+                    <a class="nav-link" href="#"><i class="far fa-file-pdf"></i> Export to PDF</a>
+                    <a class="nav-link" href="#"><i class="far fa-envelope"></i> Send to Email</a>
+                    <a class="nav-link" href="#"><i class="fas fa-ellipsis-h"></i></a>
+                </nav>
+            </div>
+
+                <div class="form-container">
+                    <h3>Course Information</h3>
+
+                    {{ form_start(form, { 'attr': {'enctype': 'multipart/form-data'} }) }}
+
+                    <div class="form-group">
+                        {{ form_label(form.title, 'Course Title') }}
+                        {{ form_widget(form.title, {'attr': {'class': 'form-control', 'placeholder': 'Enter the course title'}}) }}
+                        <div class="form-error">
+                            {{ form_errors(form.title) }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.category, 'Category') }}
+                        {{ form_widget(form.category, {'attr': {'class': 'form-control', 'placeholder': 'Select a category'}}) }}
+                        <div class="form-error">
+                            {{ form_errors(form.category) }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.description, 'Course Description') }}
+                        {{ form_widget(form.description, {'attr': {'class': 'form-control', 'placeholder': 'Write a short description about the course', 'rows': 4}}) }}
+                        <div class="form-error">
+                            {{ form_errors(form.description) }}
+                        </div>
+                        <div class="word-count"></div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.createdAt, 'Creation Date') }}
+                        {{ form_widget(form.createdAt, {'attr': {'class': 'form-control'}}) }}
+                        <div class="form-error">
+                            {{ form_errors(form.createdAt) }}
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.numberOfLevels, 'Number of Levels') }}
+                        {{ form_widget(form.numberOfLevels, {'attr': {'class': 'form-control', 'placeholder': 'Enter number of levels'}}) }}
+                        <div class="form-error">
+                            {{ form_errors(form.numberOfLevels) }}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Create Course</button>
+
+                    {{ form_end(form) }}
+                </div>
+
+            </div><!-- az-content-body -->
+        </div><!-- container -->
+    </div><!-- az-content -->
+
+    <script>
+        $(document).ready(function() {
+            // Apply text counter to description field
+            $('#course_description').simpleTxtCounter({
+                maxLength: 255,
+                countText: 'Characters remaining',
+                countElem: '<div class="form-text"></div>',
+                lineBreak: true,
+            });
+        });
+    </script>
+{% endblock %}
