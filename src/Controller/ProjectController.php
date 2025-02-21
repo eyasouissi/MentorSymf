@@ -20,7 +20,7 @@ final class ProjectController extends AbstractController
     #[Route(name: 'app_project_index', methods: ['GET'])]
     public function index(ProjectRepository $projectRepository): Response
     {
-        return $this->render('front/project/index.html.twig', [
+        return $this->render('back/project/index.html.twig', [
             'projects' => $projectRepository->findAll(),
         ]);
     }
@@ -64,7 +64,7 @@ final class ProjectController extends AbstractController
             return $this->redirectToRoute('app_project_index');
         }
 
-        return $this->render('front/project/add.html.twig', [
+        return $this->render('back/project/add.html.twig', [
             'form' => $form->createView(),
             'project' => $project,
         ]);
@@ -74,7 +74,7 @@ final class ProjectController extends AbstractController
     #[Route('/{id}', name: 'app_project_show', methods: ['GET'])]
     public function show(Project $project): Response
     {
-        return $this->render('front/project/show.html.twig', [
+        return $this->render('back/project/show.html.twig', [
             'project' => $project,
         ]);
     }
@@ -108,7 +108,7 @@ final class ProjectController extends AbstractController
             return $this->redirectToRoute('app_project_index');
         }
 
-        return $this->render('front/project/edit.html.twig', [
+        return $this->render('back/project/edit.html.twig', [
             'form' => $form->createView(),
             'project' => $project, 
         ]);

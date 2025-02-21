@@ -68,7 +68,7 @@
             <div class="form-container">
                 <h1>Créer une nouvelle catégorie</h1>
 
-                {{ form_start(form) }}
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'form-horizontal'}}) }}
                     {# Champ Name (avec validation du nom pour ne pas inclure des chiffres) #}
                     <div class="form-group">
                         {{ form_label(form.name) }}

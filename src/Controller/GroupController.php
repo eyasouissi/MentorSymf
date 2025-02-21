@@ -36,7 +36,7 @@ final class GroupController extends AbstractController
             return $this->redirectToRoute('app_group_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('front/group/new.html.twig', [
+        return $this->render('back/group/new.html.twig', [
             'group' => $group,
             'form' => $form,
         ]);
@@ -45,7 +45,7 @@ final class GroupController extends AbstractController
     #[Route('/{id}', name: 'app_group_show', methods: ['GET'])]
     public function show(Group $group): Response
     {
-        return $this->render('front/group/show.html.twig', [
+        return $this->render('back/group/show.html.twig', [
             'group' => $group,
         ]);
     }
@@ -62,7 +62,7 @@ final class GroupController extends AbstractController
             return $this->redirectToRoute('app_group_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('front/group/edit.html.twig', [
+        return $this->render('back/group/edit.html.twig', [
             'group' => $group,
             'form' => $form,
         ]);

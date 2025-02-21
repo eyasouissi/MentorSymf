@@ -11,7 +11,7 @@
 
 
         <div class="form-container">
-            {{ form_start(form) }}
+                {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'form-horizontal'}}) }}
 
             <div class="form-group">
                 {{ form_label(form.name, 'Nom de la catégorie'|trans) }}
@@ -35,9 +35,9 @@
             </div>
 
             <div class="form-group form-check">
-                {{ form_widget(form.isActive, {'attr': {'class': 'form-check-input'}}) }}
-                {{ form_label(form.isActive, 'Actif'|trans, {'label_attr': {'class': 'form-check-label'}}) }}
-                {{ form_errors(form.isActive) }}
+                {{ form_widget(form.is_active, {'attr': {'class': 'form-check-input'}}) }}
+                {{ form_label(form.is_active, 'Actif'|trans, {'label_attr': {'class': 'form-check-label'}}) }}
+                {{ form_errors(form.is_active) }}
             </div>
 
             {# Modif du champ icon pour permettre le téléversement d'une image #}

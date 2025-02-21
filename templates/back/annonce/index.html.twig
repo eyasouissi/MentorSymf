@@ -3,8 +3,54 @@
 {% block title %}Liste des Annonces - Back Office{% endblock %}
 
 {% block body %}
-<div class="main-panel" style="margin-left: 160px; padding: 20px;">
-    <div class="container mt-5">
+   <div class="az-content az-content-dashboard">
+    <div class="container">
+        <div class="az-content-body">
+            <!-- Dashboard Title -->
+            <div class="az-dashboard-one-title">
+                <div>
+                    <h2 class="az-dashboard-title">Hi, welcome back!</h2>
+                    <p class="az-dashboard-text">Your web analytics dashboard template.</p>
+                </div>
+                <div class="az-content-header-right">
+                    <div class="media">
+                        <div class="media-body">
+                            <label>Start Date</label>
+                            <h6>Oct 10, 2018</h6>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                    <div class="media">
+                        <div class="media-body">
+                            <label>End Date</label>
+                            <h6>Oct 23, 2018</h6>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                    <div class="media">
+                        <div class="media-body">
+                            <label>Event Category</label>
+                            <h6>All Categories</h6>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                    <a href="" class="btn btn-purple">Export</a>
+                </div>
+            </div><!-- az-dashboard-one-title -->
+
+            <!-- Navigation Tabs -->
+            <div class="az-dashboard-nav"> 
+                <nav class="nav">
+                    <a href="{{ path('ajouter_annonceback') }}" class="nav-link">Add annonce</a>
+                    <a href="{{ path('app_annoncesback') }}">View annonce</a>
+                    <a class="nav-link" data-toggle="tab" href="#">charts</a>
+                    <a class="nav-link" data-toggle="tab" href="#">More</a>
+                </nav>
+
+                <nav class="nav">
+                    <a class="nav-link" href="#"><i class="far fa-save"></i> Save Report</a>
+                    <a class="nav-link" href="#"><i class="far fa-file-pdf"></i> Export to PDF</a>
+                    <a class="nav-link" href="#"><i class="far fa-envelope"></i> Send to Email</a>
+                    <a class="nav-link" href="#"><i class="fas fa-ellipsis-h"></i></a>
+                </nav>
+            </div>
         <h1 class="text-center mb-4">Liste des Annonces</h1>
 
         <div class="mb-3 d-flex justify-content-end">

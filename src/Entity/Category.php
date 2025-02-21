@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 class Category
@@ -17,18 +18,34 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 3, 
+        max: 255, 
+        minMessage: "Le nom doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le nom ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(
+        max: 500,
+        maxMessage: "La description ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\NotNull(message: "La date de création est obligatoire.")]
     private ?\DateTimeInterface $created_at = null;
 
     #[ORM\Column]
     private ?bool $is_active = null;
 
     #[ORM\Column(length: 100, nullable: true)]
+    #[Assert\Length(
+        max: 100,
+        maxMessage: "L'icône ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $icon = null;
 
     /**
@@ -128,7 +145,6 @@ class Category
     public function removeCourse(Courses $course): static
     {
         if ($this->courses->removeElement($course)) {
-            // set the owning side to null (unless already changed)
             if ($course->getCategory() === $this) {
                 $course->setCategory(null);
             }
@@ -137,12 +153,10 @@ class Category
         return $this;
     }
 
-
-        // Ajouter la méthode getCoursesQueryBuilder
-        public function getCoursesQueryBuilder()
-        {
-            return $this->courses->createQueryBuilder('c')
-                ->where('c.category = :category')
-                ->setParameter('category', $this);
-        }
+    public function getCoursesQueryBuilder()
+    {
+        return $this->courses->createQueryBuilder('c')
+            ->where('c.category = :category')
+            ->setParameter('category', $this);
+    }
 }

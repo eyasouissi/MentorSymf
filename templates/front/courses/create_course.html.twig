@@ -6,40 +6,47 @@
     <div class="container py-5">
         <h1 class="text-center mb-5">Create a New Course</h1>
 
+        <style>
+            .form-error {
+                color: red;
+                font-size: 14px;
+                margin-top: 5px;
+            }
+        </style>
+
         {# Start the form with enctype for file uploads #}
-        {{ form_start(form, { 'attr': {'enctype': 'multipart/form-data'}, 'action': path('create_course', {'id': category.id}) }) }}
+        {{ form_start(form, { 'attr': {'novalidate': 'novalidate', 'class': 'form-horizontal'}, 'action': path('create_course', {'id': category.id}) }) }}
 
         <div class="row mb-4">
             <div class="col-md-6">
                 <label for="course_title" class="form-label">Course Title</label>
                 {{ form_widget(form.title, { 'attr': {'id': 'course_title', 'class': 'form-control'} }) }}
-                {{ form_errors(form.title) }} {# Display errors if any #}
+                <div class="form-error">{{ form_errors(form.title) }}</div>
             </div>
             <div class="col-md-6">
                 {{ form_row(form.category) }}
-                {{ form_errors(form.category) }}
+                <div class="form-error">{{ form_errors(form.category) }}</div>
             </div>
         </div>
 
         <div class="mb-4">
             <label for="course_description" class="form-label">Course Description</label>
             {{ form_widget(form.description, { 'attr': {'id': 'course_description', 'class': 'form-control ckeditor'} }) }}
-            {{ form_errors(form.description) }} {# Display errors for description if any #}
+            <div class="form-error">{{ form_errors(form.description) }}</div>
         </div>
 
         <div class="mb-4">
             <label for="course_createdAt" class="form-label">Creation Date</label>
             {{ form_widget(form.createdAt, { 'attr': {'id': 'course_createdAt', 'class': 'form-control'} }) }}
-            {{ form_errors(form.createdAt) }}
+            <div class="form-error">{{ form_errors(form.createdAt) }}</div>
         </div>
 
         <div class="mb-4">
             <label for="course_numberOfLevels" class="form-label">Number of Levels</label>
             {{ form_widget(form.numberOfLevels, { 'attr': {'id': 'course_numberOfLevels', 'class': 'form-control'} }) }}
-            {{ form_errors(form.numberOfLevels) }}
+            <div class="form-error">{{ form_errors(form.numberOfLevels) }}</div>
         </div>
 
-       
         {# Submit button #}
         <div class="d-flex justify-content-center">
             <button type="submit" class="btn btn-primary btn-lg">Create Course</button>

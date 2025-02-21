@@ -113,7 +113,8 @@
                 <div class="form-container">
                     <h3>Course Information</h3>
 
-                    {{ form_start(form, { 'attr': {'enctype': 'multipart/form-data'} }) }}
+                    {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'form-horizontal'}}) }}
+
 
                     <div class="form-group">
                         {{ form_label(form.title, 'Course Title') }}
