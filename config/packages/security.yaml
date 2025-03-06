@@ -16,12 +16,16 @@ security:
         main:
             lazy: true
             provider: app_user_provider
-            custom_authenticator: App\Security\LoginFormAuthenticator
-
+            custom_authenticator: 
+                - App\Security\LoginFormAuthenticator
+                - App\Security\GoogleAuthenticator 
             entry_point: form_login
             form_login:
                 login_path: login
                 check_path: login
+                failure_path: login
+                failure_handler: App\Security\LoginFailureHandler
+            user_checker: App\Security\UserChecker    
             logout:
                 path: logout             # Path to logout
                 target: login # After logging out, redirect to login page
@@ -30,13 +34,17 @@ security:
                 secret: '%kernel.secret%'    # Secret key for "Remember Me" functionality
                 lifetime: 604800             # Remember me duration in seconds (1 week)
                 path: /                      # Path to set the remember-me cookie for
-
+        connect_google:
+            pattern: ^/connect/google
+            security: false 
     access_control:
     - { path: ^/index, roles: PUBLIC_ACCESS }
     - { path: ^/login, roles: PUBLIC_ACCESS }
+    - { path: ^/connect/google, roles: PUBLIC_ACCESS }
+    - { path: ^/login/check-google, roles: PUBLIC_ACCESS }
     - { path: ^/register, roles: PUBLIC_ACCESS }
     - { path: ^/forgot-password, roles: PUBLIC_ACCESS }
-    - { path: ^/reset_password, roles: PUBLIC_ACCESS }
+    - { path: ^/reset-password, roles: PUBLIC_ACCESS }
     - { path: ^/admin, roles: ROLE_ADMIN }
     - { path: ^/, roles: ROLE_USER }  # Restrict everything else to authenticated users
     
@@ -50,3 +58,13 @@ when@test:
                 cost: 4
                 time_cost: 3
                 memory_cost: 10
+
+
+knpu_oauth2_client:
+    clients:
+        google:
+            type: google
+            client_id: "%env(GOOGLE_CLIENT_ID)%"
+            client_secret: "%env(GOOGLE_CLIENT_SECRET)%"
+            redirect_route: login_google_check
+            redirect_params: {}

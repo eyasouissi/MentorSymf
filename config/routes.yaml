@@ -4,6 +4,30 @@ controllers:
         namespace: App\Controller
     type: attribute
 
+# Route for user profile
+user_profile:
+    path: /user/profile
+    controller: App\Controller\user\ProfileController::index
+    methods: [GET]
+
+# Route for connecting with Google
+connect_google:
+    path: /connect/google
+    controller: App\Controller\user\SecurityController::connectGoogle
+    methods: [GET]
+
+# Route for handling the Google authentication check
+connect_google_check:
+    path: /connect/google/check
+    controller: App\Controller\user\SecurityController::connectGoogleCheck
+    methods: [GET]
+
+# Route for the project front
+app_project_front:
+    path: /projects
+    controller: App\Controller\ProjectController::front
+    methods: [GET]
+
 upload_pdf:
     path: /upload-pdf
     controller: App\Controller\ChatbotController::uploadPdf

@@ -23,8 +23,8 @@
                             <p class="text-light">Type de fichier non supporté</p>
                         {% endif %}
                     </div>
-                    <h1 class="text-white fw-bold">{{ category.name }}</h1>
-                    <p class="text-light fs-5">{{ category.description }}</p>
+                    <h1 class="text-white fw-bold animate__animated animate__fadeInDown">{{ category.name }}</h1>
+                    <p class="text-light fs-5 animate__animated animate__fadeInUp">{{ category.description }}</p>
                 </div>
             </div>
         </div>
@@ -41,96 +41,151 @@
         </div>
     </nav>
 
-    <!-- Ajouter un Cours -->
-    <div class="text-center my-4">
-        <a href="{{ path('create_course', {'id': category.id}) }}" class="btn btn-lg btn-primary shadow-sm px-4">➕ Ajouter un Cours</a>
-    </div>
+    <!-- Bouton Ajouter un Cours (pour les tuteurs) -->
+    {% if is_granted('ROLE_TUTOR') %}
+        <div class="text-center my-4">
+            <a href="{{ path('create_course', {'id': category.id}) }}" class="btn btn-lg btn-purple shadow-sm px-4 animate__animated animate__bounceIn">
+                + Add Course
+            </a>
+        </div>
+    {% endif %}
 
     <!-- Section Cours -->
     <section id="courses" class="courses section py-5">
         <div class="container">
+            <!-- Barre de recherche et filtre -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <input type="text" id="search-input" class="form-control" placeholder="Search for a course...">
+                </div>
+                <div class="col-md-6">
+                    <select id="filter-select" class="form-control">
+                        <option value="all">All courses</option>
+                        <option value="free">Free Course</option>
+                        <option value="premium">premium Course</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Liste des cours -->
             <div id="course-list" class="row g-4">
                 {% for course in courses %}
-                    <div class="col-lg-4 col-md-6 course-item">
+                    <div class="col-lg-4 col-md-6 course-item" data-premium="{{ course.premium ? 'premium' : 'free' }}">
                         <div class="course-card card border-0 shadow-sm">
                             <div class="card-body text-center">
                                 <h5 class="card-title fw-bold mb-2">{{ course.title }}</h5>
                                 <p class="card-text text-muted">{{ course.description|length > 100 ? course.description|slice(0, 100) ~ '...' : course.description }}</p>
-                                <a href="{{ path('course_details', {'id': course.id}) }}" class="btn btn-outline-primary rounded-pill px-3">Voir Détails</a>
+                                {% if course.premium %}
+                                    <a href="{{ path('offre_list_front') }}" class="btn btn-purple rounded-pill px-3">🔒Premium Course</a>
+                                {% else %}
+                                    <a href="{{ path('course_details', {'id': course.id}) }}" class="btn btn-outline-purple rounded-pill px-3">Details</a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
                 {% endfor %}
             </div>
 
-            <!-- Pagination Controls -->
+            <!-- Pagination -->
             <div class="pagination-controls text-center my-4">
-                <button id="prev-btn" class="btn btn-outline-secondary" disabled>Précédent</button>
+                <button id="prev-btn" class="btn btn-outline-secondary" disabled>⬅️ Previous</button>
                 <span id="page-number" class="mx-3">Page 1</span>
-                <button id="next-btn" class="btn btn-outline-secondary">Suivant</button>
+                <button id="next-btn" class="btn btn-outline-secondary">Next ➡️</button>
             </div>
         </div>
     </section>
+
+    <!-- Bouton Retour en haut -->
+    <button id="back-to-top" class="btn btn-primary btn-back-to-top shadow">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 </main>
 
+<!-- Scripts -->
 <script>
-    // Récupérer tous les cours
-    const courses = document.querySelectorAll('.course-item');
-    const coursesPerPage = 3;  // Nombre de cours à afficher par page
-    let currentPage = 1;
-    const totalPages = Math.ceil(courses.length / coursesPerPage);
+    document.addEventListener("DOMContentLoaded", function () {
+        const courses = Array.from(document.querySelectorAll('.course-item'));
+        const searchInput = document.getElementById('search-input');
+        const filterSelect = document.getElementById('filter-select');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const pageNumber = document.getElementById('page-number');
 
-    // Fonction pour afficher les cours de la page actuelle
-    function displayCourses(page) {
-        const start = (page - 1) * coursesPerPage;
-        const end = start + coursesPerPage;
-        
-        // Masquer tous les cours
-        courses.forEach((course, index) => {
-            course.style.display = 'none';
-            if (index >= start && index < end) {
-                course.style.display = 'block';  // Afficher seulement les cours de la page actuelle
+        let currentPage = 1;
+        const coursesPerPage = 3;
+        let filteredCourses = [...courses];
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
+            pageNumber.textContent = `Page ${currentPage} / ${totalPages || 1}`;
+            prevBtn.disabled = (currentPage === 1);
+            nextBtn.disabled = (currentPage >= totalPages);
+        }
+
+        function displayCourses() {
+            const start = (currentPage - 1) * coursesPerPage;
+            const end = start + coursesPerPage;
+
+            courses.forEach(course => course.style.display = 'none');
+            filteredCourses.slice(start, end).forEach(course => course.style.display = 'block');
+
+            updatePagination();
+        }
+
+        function filterCourses() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const filterValue = filterSelect.value;
+
+            filteredCourses = courses.filter(course => {
+                const title = course.querySelector('.card-title').textContent.toLowerCase();
+                const description = course.querySelector('.card-text').textContent.toLowerCase();
+                const isPremium = course.getAttribute('data-premium') === 'premium';
+
+                const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+                const matchesFilter = (filterValue === 'all') || 
+                                      (filterValue === 'free' && !isPremium) || 
+                                      (filterValue === 'premium' && isPremium);
+
+                return matchesSearch && matchesFilter;
+            });
+
+            currentPage = 1; 
+            displayCourses();
+        }
+
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                displayCourses();
             }
         });
 
-        // Afficher la page actuelle
-        document.getElementById('page-number').textContent = `Page ${page}`;
+        nextBtn.addEventListener('click', () => {
+            const totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
+            if (currentPage < totalPages) {
+                currentPage++;
+                displayCourses();
+            }
+        });
 
-        // Désactiver les boutons si on est à la première ou dernière page
-        document.getElementById('prev-btn').disabled = (page === 1);
-        document.getElementById('next-btn').disabled = (page === totalPages);
-    }
+        searchInput.addEventListener('input', filterCourses);
+        filterSelect.addEventListener('change', filterCourses);
 
-    // Gérer les boutons Précédent et Suivant
-    document.getElementById('prev-btn').addEventListener('click', () => {
-        if (currentPage > 1) {
-            currentPage--;
-            displayCourses(currentPage);
-        }
+        displayCourses();
     });
-
-    document.getElementById('next-btn').addEventListener('click', () => {
-        if (currentPage < totalPages) {
-            currentPage++;
-            displayCourses(currentPage);
-        }
-    });
-
-    // Initialiser l'affichage des cours
-    displayCourses(currentPage);
 </script>
 
+<!-- Styles -->
 <style>
     /* Hero Section */
     .category-hero {
         background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url("https://source.unsplash.com/1600x900/?education,learning") center/cover no-repeat;
-        padding: 80px 0;
+        padding: 100px 0;
         color: white;
     }
 
-    /* Breadcrumbs */
-    .breadcrumbs {
-        font-size: 1rem;
+    .category-hero h1, .category-hero p {
+        animation-duration: 1s;
     }
 
     /* Course Card */
@@ -140,11 +195,23 @@
     }
 
     .course-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+        transform: translateY(-10px);
+        box-shadow: 0px 15px 30px rgba(0, 0, 0, 0.2);
     }
 
-    /* Pagination Controls */
+    /* Bouton Retour en haut */
+    .btn-back-to-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+    }
+
+    /* Pagination */
     .pagination-controls {
         display: flex;
         justify-content: center;
@@ -155,25 +222,35 @@
     .btn-outline-secondary {
         font-size: 1rem;
         padding: 8px 16px;
+        border-radius: 20px;
     }
 
     .btn-outline-secondary:disabled {
         opacity: 0.5;
     }
 
-    .mx-3 {
-        font-size: 1.2rem;
-    }
-
-    /* Button Hover Effects */
-    .btn-primary {
-        background-color: #007bff;
+    /* Boutons */
+    .btn-purple {
+        background-color: rgb(215, 165, 251);
         border: none;
+        color: white;
         transition: background-color 0.3s;
     }
 
-    .btn-primary:hover {
-        background-color: #0056b3;
+    .btn-purple:hover {
+        background-color: rgb(190, 119, 252);
+    }
+
+    .btn-outline-purple {
+        color: rgb(190, 98, 255);
+        border: 2px solid rgb(227, 187, 255);
+        background: transparent;
+        transition: all 0.3s;
+    }
+
+    .btn-outline-purple:hover {
+        background-color: rgb(193, 105, 255);
+        color: white;
     }
 </style>
 

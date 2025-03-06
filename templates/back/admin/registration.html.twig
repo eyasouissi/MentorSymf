@@ -1,0 +1,90 @@
+{% extends 'back/baseback.html.twig' %}
+
+{% block title %}User Registration{% endblock %}
+
+{% block body %}
+<div class="container mt-5 d-flex justify-content-center">
+    <div class="card shadow-lg p-4 rounded" style="width: 400px;">
+        <h2 class="text-center mb-4">Register as User</h2>
+
+        {{ form_start(registrationForm, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+        
+        <div class="mb-3">
+            {{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(registrationForm.email, {'attr': {'class': 'form-control', 'placeholder': 'Enter your email'}}) }}
+            {{ form_errors(registrationForm.email) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(registrationForm.name, 'Full Name', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(registrationForm.name, {'attr': {'class': 'form-control', 'placeholder': 'Enter your full name'}}) }}
+            {{ form_errors(registrationForm.name) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(registrationForm.age, 'Age', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(registrationForm.age, {'attr': {'class': 'form-control', 'placeholder': 'Enter your age'}}) }}
+            {{ form_errors(registrationForm.age) }}
+        </div>
+
+        {# Gender Field #}
+        <div class="input-field {{ form_errors(registrationForm.gender) ? 'has-error' }}">
+            <label>Gender:</label>
+            <div class="gender-options">
+                {% for child in registrationForm.gender %}
+                    <div class="gender-option">
+                        {{ form_widget(child) }} {# Render the radio button #}
+                        {{ form_label(child, null, { 'label_attr': { 'class': 'gender-label' } }) }} {# Render the label #}
+                    </div>
+                {% endfor %}
+            </div>
+            {{ form_errors(registrationForm.gender) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(registrationForm.country, 'Country', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(registrationForm.country, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.country) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(registrationForm.plainPassword, 'Password', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Choose a password'}}) }}
+            {{ form_errors(registrationForm.plainPassword) }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Role</label>
+            <div>
+                {{ form_widget(registrationForm.roles) }}
+            </div>
+            {{ form_errors(registrationForm.roles) }}
+        </div>
+
+        <div id="diplome-field" class="mb-3" style="display: none;">
+            {{ form_label(registrationForm.diplome, 'Diploma', {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(registrationForm.diplome, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(registrationForm.diplome) }}
+        </div>
+
+        <button type="submit" class="btn w-100" style="background-color: purple; color: white;">Register</button>
+        {{ form_end(registrationForm) }}
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let roleRadios = document.querySelectorAll("input[name='registrationForm[roles]']");
+        let diplomeField = document.getElementById("diplome-field");
+
+        function toggleDiplomeField() {
+            let isTutorSelected = Array.from(roleRadios).some(radio => radio.checked && radio.value === "ROLE_TUTOR");
+            diplomeField.style.display = isTutorSelected ? "block" : "none";
+        }
+
+        roleRadios.forEach(radio => radio.addEventListener("change", toggleDiplomeField));
+        toggleDiplomeField();
+    });
+</script>
+
+{% endblock %}

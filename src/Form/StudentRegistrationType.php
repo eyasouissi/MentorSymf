@@ -16,6 +16,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class StudentRegistrationType extends AbstractType
 {
@@ -45,15 +46,26 @@ class StudentRegistrationType extends AbstractType
             ->add('email', EmailType::class)
             ->add('name', TextType::class)
             ->add('age', IntegerType::class, [
-                'required' => false,
+                'required' => true,  // Make it obligatory
+                'constraints' => [
+                    new Assert\NotBlank(['message' => 'Age is required.']),
+                    new Assert\Range([
+                        'min' => 18,
+                        'max' => 70,
+                        'notInRangeMessage' => 'Age must be between 18 and 70.',
+                    ]),
+                ],
             ])
+            
             ->add('gender', ChoiceType::class, [
                 'choices' => [
-                    'Female' => 'female',
                     'Male' => 'male',
+                    'Female' => 'female',
                 ],
-                'placeholder' => 'Choose your gender',
+                'expanded' => true,  // Displays as radio buttons
+                'multiple' => false, // Ensures only one selection
             ])
+
             ->add('country', CountryType::class, [
                 'placeholder' => 'Choose your country',
             ])

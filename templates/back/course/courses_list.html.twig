@@ -37,11 +37,118 @@
         .az-dashboard-text {
             color: #6c757d;
         }
-    </style>
+        #searchInput {
+            display: none;
+            width: 200px;
+            transition: width 0.5s, opacity 0.5s;
+            opacity: 0;
+        }
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .no-results {
+            display: none;
+            text-align: center;
+            font-style: italic;
+            color: #6c757d;
+            margin-top: 20px;
+        }
+        .sort-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+
+        .switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 20px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 14px;
+    width: 14px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: green;
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+
+
+    /* Style pour la description tronquée */
+    .truncated-description {
+        cursor: pointer;
+        color: #007bff; /* Couleur de lien pour indiquer que c'est cliquable */
+        text-decoration: underline;
+    }
+
+    .truncated-description:hover {
+        color: #0056b3; /* Changement de couleur au survol */
+    }
+
+    /* Style pour la fenêtre modale */
+    .modal {
+        display: none; /* Cachée par défaut */
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.5); /* Fond semi-transparent */
+    }
+
+    .modal-content {
+        background-color: white;
+        margin: 10% auto;
+        padding: 20px;
+        border-radius: 8px;
+        width: 50%;
+        max-width: 600px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        position: relative;
+    }
+</style>
 {% endblock %}
 
 {% block body %}
-     <div class="az-content az-content-dashboard">
+<div class="az-content az-content-dashboard">
     <div class="container">
         <div class="az-content-body">
             <!-- Dashboard Title -->
@@ -78,64 +185,275 @@
                 <nav class="nav">
                     <a href="{{ path('CourseBack') }}" class="nav-link {% if app.request.attributes.get('_route') == 'CourseBack' %}active{% endif %}">Add Course</a>
                     <a href="{{ path('admin_courses_list') }}" class="nav-link {% if app.request.attributes.get('_route') == 'admin_courses_list' %}active{% endif %}">View Courses</a>
-                    <a class="nav-link" data-toggle="tab" href="#">charts</a>
+
+                     <a href="{{ path('courses_statistics') }}" class="nav-link {% if app.request.attributes.get('_route') == 'courses_statistics' %}active{% endif %}">Charts</a>
                     <a class="nav-link" data-toggle="tab" href="#">More</a>
                 </nav>
 
                 <nav class="nav">
                     <a class="nav-link" href="#"><i class="far fa-save"></i> Save Report</a>
-                    <a class="nav-link" href="#"><i class="far fa-file-pdf"></i> Export to PDF</a>
-                    <a class="nav-link" href="#"><i class="far fa-envelope"></i> Send to Email</a>
+                    <a class="nav-link" href="{{ path('admin_courses_export_pdf') }}"><i class="far fa-file-pdf"></i> Export to PDF</a>                    <a class="nav-link" href="#"><i class="far fa-envelope"></i> Send to Email</a>
                     <a class="nav-link" href="#"><i class="fas fa-ellipsis-h"></i></a>
                 </nav>
             </div>
 
+            <!-- Search and Filter Form -->
+            <div class="mb-4" id="search-filter-form">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="search-container">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search by title or description">
+                            <button id="searchIcon" class="btn btn-primary" onclick="toggleSearch()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button id="clearSearch" class="btn btn-secondary" onclick="clearSearch()" style="display: none;">
+                                <i class="fas fa-times"></i>
+                            </button>
 
-            <div class="container py-5">
-                <div class="table-container">
-                    <table class="table table-hover">
-                        <thead class="thead-dark">
-                            <tr>
-                                <th>ID</th>
-                                <th>Title</th>
-                                <th>Description</th>
-                                <th>Category</th>
-                                <th>Created At</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for course in courses %}
-                                <tr>
-                                    <td>{{ course.id }}</td>
-                                    <td>{{ course.title }}</td>
-                                    <td>{{ course.description }}</td>
-                                    <td>{{ course.category.name }}</td>
-                                    <td>{{ course.createdAt|date('d/m/Y') }}</td>
-                                    <td>
-                                        <a href="{{ path('course_details_back', {'id': course.id}) }}" class="btn btn-info btn-sm">
-                                            <i class="fas fa-info-circle"></i> Details
-                                        </a>
-                                        <a href="{{ path('course_edit', {'id': course.id}) }}" class="btn btn-warning btn-sm">
-                                            <i class="fas fa-edit"></i> Edit
-                                        </a>
-                                        <a href="{{ path('course_delete', {'id': course.id}) }}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this course?');">
-                                            <i class="fas fa-trash-alt"></i> Delete
-                                        </a>
-                                    </td>
-                                </tr>
-                            {% else %}
-                                <tr>
-                                    <td colspan="6" class="text-center">No courses found.</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                    
+
+                        </div>
+                    </div>
+                
                 </div>
+                
+            </div>
+            
+
+
+            <label class="switch">
+             <input type="checkbox" id="premiumFilter" onchange="filterByPremium()">
+            <span class="slider round"></span>
+            </label>
+            <span>Show Premium Only</span>
+
+            <!-- Sort Dropdown and Reset Button -->
+            <div class="sort-container">
+                <select id="sortField" class="form-control">
+                    <option value="title">Sort by Title</option>
+                    <option value="createdAt">Sort by Created At</option>
+                </select>
+                <select id="sortDirection" class="form-control">
+                    <option value="asc">Ascending</option>
+                    <option value="desc">Descending</option>
+                </select>
+                <button class="btn btn-primary" onclick="applySort()">Sort</button>
+                <button class="btn btn-warning" onclick="resetSort()">Reset</button>
+                
+            </div>
+
+
+<!-- Fenêtre modale pour afficher la description complète -->
+<div id="descriptionModal" class="modal">
+    <div class="modal-content">
+        <!-- <span class="close">&times;</span> -->
+        <p id="fullDescription"></p>
+    </div>
+</div>
+<!-- Tableau -->
+<div class="table-container">
+<table class="table table-hover" id="course-table">
+    <thead class="thead-dark">
+        <tr>
+            <th>ID</th>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Created At</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="course-table-body">
+        {% for course in courses %}
+            <tr class="course-item" data-title="{{ course.title|lower }}" data-description="{{ course.description|lower }}" data-created-at="{{ course.createdAt.timestamp }}">
+                <td>{{ course.id }}</td>
+                <td>{{ course.title }}</td>
+                <td>
+                    <!-- Description tronquée et cliquable -->
+                    <span class="truncated-description" onclick="showFullDescription('{{ course.description|escape('js') }}')">
+                        {{ course.description|length > 50 ? course.description|slice(0, 50) ~ '...' : course.description }}
+                    </span>
+                </td>
+                <td>{{ course.category.name }}</td>
+                <td>{{ course.createdAt|date('d/m/Y') }}</td>
+                <td>
+                    <span class="badge {% if course.isPremium %}badge-danger{% else %}badge-success{% endif %}">
+                        {{ course.isPremium ? 'Premium' : 'Standard' }}
+                    </span>
+                </td>
+                <td>
+                    <!-- Icônes d'actions -->
+                    <a href="{{ path('course_details_back', {'id': course.id}) }}" class="btn btn-info btn-sm" title="Details">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                    <a href="{{ path('course_edit', {'id': course.id}) }}" class="btn btn-warning btn-sm" title="Edit">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{{ path('course_delete', {'id': course.id}) }}" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this course?');">
+                        <i class="fas fa-trash-alt"></i>
+                    </a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7" class="text-center">No courses found.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+
+                </table>
+                <div id="noResultsMessage" class="no-results">No courses match your search.</div>
             </div>
         </div><!-- az-content-body -->
-        
     </div><!-- container -->
+</div>
+
+<!-- Include jsPDF and html2canvas libraries -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<!-- JavaScript for Dynamic Search, Filtering, Sorting, and PDF Export -->
+<script>
+
+
+    // Rest of your existing JavaScript code...
+    let searchVisible = false;
+    let originalOrder = [];
+
+    function toggleSearch() {
+        searchVisible = !searchVisible;
+        const searchInput = document.getElementById("searchInput");
+        const searchIcon = document.getElementById("searchIcon");
+        const clearSearchButton = document.getElementById("clearSearch");
+        if (searchVisible) {
+            searchInput.style.display = "block";
+            setTimeout(() => {
+                searchInput.style.width = '200px';
+                searchInput.style.opacity = '1';
+                searchInput.focus();
+            }, 100);
+            searchIcon.style.transform = "rotate(90deg)";
+            clearSearchButton.style.display = "inline-block";
+        } else {
+            searchInput.style.width = '0';
+            searchInput.style.opacity = '0';
+            setTimeout(() => searchInput.style.display = "none", 500);
+            searchIcon.style.transform = "rotate(0deg)";
+            clearSearchButton.style.display = "none";
+        }
+    }
+
+    let timeoutId;
+
+    function filterCourses() {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+            const courseItems = document.querySelectorAll(".course-item");
+            const noResultsMessage = document.getElementById("noResultsMessage");
+            let hasResults = false;
+
+            courseItems.forEach((courseItem) => {
+                const courseTitle = courseItem.dataset.title;
+                const courseDescription = courseItem.dataset.description;
+                if (courseTitle.includes(searchTerm) || courseDescription.includes(searchTerm)) {
+                    courseItem.style.display = "table-row";
+                    hasResults = true;
+                } else {
+                    courseItem.style.display = "none";
+                }
+            });
+
+            if (!hasResults && searchTerm.trim() !== "") {
+                noResultsMessage.style.display = "block";
+            } else {
+                noResultsMessage.style.display = "none";
+            }
+        }, 300);
+    }
+
+    function clearSearch() {
+        const searchInput = document.getElementById("searchInput");
+        searchInput.value = "";
+        filterCourses();
+    }
+
+    function applySort() {
+        const sortField = document.getElementById("sortField").value;
+        const sortDirection = document.getElementById("sortDirection").value;
+        const courseItems = Array.from(document.querySelectorAll(".course-item"));
+
+        if (originalOrder.length === 0) {
+            originalOrder = courseItems.map((courseItem) => courseItem);
+        }
+
+        courseItems.sort((a, b) => {
+            const aValue = a.dataset[sortField];
+            const bValue = b.dataset[sortField];
+
+            if (sortField === "createdAt") {
+                return sortDirection === "asc" ? aValue - bValue : bValue - aValue;
+            } else {
+                return sortDirection === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+            }
+        });
+
+        const courseTableBody = document.getElementById("course-table-body");
+        courseItems.forEach((courseItem) => {
+            courseTableBody.appendChild(courseItem);
+        });
+    }
+
+    function resetSort() {
+        const courseTableBody = document.getElementById("course-table-body");
+        originalOrder.forEach((courseItem) => {
+            courseTableBody.appendChild(courseItem);
+        });
+    }
+
+    document.getElementById("searchInput").addEventListener("input", filterCourses);
+
+
+
+    function filterByPremium() {
+    const isChecked = document.getElementById("premiumFilter").checked;
+    const courseItems = document.querySelectorAll(".course-item");
+
+    courseItems.forEach((courseItem) => {
+        const isPremium = courseItem.querySelector(".badge").textContent.trim() === "Premium";
+        if (isChecked && !isPremium) {
+            courseItem.style.display = "none";
+        } else {
+            courseItem.style.display = "table-row";
+        }
+    });
+}
+
+    // Fonction pour afficher la description complète dans une fenêtre modale
+    function showFullDescription(description) {
+        const modal = document.getElementById("descriptionModal");
+        const fullDescriptionElement = document.getElementById("fullDescription");
+
+        // Afficher la description complète
+        fullDescriptionElement.textContent = description;
+
+        // Afficher la fenêtre modale
+        modal.style.display = "block";
+
+        // Fermer la fenêtre modale si on clique en dehors de celle-ci
+        window.onclick = function (event) {
+            if (event.target === modal) {
+                modal.style.display = "none";
+            }
+        };
+    }
+
+    document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+        const modal = document.getElementById("descriptionModal");
+        modal.style.display = "none";
+    }
+});
+</script>
 
 {% endblock %}

@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Controller;
 
 use App\Entity\Project;
@@ -11,8 +10,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\RedirectResponse; // Make sure you're using the correct RedirectResponse class
-
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 #[Route('/project')]
 final class ProjectController extends AbstractController
@@ -32,31 +30,37 @@ final class ProjectController extends AbstractController
         $form = $this->createForm(ProjectType::class, $project);
         $form->handleRequest($request);
 
-        // Debug the form submission
-        if ($form->isSubmitted()) {
-            dump('Form submitted');
-        }
-
         if ($form->isSubmitted() && $form->isValid()) {
-            dump('Form is valid');
-            dump($project); // Inspect project data
+            // Gérer le téléchargement du PDF
+            $pdfFile = $form->get('fichier_pdf')->getData();
+            if ($pdfFile) {
+                $uploadsDirectory = $this->getParameter('uploads_directory');
+                $newFilename = uniqid() . '.' . $pdfFile->guessExtension();
 
-            // Handle PDF file upload
-            $file = $form->get('fichier_pdf')->getData();
-    if ($file) {
-        $uploadsDirectory = $this->getParameter('uploads_directory');
-        $newFilename = uniqid() . '.' . $file->guessExtension(); // Generate unique filename
+                try {
+                    $pdfFile->move($uploadsDirectory, $newFilename);
+                    $project->setFichierPdf($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('danger', '❌ Failed to upload the PDF file.');
+                    return $this->redirectToRoute('app_project_add');
+                }
+            }
 
-        try {
-            // Move the uploaded file to the designated uploads directory
-            $file->move($uploadsDirectory, $newFilename);
-            $project->setFichierPdf($newFilename); // Save filename in the entity
-        } catch (FileException $e) {
-            $this->addFlash('danger', '❌ Failed to upload the PDF file.');
-            return $this->redirectToRoute('app_project_add');
-        }
-    }
-            // Persist project to database
+            // Gérer le téléchargement de l'image
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $imageDirectory = $this->getParameter('project_images_directory');
+                $newImageName = uniqid() . '.' . $imageFile->guessExtension();
+
+                try {
+                    $imageFile->move($imageDirectory, $newImageName);
+                    $project->setImage($newImageName);
+                } catch (FileException $e) {
+                    $this->addFlash('danger', '❌ Failed to upload the image.');
+                    return $this->redirectToRoute('app_project_add');
+                }
+            }
+
             $entityManager->persist($project);
             $entityManager->flush();
 
@@ -68,7 +72,6 @@ final class ProjectController extends AbstractController
             'form' => $form->createView(),
             'project' => $project,
         ]);
-        
     }
 
     #[Route('/{id}', name: 'app_project_show', methods: ['GET'])]
@@ -86,14 +89,14 @@ final class ProjectController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Handle PDF file upload
-            $file = $form->get('fichier_pdf')->getData();
-            if ($file) {
+            // Gérer le téléchargement du PDF
+            $pdfFile = $form->get('fichier_pdf')->getData();
+            if ($pdfFile) {
                 $uploadsDirectory = $this->getParameter('uploads_directory');
-                $newFilename = uniqid() . '.' . $file->guessExtension();
+                $newFilename = uniqid() . '.' . $pdfFile->guessExtension();
 
                 try {
-                    $file->move($uploadsDirectory, $newFilename);
+                    $pdfFile->move($uploadsDirectory, $newFilename);
                     $project->setFichierPdf($newFilename);
                 } catch (FileException $e) {
                     $this->addFlash('danger', '❌ Failed to upload the PDF file.');
@@ -101,7 +104,21 @@ final class ProjectController extends AbstractController
                 }
             }
 
-            // Update project in the database
+            // Gérer le téléchargement de l'image
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $imageDirectory = $this->getParameter('project_images_directory');
+                $newImageName = uniqid() . '.' . $imageFile->guessExtension();
+
+                try {
+                    $imageFile->move($imageDirectory, $newImageName);
+                    $project->setImage($newImageName);
+                } catch (FileException $e) {
+                    $this->addFlash('danger', '❌ Failed to upload the image.');
+                    return $this->redirectToRoute('app_project_edit', ['id' => $project->getId()]);
+                }
+            }
+
             $entityManager->flush();
 
             $this->addFlash('info', '✏️ Project successfully updated!');
@@ -110,51 +127,75 @@ final class ProjectController extends AbstractController
 
         return $this->render('back/project/edit.html.twig', [
             'form' => $form->createView(),
-            'project' => $project, 
+            'project' => $project,
         ]);
     }
 
-    #[Route('/project/{id}/delete', name: 'app_project_delete', methods: ['POST'])]
-    public function delete($id, EntityManagerInterface $entityManager, ProjectRepository $projectRepository): RedirectResponse
-    {
-        // Find the project by ID
-        $project = $projectRepository->find($id);
-    
-        if ($project) {
-            // Remove the associated PDF file if it exists
-            $pdfFile = $this->getParameter('uploads_directory') . '/' . $project->getFichierPdf();
-            if ($project->getFichierPdf() && file_exists($pdfFile)) {
-                unlink($pdfFile);
-            }
-    
-            // Delete the project from the database
-            $entityManager->remove($project);
-            $entityManager->flush();
-        }
-    
-        // Redirect back to the project index page after deletion
-        return $this->redirectToRoute('app_project_index');
-    }
-    
+    #[Route('/{id}/delete', name: 'app_project_delete', methods: ['POST'])]
+public function delete($id, EntityManagerInterface $entityManager, ProjectRepository $projectRepository): RedirectResponse
+{
+    $project = $projectRepository->find($id);
 
-    #[Route('/delete-all', name: 'app_project_delete_all', methods: ['POST'])]
-    public function deleteAll(EntityManagerInterface $entityManager): Response
-    {
-        $projects = $entityManager->getRepository(Project::class)->findAll();
-    
-        // Delete all projects and their associated PDF files
-        foreach ($projects as $project) {
-            $pdfFile = $this->getParameter('uploads_directory') . '/' . $project->getFichierPdf();
-            if ($project->getFichierPdf() && file_exists($pdfFile)) {
-                unlink($pdfFile);
-            }
-            $entityManager->remove($project);
+    if ($project) {
+        // Supprimer le fichier PDF associé
+        $pdfFile = $this->getParameter('uploads_directory') . '/' . $project->getFichierPdf();
+        if ($project->getFichierPdf() && file_exists($pdfFile)) {
+            unlink($pdfFile);
         }
-    
+
+        // Supprimer l'image associée
+        $imageFile = $this->getParameter('project_images_directory') . '/' . $project->getImage();
+        if ($project->getImage() && file_exists($imageFile)) {
+            unlink($imageFile);
+        }
+
+        // Supprimer le projet de la base de données
+        $entityManager->remove($project);
         $entityManager->flush();
-        $this->addFlash('danger', '🗑️ All projects deleted successfully.');
-    
-        return $this->redirectToRoute('app_project_index');
+
+        $this->addFlash('danger', '🗑️ Project deleted successfully.');
     }
-    
+
+    return $this->redirectToRoute('app_project_index');
+}
+
+#[Route('/delete-all', name: 'app_project_delete_all', methods: ['POST'])]
+public function deleteAll(EntityManagerInterface $entityManager): Response
+{
+    $projects = $entityManager->getRepository(Project::class)->findAll();
+
+    foreach ($projects as $project) {
+        // Supprimer le fichier PDF associé
+        $pdfFile = $this->getParameter('uploads_directory') . '/' . $project->getFichierPdf();
+        if ($project->getFichierPdf() && file_exists($pdfFile)) {
+            unlink($pdfFile);
+        }
+
+        // Supprimer l'image associée
+        $imageFile = $this->getParameter('project_images_directory') . '/' . $project->getImage();
+        if ($project->getImage() && file_exists($imageFile)) {
+            unlink($imageFile);
+        }
+
+        // Supprimer le projet de la base de données
+        $entityManager->remove($project);
+    }
+
+    $entityManager->flush();
+    $this->addFlash('danger', '🗑️ All projects deleted successfully.');
+
+    return $this->redirectToRoute('app_project_index');
+}
+#[Route('/projects', name: 'app_project_front', methods: ['GET'])]
+public function front(ProjectRepository $projectRepository, Request $request): Response
+{
+    $projects = $projectRepository->findAll();
+
+    return $this->render('front/project/index.html.twig', [
+        'projects' => $projects,
+    ]);
+}
+
+
+
 }

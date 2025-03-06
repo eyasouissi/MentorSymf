@@ -4,6 +4,8 @@ namespace App\Form;
 
 use App\Entity\Project;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType; 
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
@@ -21,44 +23,40 @@ class ProjectType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+        ->add('image', FileType::class, [
+            'label' => 'Project Image',
+            'required' => false,
+            'mapped' => false, // Do not map to the entity directly
+            'attr' => [
+                'accept' => 'image/*', // Only allow image files
+            ]
+        
+        ])
             ->add('titre', TextType::class, [
-                'constraints' => [new NotBlank(['message' => 'Title cannot be empty'])],
-            ])
-            ->add('description_project', TextareaType::class, [
-                'attr' => ['class' => 'editor'],
-                'constraints' => [
-                    new Length([
-                        'min' => 20,
-                        'minMessage' => 'Description must contain atleast 20 character',
-                    ]),
-                ],
-            ])
-            ->add('difficulte', ChoiceType::class, [
-                'choices' => [
-                    'Facile' => 'facile',
-                    'Moyen' => 'moyen',
-                    'Difficile' => 'difficile',
-                ],
-                'expanded' => true,
-                'multiple' => false,
-                'label' => 'Difficulty',
-            ])
-            ->add('date_limite', DateTimeType::class, [
-                'widget' => 'single_text',
-                'attr' => ['min' => (new \DateTime())->format('Y-m-d\TH:i')],
-            ])
-            ->add('fichier_pdf', FileType::class, [
-                'label' => 'Upload a PDF file',
-                'mapped' => true,  
-                'required' => true,
-                'constraints' => [
-                    new File([
-                        'maxSize' => '5M',
-                        'mimeTypes' => ['application/pdf'],
-                        'mimeTypesMessage' => 'Please upload a valid PDF file',
-                    ])
-                ],
-            ]);
+                'label' => 'Title '],)
+
+            ->add('description_project', TextType::class, [
+                'label' => 'Project description '],)
+                ->add('fichier_pdf', FileType::class, [
+                    'label' => 'Upload a PDF file ',
+                    'mapped' => true,
+                    'required' => true,
+                    'constraints' => [
+                        new File([
+                            'maxSize' => '5M',
+                            'mimeTypes' => ['application/pdf'],
+                        ])
+                    ],
+                ])
+                ->add('difficulte', IntegerType::class, [
+                    'required' => false, 
+                ])
+                ->add('date_limite', DateTimeType::class, [
+                    'label' => 'Limit date',
+                    'widget' => 'single_text',
+                    'attr' => ['min' => (new \DateTime())->format('Y-m-d\TH:i')],
+                ])
+                ;
             
     }
 

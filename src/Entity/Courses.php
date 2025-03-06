@@ -5,7 +5,6 @@ namespace App\Entity;
 use App\Repository\CoursesRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -56,10 +55,87 @@ class Courses
     #[ORM\OneToMany(targetEntity: Level::class, mappedBy: 'course', cascade: ['remove'])]
     private Collection $levels;
 
+      /**
+     * @var Collection<int, Rating>
+     */
+    #[ORM\OneToMany(targetEntity: Rating::class, mappedBy: 'course', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    private Collection $ratings;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $isPremium = false;
+    
+    #[ORM\Column(length: 255, nullable: true)]
+private ?string $tutorName = null;
+
+public function getTutorName(): ?string
+{
+    return $this->tutorName;
+}
+
+public function setTutorName(?string $tutorName): self
+{
+    $this->tutorName = $tutorName;
+    return $this;
+}
+
+
+        // ⚡ Ajoute cette méthode pour calculer la moyenne des ratings
+        public function getAverageRating(): float
+        {
+            if ($this->ratings->isEmpty()) {
+                return 0; // Aucun avis, retourne 0
+            }
+    
+            $total = 0;
+            foreach ($this->ratings as $rating) {
+                $total += $rating->getRating(); // Utilise la méthode getRating() de l'entité Rating
+            }
+    
+            return $total / count($this->ratings);
+        }
+    public function isPremium(): bool
+    {
+        return $this->isPremium;
+    }
+    
+    public function setIsPremium(bool $isPremium): static
+    {
+        $this->isPremium = $isPremium;
+        return $this;
+    }
+    
+    /**
+     * @return Collection<int, Rating>
+     */
+    public function getRatings(): Collection
+    {
+        return $this->ratings;
+    }
+
+    public function addRating(Rating $rating): self
+    {
+        if (!$this->ratings->contains($rating)) {
+            $this->ratings[] = $rating;
+            $rating->setCourse($this);
+        }
+        return $this;
+    }
+
+    public function removeRating(Rating $rating): self
+    {
+        if ($this->ratings->removeElement($rating)) {
+            if ($rating->getCourse() === $this) {
+                $rating->setCourse(null);
+            }
+        }
+        return $this;
+    }
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable(); // Initialise createdAt à l'instanciation
         $this->levels = new ArrayCollection();
+        $this->ratings = new ArrayCollection();
+
     }
 
     public function getId(): ?int

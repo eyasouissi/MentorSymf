@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Entity;
 
 use App\Repository\ProjectRepository;
@@ -18,40 +17,68 @@ class Project
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "Le titre ne peut pas être vide.")]
+    #[Assert\NotBlank(message: "Title cannot be empty !")]
     private ?string $titre = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Assert\NotBlank(message: "La description ne peut pas être vide.")]
+    #[Assert\NotBlank(message: "Description cannot be empty !")]
     #[Assert\Length(
-        min: 20,
-        minMessage: "La description doit contenir au moins 20 caractères."
+        min: 5,
+        minMessage: "Description must contain at least 5 characters !"
     )]
     private ?string $description_project = null;
+
+    #[ORM\Column(type: "string", nullable: true)]
+    #[Assert\NotBlank(message: "Please select a PDF file ")]
+    private ?string $fichier_pdf = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $date_creation_project = null;
 
     #[ORM\Column(type: "string", length: 255)]
-    #[Assert\NotBlank(message: "Vous devez sélectionner un niveau de difficulté.")]
+    #[Assert\NotBlank(message: "Select one of these choices !")]
     private ?string $difficulte = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Assert\GreaterThanOrEqual("today", message: "La date limite doit être aujourd'hui ou plus tard.")]
+    #[Assert\GreaterThanOrEqual("today", message: "Please enter a valid date !")]
+    #[Assert\NotBlank(message: "Select one of these choices !")]
     private ?\DateTimeInterface $date_limite = null;
 
-    #[ORM\Column(type: "string", nullable: true)]
-    #[Assert\NotBlank(message: "Un fichier PDF est requis.")]
-    private ?string $fichier_pdf = null;
+    #[ORM\Column(type: "string", length: 255, nullable: true)]
+    private ?string $image = null;
 
-    // 🛠️ 🔥 Relation ManyToMany avec Groupe
-    #[ORM\ManyToMany(targetEntity: Groupe::class, inversedBy: "projects")]
-    #[ORM\JoinTable(name: "project_groupe")] // Updated the table name
-    private Collection $groups;
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+        return $this;
+    }
+    // Relation ManyToOne avec GroupStudent
+    /**
+     * @ORM\ManyToOne(targetEntity=GroupStudent::class, inversedBy="projects")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $group;
+
+    public function getGroup(): ?GroupStudent
+    {
+        return $this->group;
+    }
+
+    public function setGroup(?GroupStudent $group): self
+    {
+        $this->group = $group;
+
+        return $this;
+    }
+   
 
     public function __construct()
     {
-        $this->groups = new ArrayCollection();
         $this->date_creation_project = new \DateTime();
     }
 
@@ -123,35 +150,6 @@ class Project
     public function setFichierPdf(?string $fichier_pdf): self
     {
         $this->fichier_pdf = $fichier_pdf;
-        return $this;
-    }
-
-    // 🛠️ 🔥 Gestion des relations ManyToMany avec Groupe
-
-    /**
-     * @return Collection<int, Groupe>
-     */
-    public function getGroups(): Collection
-    {
-        return $this->groups;
-    }
-
-    public function addGroup(Groupe $group): static
-    {
-        if (!$this->groups->contains($group)) {
-            $this->groups->add($group);
-            $group->addProject($this); // Synchronisation avec Groupe
-        }
-
-        return $this;
-    }
-
-    public function removeGroup(Groupe $group): static
-    {
-        if ($this->groups->removeElement($group)) {
-            $group->removeProject($this); // Synchronisation avec Groupe
-        }
-
         return $this;
     }
 }

@@ -43,4 +43,32 @@ class FileController extends AbstractController
 
         return $this->redirectToRoute('level_show', ['levelId' => $levelId]);
     }
+
+
+    // FileController.php
+    #[Route('/file/delete/{fileId}', name: 'delete_file', methods: ['POST'])]
+    public function deleteFile(int $fileId, EntityManagerInterface $em)
+    {
+        $file = $em->getRepository(File::class)->find($fileId);
+        if (!$file) {
+            throw $this->createNotFoundException('Fichier introuvable.');
+        }
+    
+        // Suppression du fichier sur le disque
+        $filesystem = new Filesystem();
+        $filePath = $this->getParameter('upload_directory') . DIRECTORY_SEPARATOR . $file->getFileName();
+        
+        if ($filesystem->exists($filePath)) {
+            $filesystem->remove($filePath);
+        }
+    
+        // Suppression du fichier dans la base de données
+        $em->remove($file);
+        $em->flush();
+    
+        // Redirection après suppression
+        // Assurez-vous de rediriger vers le bon paramètre "id"
+        return $this->redirectToRoute('course_details', ['id' => $file->getLevel()->getCourse()->getId()]);
+    }
+    
 }

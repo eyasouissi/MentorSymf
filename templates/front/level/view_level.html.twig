@@ -1,0 +1,313 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %} Visionner le Niveau - {{ level.name }} {% endblock %}
+
+{% block body %}
+    <div class="level-container">
+        <!-- Bouton "Retour" en forme de flèche (en haut à gauche) -->
+        <div class="back-button-container">
+            <button onclick="window.location.href='{{ path('course_details', { id: level.course.id }) }}'" class="back-button">
+                <i class="bi bi-arrow-left"></i>
+            </button>
+        </div>
+
+        <h2 class="level-title">{{ level.name }}</h2>
+
+        {% if level.files|length == 0 %}
+            <p class="text-danger no-files-message">Level not available. No documents associated with this level.</p>
+        {% else %}
+            <!-- Bouton pour télécharger tous les fichiers en ZIP -->
+            {% if level.files is not empty %}
+                <div class="download-all-container">
+                    <a href="{{ path('download_all_files', {'id': level.id}) }}" class="btn btn-custom download-all-btn">
+                        <i class="bi bi-download"></i> Download(ZIP)
+                    </a>
+                </div>
+            {% endif %}
+
+            <!-- Tableau pour afficher les fichiers -->
+            <div class="files-table-container">
+                <table class="table table-bordered files-table">
+                    <thead>
+                        <tr>
+                            <th>File name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for file in level.files %}
+                            <tr>
+                                <td>{{ file.fileName }}</td>
+                                <td>
+                                    <div class="eye-icon" onclick="toggleDocument(this, '{{ asset('uploads/Diplomas/' ~ file.fileName) }}')">
+                                        <i class="bi bi-eye-slash-fill eye-closed"></i>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Affichage du document en plein écran -->
+            <div class="document-container">
+                <iframe id="level-document" width="100%" height="100%" style="border: none;"></iframe>
+            </div>
+
+            <!-- Bouton "Terminer" -->
+            <button id="finish-btn" class="btn-custom finish-button">
+                <i class="bi bi-check-circle"></i> Finish
+            </button>
+        {% endif %}
+    </div>
+
+    <!-- Inclure SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let finishButton = document.getElementById('finish-btn');
+        finishButton.disabled = false;
+
+        finishButton.addEventListener('click', function () {
+            fetch("{{ path('complete_level', { id: level.id }) }}", { method: "POST" })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Utiliser SweetAlert au lieu de alert
+                        Swal.fire({
+                            title: "Bravo !",
+                            text: "You have successfully completed this level🎉 !",
+                            icon: "success",
+                            confirmButtonText: "OK",
+                            customClass: {
+                                confirmButton: "swal2-confirm",
+                            },
+                        }).then(() => {
+                            // Rediriger vers la page du cours après avoir cliqué sur "OK"
+                            window.location.href = "{{ path('course_details', { id: level.course.id }) }}";
+                        });
+                    } else {
+                        // Afficher une erreur avec SweetAlert
+                        Swal.fire({
+                            title: "Erreur",
+                            text: data.error,
+                            icon: "error",
+                            confirmButtonText: "OK",
+                            customClass: {
+                                confirmButton: "swal2-confirm",
+                            },
+                        });
+                    }
+                })
+                .catch(error => {
+                    // Afficher une erreur de communication avec SweetAlert
+                    Swal.fire({
+                        title: "Erreur",
+                        text: "Une erreur de communication s'est produite : " + error,
+                        icon: "error",
+                        confirmButtonText: "OK",
+                        customClass: {
+                            confirmButton: "swal2-confirm",
+                        },
+                    });
+                });
+        });
+    });
+
+    // Fonction pour ouvrir/fermer le document et basculer l'œil
+    function toggleDocument(element, fileUrl) {
+        const eye = element.querySelector('i');
+        const iframe = document.getElementById('level-document');
+
+        if (eye.classList.contains('bi-eye-slash-fill')) {
+            // Ouvrir le document et ouvrir l'œil
+            iframe.src = fileUrl;
+            eye.classList.remove('bi-eye-slash-fill', 'eye-closed');
+            eye.classList.add('bi-eye-fill', 'eye-open');
+        } else {
+            // Fermer le document et fermer l'œil
+            iframe.src = ''; // Vider l'iframe
+            eye.classList.remove('bi-eye-fill', 'eye-open');
+            eye.classList.add('bi-eye-slash-fill', 'eye-closed');
+        }
+    }
+    </script>
+
+    <style>
+        /* Conteneur principal */
+        .level-container {
+            text-align: center;
+            padding: 40px 20px;
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 1200px;
+            margin: 40px auto;
+            position: relative;
+        }
+
+        /* Titre du niveau */
+        .level-title {
+            font-size: 2.5rem;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        /* Message lorsqu'aucun fichier n'est disponible */
+        .no-files-message {
+            font-size: 1.2rem;
+            color: #dc3545;
+            margin-top: 20px;
+        }
+
+        /* Conteneur du bouton de téléchargement */
+        .download-all-container {
+            margin-bottom: 30px;
+        }
+
+        /* Bouton personnalisé pour la couleur #CDB2DA */
+        .btn-custom {
+            background: linear-gradient(to right, #96bdc4, #df89cb);
+            border: none;
+            color: white; /* Couleur du texte */
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            background-color: #b89fc7; /* Une teinte légèrement plus foncée au survol */
+        }
+
+        /* Tableau des fichiers */
+        .files-table-container {
+            margin: 20px auto;
+            width: 90%;
+            overflow-x: auto;
+        }
+
+        .files-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .files-table th,
+        .files-table td {
+            padding: 15px;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .files-table th {
+            background-color:rgba(106, 178, 255, 0.53);
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .files-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .files-table tr:hover {
+            background-color: #e9ecef;
+        }
+
+        /* Icône de l'œil */
+        .eye-icon {
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: inline-block;
+            transition: transform 0.3s ease, color 0.3s ease;
+        }
+
+        .eye-icon:hover {
+            transform: scale(1.1); /* Effet de zoom au survol */
+        }
+
+        .eye-open {
+            color: green;
+        }
+
+        .eye-closed {
+            color: red;
+        }
+
+        /* Conteneur du document */
+        .document-container {
+            margin-top: 30px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            height: 80vh; /* Ajustez la hauteur selon vos besoins */
+        }
+
+        /* Bouton "Terminer" */
+        .finish-button {
+            margin-top: 30px;
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .finish-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Conteneur du bouton "Retour" */
+        .back-button-container {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        /* Bouton "Retour" en forme de flèche (sans couleur de fond) */
+        .back-button {
+            padding: 0;
+            font-size: 1.5rem;
+            background: none;
+            border: none;
+            color: #333; /* Couleur de la flèche */
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .back-button:hover {
+            color: #000; /* Couleur plus foncée au survol */
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .level-container {
+                padding: 20px 10px;
+            }
+
+            .level-title {
+                font-size: 2rem;
+            }
+
+            .files-table th,
+            .files-table td {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
+
+            .download-all-btn,
+            .finish-button {
+                font-size: 1rem;
+                padding: 8px 16px;
+            }
+
+            .back-button {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+{% endblock %}

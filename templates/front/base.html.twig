@@ -25,6 +25,7 @@
     <link href="{{asset('assets/vendor/glightbox/css/glightbox.min.css')}}" rel="stylesheet">
     <link href="{{asset('assets/vendor/swiper/swiper-bundle.min.css')}}" rel="stylesheet">
 
+
     <!-- Main CSS File -->
     <link href="{{asset('assets/css/main.css')}}" rel="stylesheet">
        <style>
@@ -595,12 +596,12 @@
             </nav>
 
          {% if app.user %}
-    <div class="profile-dropdown">
-    <div class="notification-bell" onclick="toggleNotifications()">
-        <svg class="bell-icon" viewBox="0 0 24 24" width="24" height="24">
-            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
-        </svg>
-        <span class="notification-count">0</span>
+              <div class="profile-dropdown">
+               <div class="notification-bell" onclick="toggleNotifications()">
+                     <svg class="bell-icon" viewBox="0 0 24 24" width="24" height="24">
+                     <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+                           </svg>
+             <span class="notification-count">0</span>
     </div>
 
    
@@ -1184,6 +1185,7 @@ function timeAgo(timestamp) {
     }
     return `${Math.floor(seconds)} second${seconds !== 1 ? 's' : ''} ago`;
 }
+
 
 </script>
 {% endblock %}

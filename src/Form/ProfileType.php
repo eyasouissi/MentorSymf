@@ -19,7 +19,7 @@ class ProfileType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'Nom',
+                'label' => 'Name',
                 'attr' => ['class' => 'form-control']
             ])
             ->add('email', EmailType::class, [
@@ -32,7 +32,7 @@ class ProfileType extends AbstractType
                 'attr' => ['class' => 'form-control']
             ])
             ->add('pfp', FileType::class, [
-                'label' => 'Photo de profil',
+                'label' => 'Profile picture',
                 'mapped' => false, 
                 'required' => false,
                 'constraints' => [
@@ -44,17 +44,22 @@ class ProfileType extends AbstractType
                 ],
                 'attr' => ['class' => 'form-control']
             ]);
-
+            $builder->add('bg', FileType::class, [
+                'label' => 'background picture',
+                'required' => false,  // Background image is optional
+                'mapped' => false,    // No entity mapping needed
+                'attr' => ['class' => 'form-control'],
+            ]);
         // Tutor-specific fields
         if ($options['userType'] === 'tutor') {
             $builder
                 ->add('speciality', TextType::class, [
-                    'label' => 'Spécialité',
+                    'label' => 'Speciality',
                     'required' => false,
                     'attr' => ['class' => 'form-control']
                 ])
                 ->add('diplome', FileType::class, [
-                    'label' => 'Diplôme (PDF ou Word)',
+                    'label' => 'Diploma (PDF ou Word)',
                     'mapped' => false,
                     'required' => false,
                     'constraints' => [

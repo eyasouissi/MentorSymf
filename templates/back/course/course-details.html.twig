@@ -10,6 +10,14 @@
         <h2>{{ course.title }}</h2>
         <p><strong>Category:</strong> {{ course.category.name }}</p>
         <p><strong>Created At:</strong> {{ course.createdAt|date('d/m/Y') }}</p>
+        
+        <!-- Affichage du statut Premium -->
+        <p>
+            <strong>Status:</strong> 
+            <span class="badge {% if course.isPremium %}badge-danger{% else %}badge-success{% endif %}">
+                {{ course.isPremium ? 'Premium' : 'Standard' }}
+            </span>
+        </p>
 
         <h3 class="mt-4">Levels</h3>
         <ul class="list-group">

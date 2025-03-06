@@ -19,6 +19,7 @@ class ResetPasswordType extends AbstractType
             'second_options' => ['label' => 'Confirm New Password'],
             'invalid_message' => 'The password fields must match.',
         ]);
+
     }
 
     public function configureOptions(OptionsResolver $resolver)

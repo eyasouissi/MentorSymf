@@ -8,6 +8,7 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
+use Doctrine\DBAL\Connection;
 
 /**
  * @extends ServiceEntityRepository<User>
@@ -33,28 +34,29 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-    //    /**
-    //     * @return User[] Returns an array of User objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('u.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Find users with a specific role.
+     * @return array
+     */
+    // In UserRepository.php
 
-    //    public function findOneBySomeField($value): ?User
-    //    {
-    //        return $this->createQueryBuilder('u')
-    //            ->andWhere('u.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+    public function findByRoleStudent(): \Doctrine\ORM\QueryBuilder
+{
+    return $this->createQueryBuilder('u')
+        ->where('u.roles LIKE :role')
+        ->setParameter('role', '%"ROLE_STUDENT"%')  // Check if the roles array contains 'ROLE_STUDENT'
+        ->orderBy('u.name', 'ASC');  // Optionally, add ordering
+}
+
+
+
+    // Example for fetching a single user by ID (commented out for reference)
+    // public function findOneById($id): ?User
+    // {
+    //     return $this->createQueryBuilder('u')
+    //         ->andWhere('u.id = :id')
+    //         ->setParameter('id', $id)
+    //         ->getQuery()
+    //         ->getOneOrNullResult();
+    // }
 }

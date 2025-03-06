@@ -19,11 +19,11 @@ class CategoryType extends AbstractType
     {
         $builder
         ->add('name', TextType::class, [
-            'label' => 'Nom de la catégorie',
+            'label' => 'Category Name',
             'attr' => ['class' => 'form-control'],
             'constraints' => [
                 new Assert\NotBlank([
-                    'message' => 'Le nom de la catégorie est obligatoire.',
+                    'message' => 'Category name is obligatory.',
                 ]),
                 new Assert\Length([
                     'min' => 3,
@@ -40,7 +40,7 @@ class CategoryType extends AbstractType
             'required' => false,
         ])
         ->add('created_at', DateTimeType::class, [
-            'label' => 'Date de création',
+            'label' => 'Creation Date',
             'widget' => 'single_text',
             'attr' => ['class' => 'form-control'],
             'disabled' => true,  // Empêche la modification
@@ -53,7 +53,7 @@ class CategoryType extends AbstractType
         ])
         
         ->add('icon', FileType::class, [
-            'label' => 'Icône ou Vidéo (fichier image ou vidéo)',
+            'label' => 'Icône or Vidéo (file image ou vidéo)',
             'required' => false,
             'attr' => ['class' => 'form-control'],
             'mapped' => false,  // Important si tu ne veux pas que ce champ soit directement lié à l'entité

@@ -16,5 +16,6 @@ return [
     Knp\Bundle\PaginatorBundle\KnpPaginatorBundle::class => ['all' => true],
     // Add FOSCKEditorBundle
     FOS\CKEditorBundle\FOSCKEditorBundle::class => ['all' => true],
+    KnpU\OAuth2ClientBundle\KnpUOAuth2ClientBundle::class => ['all' => true],
     
 ];

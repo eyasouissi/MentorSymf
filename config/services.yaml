@@ -9,6 +9,9 @@ parameters:
     photos_directory: '%kernel.project_dir%/public/uploads/photos'
     uploads_directory: '%kernel.project_dir%/public/uploads/projet'
     comment_images_directory: '%kernel.project_dir%/public/uploads/comments'
+    bg_upload_directory: '%kernel.project_dir%/public/uploads/bg'
+    groupimage_directory: '%kernel.project_dir%/public/uploads/groupPics'
+    project_images_directory: '%kernel.project_dir%/public/uploads/project_images'
     prohibited_terms:
         - 'badword1'
         - 'badword2'
@@ -48,9 +51,12 @@ services:
         autoconfigure: true
         public: true
 
-    App\Controller\SecurityController:
-        autowire: true
-        autoconfigure: true
+    App\Controller\User\SecurityController:
+        arguments:
+            $tokenStorage: '@security.token_storage'
+            $entityManager: '@doctrine.orm.entity_manager'
+            $eventDispatcher: '@event_dispatcher'
+            $logger: '@logger'
         public: true
     
     App\Repository\CommentRepository:

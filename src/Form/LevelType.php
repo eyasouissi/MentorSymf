@@ -17,13 +17,13 @@ class LevelType extends AbstractType
         $builder
             // Champ pour le nom du niveau
             ->add('name', TextType::class, [
-                'label' => 'Nom du Niveau',
+                'label' => 'Level Name',
                 'attr' => ['class' => 'form-control']
             ])
             
             // Champ pour les fichiers
             ->add('files', FileType::class, [
-                'label' => 'Fichiers',
+                'label' => 'Files',
                 'multiple' => true, // Permet de sélectionner plusieurs fichiers
                 'mapped' => false,  // Lier à une entité séparée pour les fichiers
                 'attr' => ['class' => 'form-control', 'multiple' => 'multiple'],

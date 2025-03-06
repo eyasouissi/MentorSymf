@@ -1,83 +1,311 @@
-
-{% block stylesheet %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login and Registration</title>
     <link rel="stylesheet" href="{{ asset('user/stylelogin.css') }}">
-{% endblock %}
+    <style>
+        /* Custom CSS for Richard Captcha */
+        #richard-captcha-container {
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Space between Richard image and input field */
+        }
 
-{% block body %}
-<div class="container" id="container">
-    <div class="form-container sign-up">
-        <div class="glassmorphism-form">
-            <h1>Register</h1>
-            <p>Please choose your registration type:</p>
-            <div class="register-options">
-                <a href="{{ path('student_register') }}" class="btn">Register as Student</a>
-                <a href="{{ path('tutor_register') }}" class="btn">Register as Tutor</a>
-            </div>
-            <div class="login-link">
-                <p>Already have an account? <a href="{{ path('login') }}">Login</a></p>
-            </div>
-        </div>
-    </div>
+        #richard-image {
+            width: 80px; /* Adjust size as needed */
+            display: none; /* Hidden by default */
+        }
 
-    <!-- Login Form Section -->
-    <div class="form-container sign-in">
-        <form method="post" action="{{ path('login') }}">
-            {% if error %}
-                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-            {% endif %}
-            <h1>Login With</h1>
+        #captcha-checkbox {
+            cursor: pointer;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
 
-            <hr>
-            <span>Login With Your Email & Password</span>
-            <input type="email" name="email" value="{{ last_username }}" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Password" required>
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-            <div class="forget">
-                <label>
-                    <input type="checkbox" name="_remember_me"> Remember me
-                </label>
-            </div>
-            <button type="submit">Login</button>
-            <div class="forgot-password">
-                <p><a href="{{ path('forgot_password') }}">Forgot your password?</a></p>
-            </div>
-        </form>
-    </div>
+        #captcha-input {
+            display: none;
+            margin-top: 10px;
+        }
 
-    <div class="toggle-container">
-        <div class="toggle">
-            <div class="toggle-panel toggle-left">
-                <h1>Welcome Back!</h1>
-                <p>Provide your personal details to use all features</p>
-                <button class="hidden" id="login">Sign In</button>
-            </div>
-            <div class="toggle-panel toggle-right">
-                <h1>Hello</h1>
-                <p>Register to use all features in our site</p>
-                <button class="hidden" id="register">Sign Up</button>
-            </div>
-        </div>
-    </div>
+        #compliment {
+            width: 100%;
+            padding: 10px;
+        }
+
+        #richard-response {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .forget {
+            margin-top: 10px;
+        }
+
+        .forgot-password {
+            margin-top: 1px;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="container" id="container">
+        <!-- Registration Form -->
+        <div class="form-container sign-up">
+            <div class="glassmorphism-form">
+                <h1>Register</h1>
+                <p>Please choose your registration type:</p>
+                <div class="register-options">
+                    <a href="{{ path('student_register') }}" class="btn">Register as Student</a>
+                    <a href="{{ path('tutor_register') }}" class="btn">Register as Tutor</a>
+                </div>
+                <div class="login-link">
+                    <p>Already have an account? <a href="{{ path('login') }}">Login</a></p>
+                   
+                </div>
+                 <div style="text-align: center; margin-top: 50px;">
+                <a href="{{ path('connect_google') }}" style="color: black; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-flex; align-items: center; border: 1px solid #ccc; background-color: white;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 100 100" style="margin-right: 10px;">
+                    <path fill="#f9e65c" d="M84.467,44H50v13h20.856C67.931,65.717,59.702,72,50,72c-12.15,0-22-9.85-22-22s9.85-22,22-22 c4.799,0,9.235,1.541,12.851,4.149l9.269-9.269C66.091,17.956,58.391,15,50,15c-19.33,0-35,15.67-35,35s15.67,35,35,35 s35-15.67,35-35C85,47.952,84.806,45.951,84.467,44z"></path>
+                    <path fill="#78a2d2" d="M50,57h20.856c-1.577,4.699-4.704,8.679-8.763,11.36l9.87,8.884C79.911,70.828,85,61.01,85,50 c0-2.048-0.194-4.049-0.533-6H50V57z"></path>
+                    <path fill="#60be92" d="M62.093,68.36C58.622,70.653,54.472,72,50,72c-8.997,0-16.727-5.403-20.137-13.139L18.818,65.89 C24.609,77.23,36.393,85,50,85c8.32,0,15.957-2.908,21.963-7.756L62.093,68.36z"></path>
+                    <path fill="#f15b6c" d="M29.677,41.569C32.985,33.603,40.837,28,50,28c4.799,0,9.235,1.541,12.851,4.149l9.269-9.269 C66.091,17.956,58.391,15,50,15c-13.772,0-25.681,7.958-31.394,19.524L29.677,41.569z"></path>
+                    </svg>
+                    Login with Google
+                </a>
 </div>
 
-{% block js %}
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const container = document.getElementById('container');
-        const registerBtn = document.getElementById('register');
-        const loginBtn = document.getElementById('login');
+                
+            </div>
+        </div>
 
-        if (registerBtn && loginBtn && container) {
-            registerBtn.addEventListener('click', () => {
-                container.classList.add("right-panel-active");
+       <!-- Login Form -->
+        <div class="form-container sign-in">
+            <form method="post" action="{{ path('login') }}" id="login-form" novalidate>
+               {% if error %}
+          <div class="alert alert-danger">
+        {% if error %}
+                    <div class="alert alert-danger">
+                        {% if error.messageKey == 'User is restricted.' %}
+                            Your account has been restricted. Please contact the administrator.
+                        {% else %}
+                            {{ error.messageKey|trans(error.messageData, 'security') }}
+                        {% endif %}
+    </div>
+
+        {% endif %}
+  
+                    </div>
+                {% endif %}
+                <h1>Login With</h1>
+                <hr>
+                <span>Login With Your Email & Password</span>
+
+                <div style="display: flex; flex-direction: column; gap: 10px; width: 100%; max-width: 300px;">
+                    <input type="email" name="email" value="{{ last_username }}" placeholder="Email" style="width: 100%; padding: 10px;">
+
+                    <div style="position: relative; width: 100%;">
+                        <input type="password" id="password" name="password" placeholder="Password" style="width: 100%; padding: 10px; padding-right: 40px;">
+                        <span onclick="togglePassword()" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer;">
+                            <svg id="eyeClosed" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-closed">
+                                <path d="m15 18-.722-3.25"/>
+                                <path d="M2 8a10.645 10.645 0 0 0 20 0"/>
+                                <path d="m20 15-1.726-2.05"/>
+                                <path d="m4 15 1.726-2.05"/>
+                                <path d="m9 18 .722-3.25"/>
+                            </svg>
+                            <svg id="eyeOpen" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye" style="display: none;">
+                                <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Richard Captcha Section -->
+                <div id="richard-captcha" style="margin-top: 20px;">
+                    <div id="captcha-checkbox">
+                        <span>I'm not a robot</span>
+                    </div>
+                    <div id="captcha-input">
+                        <div id="richard-captcha-container">
+                            <!-- Richard image -->
+                            <img id="richard-image" src="" alt="Richard">
+                            <!-- Compliment input -->
+                            <input type="text" id="compliment" placeholder="Compliment Richard...">
+                        </div>
+                        <p id="richard-response"></p>
+                        <!-- Hint for allowed compliments -->
+                        <p style="font-size: 12px; color: #888; margin-top: 5px;">
+                            Examples: "Richard is smart", "You look nice", "You are cute", "You are funny", "You are lovely"
+                        </p>
+                    </div>
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <div class="forget">
+                    <label>
+                        <input type="checkbox" name="_remember_me"> Remember me
+                    </label>
+                </div>
+                <button type="submit" id="login-button" style="display: none;">Login</button>
+                <div class="forgot-password">
+                    <p><a href="{{ path('forgot_password') }}">Forgot your password?</a></p>
+                </div>
+            </form>
+        </div>
+
+        <!-- Toggle Container -->
+        <div class="toggle-container">
+            <div class="toggle">
+                <div class="toggle-panel toggle-left">
+                    <h1>Welcome Back!</h1>
+                    <p>Provide your personal details to use all features</p>
+                    <button class="hidden" id="login">Sign In</button>
+                </div>
+                <div class="toggle-panel toggle-right">
+                    <h1>Hello</h1>
+                    <p>Register to use all features in our site</p>
+                    <button class="hidden" id="register">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const container = document.getElementById('container');
+            const registerBtn = document.getElementById('register');
+            const loginBtn = document.getElementById('login');
+
+            if (registerBtn && loginBtn && container) {
+                registerBtn.addEventListener('click', () => {
+                    container.classList.add("right-panel-active");
+                });
+
+                loginBtn.addEventListener('click', () => {
+                    container.classList.remove("right-panel-active");
+                });
+            }
+
+            // Richard Captcha Logic
+            const captchaCheckbox = document.getElementById('captcha-checkbox');
+            const captchaInput = document.getElementById('captcha-input');
+            const complimentInput = document.getElementById('compliment');
+            const richardResponse = document.getElementById('richard-response');
+            const richardImage = document.getElementById('richard-image');
+            const loginButton = document.getElementById('login-button');
+            const loginForm = document.getElementById('login-form');
+
+            let isRichardImpressed = false; // Track whether Richard is impressed
+
+            // Add savage responses for insults
+            const savageResponses = [
+                "Excuse me? Try again, but with taste. 😌",
+                "Oh, you must be fun at parties. 🙄",
+                "Imagine failing a CAPTCHA test. Couldn't be me. 🤭",
+                "No verification for haters. Bye. 🚪👋",
+                "Talk to me nicely, or don’t talk at all. 💅",
+                "Error 404: Manners not found. 🛑"
+            ];
+
+            // Show bored Richard by default when CAPTCHA input is revealed
+            captchaCheckbox.addEventListener('click', () => {
+                captchaCheckbox.style.display = 'none';
+                captchaInput.style.display = 'block';
+                richardImage.style.display = 'block'; // Show Richard image
+                richardImage.src = '{{ asset('uploads/zesty_captcha/bored-richard.png') }}'; // Set default bored image
+                richardResponse.textContent = 'Richard is waiting for your compliment...'; // Default message
             });
 
-            loginBtn.addEventListener('click', () => {
-                container.classList.remove("right-panel-active");
+            complimentInput.addEventListener('input', () => {
+                const compliment = complimentInput.value.toLowerCase();
+
+                // List of allowed compliments for Richard's sassy verification system
+                const allowedCompliments = [
+                    'smart', 'brilliant', 'genius', 'intelligent',
+                    'nice', 'kind', 'sweet', 'charming', 'thoughtful',
+                    'cute', 'adorable', 'handsome', 'gorgeous', 'stunning',
+                    'funny', 'hilarious', 'witty', 'entertaining', 'charismatic',
+                    'lovely', 'amazing', 'awesome', 'fantastic', 'wonderful',
+                    'great', 'exceptional', 'legendary', 'the best', 'iconic',
+                    'radiant', 'majestic', 'superior', 'sexy','unmatched', 'phenomenal'
+                ];
+
+                // List of insults that will make Richard mad (and possibly roast you back)
+                const insults = [
+                    'stupid', 'bald', 'dumb', 'idiot', 'fool', 'useless',
+                    'ugly', 'trash', 'pathetic', 'basic', 'boring',
+                    'annoying', 'cringe', 'weak', 'lame', 'clown',
+                    'loser', 'irrelevant', 'fraud', 'mid', 'disappointment'
+                ];
+
+                // Check if the compliment is allowed
+                const isComplimentValid = allowedCompliments.some(phrase => compliment.includes(phrase));
+
+                // Check if the user insulted Richard
+                const isInsult = insults.some(insult => compliment.includes(insult));
+
+                if (isInsult) {
+                    // Richard gets mad if insulted
+                    const randomSassyResponse = savageResponses[Math.floor(Math.random() * savageResponses.length)];
+                    richardResponse.textContent = randomSassyResponse;
+                    richardImage.src = '{{ asset('uploads/zesty_captcha/angry-richard.png') }}';
+                    loginButton.style.display = 'none';
+                    isRichardImpressed = false;
+                } else if (isComplimentValid) {
+                    // Richard is impressed with the compliment
+                    richardResponse.textContent = '😊 Richard smiles. You may proceed.';
+                    richardImage.src = '{{ asset('uploads/zesty_captcha/smile-richard.png') }}';
+                    loginButton.style.display = 'block';
+                    isRichardImpressed = true;
+                } else {
+                    // Richard is not impressed
+                    richardResponse.textContent = 'Richard is not impressed. Try again.';
+                    richardImage.src = '{{ asset('uploads/zesty_captcha/bored-richard.png') }}';
+                    loginButton.style.display = 'none';
+                    isRichardImpressed = false;
+                }
             });
+
+            // Prevent form submission if Richard is not impressed
+            loginForm.addEventListener('submit', function (event) {
+                if (!isRichardImpressed) {
+                    event.preventDefault(); // Stop the form submission
+                    alert('You must impress Richard to log in!');
+                }
+            });
+        });
+
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const eyeOpen = document.getElementById('eyeOpen');
+            const eyeClosed = document.getElementById('eyeClosed');
+
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                eyeOpen.style.display = 'inline';
+                eyeClosed.style.display = 'none';
+            } else {
+                passwordField.type = "password";
+                eyeOpen.style.display = 'none';
+                eyeClosed.style.display = 'inline';
+
+            }
         }
-    });
-</script>
 
-{% endblock %}
-{% endblock %}
+  document.addEventListener("DOMContentLoaded", function () {
+        {% if error and error.messageKey == 'User  is restricted.' %}
+            alert('Your account has been restricted. Please contact the administrator.');
+        {% endif %}
+    });
+
+    </script>
+</body>
+</html>

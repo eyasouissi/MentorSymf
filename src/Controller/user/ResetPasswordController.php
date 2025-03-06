@@ -15,6 +15,7 @@ class ResetPasswordController extends AbstractController
 {
     #[Route('/reset-password/{token}', name: 'reset_password')]
     public function reset(
+     
     Request $request,
     EntityManagerInterface $entityManager,
     UserPasswordHasherInterface $passwordHasher,
@@ -22,18 +23,14 @@ class ResetPasswordController extends AbstractController
     ): Response {
     // Find the user by the reset token
     $user = $entityManager->getRepository(User::class)->findOneBy(['password_reset_token' => $token]);
+    dump($user->getPasswordResetToken(), $token);
 
     if (!$user) {
         $this->addFlash('error', 'Invalid or expired token.');
         return $this->redirectToRoute('login');
     }
 
-    // Optional: Check token expiration (1 hour)
-    $passwordResetRequestedAt = $user->getPasswordResetRequestedAt();
-    if ($passwordResetRequestedAt && $passwordResetRequestedAt->modify('+1 hour') < new \DateTimeImmutable()) {
-        $this->addFlash('error', 'Token has expired.');
-        return $this->redirectToRoute('login');
-    }
+   
 
     // Create and handle the reset password form
     $form = $this->createForm(ResetPasswordType::class);
@@ -64,3 +61,4 @@ class ResetPasswordController extends AbstractController
 }
 
 }
+

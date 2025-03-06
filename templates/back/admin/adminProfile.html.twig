@@ -1,0 +1,68 @@
+{% extends 'back/baseback.html.twig' %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
+{% endblock %}
+
+{% block body %}
+    <section class="h-100 gradient-custom-2">
+        <div class="container py-5 h-100">
+            <div class="row d-flex justify-content-center">
+                <div class="col col-lg-9 col-xl-8">
+                    <div class="card">
+                        <div class="rounded-top text-white d-flex flex-row" style="background-color: #000; height: 200px;
+                            background-image: url('{{ asset('uploads/bg/' ~ (user.bg is not null and user.bg != '' ? user.bg : 'default-bg.jpg')) }}');
+                            background-size: cover; background-position: center center; background-repeat: no-repeat;">
+                            <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
+                                <div class="d-flex flex-column" style="width: 150px; height: 150px;
+                                    background-image: url('{{ asset('uploads/pfp/' ~ (user.pfp is not null ? user.pfp : (user.gender == 'male' ? 'male.jpg' : 'female.jpg'))) }}');
+                                    background-size: cover; background-position: top left; background-repeat: no-repeat; border-radius: 50%;">
+                                </div>
+                            </div>
+                            <div class="ms-3 d-flex flex-column justify-content-center" style="margin-top: 25px;"></div>
+                        </div>
+
+                        <div class="ms-3" style="margin-top: 10px;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <h5 class="mb-0">{{ user.name }}</h5>
+                                    <a href="{{ path('admin_edit_profile') }}" class="text-body ms-3" style="z-index: 1;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round-pen">
+                                            <path d="M2 21a8 8 0 0 1 10.821-7.487"/>
+                                            <path d="M21.378 16.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/>
+                                            <circle cx="10" cy="8" r="5"/>
+                                        </svg>
+                                    </a>
+                                    <span style="font-weight: bold; color: red; margin-left: 5px;">ADMIN</span> <!-- Added ADMIN text -->
+                                </div>
+                                <div class="d-flex align-items-center" style="margin-right: 30px;">
+                                    <p class="small text-muted mb-0" style="margin-bottom: 0;">Age:</p>
+                                    <p class="mb-1 h5 ms-1" style="margin-bottom: 0;">{{ user.age }}</p>
+                                </div>
+                            </div>
+                            <p>{{ user.country }}</p>
+                            <p class="font-italic mb-1">Bio: {{ user.bio ? user.bio : 'No bio available' }}</p>
+                        </div>
+
+                        <div class="card-body p-4 text-black">
+                            <div class="mb-5 text-body">
+                                <p class="lead fw-normal mb-1">About</p>
+                                <div class="p-4 bg-body-tertiary">
+                                    <p class="font-italic mb-1">Speciality: {{ user.speciality ? user.speciality : 'No speciality available' }}</p>
+                                    <p class="font-italic mb-0">Diplôme: 
+                                        {% if user.diplome %}
+                                            <a href="{{ asset('uploads/pfp/' ~ user.diplome) }}" target="_blank">Voir le diplôme</a>
+                                        {% else %}
+                                            No diploma available
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

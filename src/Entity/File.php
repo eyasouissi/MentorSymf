@@ -64,4 +64,9 @@ class File
 
         return $this;
     }
+
+    public function getFilePath(): string
+    {
+        return '/uploads/images/' . $this->file_name;
+    }
 }

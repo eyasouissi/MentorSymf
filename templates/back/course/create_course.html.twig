@@ -54,6 +54,54 @@
             font-size: 12px;
             color: #888;
         }
+        
+        /* Toggle Switch Styles */
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .switch-label {
+            font-weight: bold;
+            color: #333;
+        }
+        .switch input {
+            display: none;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 25px;
+        }
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ddd;
+            transition: 0.3s;
+            border-radius: 25px;
+        }
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 2.5px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        input:checked + .switch-slider {
+            background-color: #e74c3c; /* Rouge pour Premium */
+        }
+        input:checked + .switch-slider:before {
+            transform: translateX(25px);
+        }
     </style>
 {% endblock %}
 
@@ -61,60 +109,32 @@
     <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
     <script src="{{ asset('assets/backAss/eya/jquery-simple-txt-counter.js') }}"></script>
 
-     <div class="az-content az-content-dashboard">
-    <div class="container">
-        <div class="az-content-body">
-            <!-- Dashboard Title -->
-            <div class="az-dashboard-one-title">
-                <div>
-                    <h2 class="az-dashboard-title">Hi, welcome back!</h2>
-                    <p class="az-dashboard-text">Your web analytics dashboard template.</p>
+    <div class="az-content az-content-dashboard">
+        <div class="container">
+            <div class="az-content-body">
+                <div class="az-dashboard-one-title">
+                    <div>
+                        <h2 class="az-dashboard-title">Hi, welcome back!</h2>
+                        <p class="az-dashboard-text">Your web analytics dashboard template.</p>
+                    </div>
+                    <div class="az-content-header-right">
+                        <a href="" class="btn btn-purple">Export</a>
+                    </div>
                 </div>
-                <div class="az-content-header-right">
-                    <div class="media">
-                        <div class="media-body">
-                            <label>Start Date</label>
-                            <h6>Oct 10, 2018</h6>
-                        </div><!-- media-body -->
-                    </div><!-- media -->
-                    <div class="media">
-                        <div class="media-body">
-                            <label>End Date</label>
-                            <h6>Oct 23, 2018</h6>
-                        </div><!-- media-body -->
-                    </div><!-- media -->
-                    <div class="media">
-                        <div class="media-body">
-                            <label>Event Category</label>
-                            <h6>All Categories</h6>
-                        </div><!-- media-body -->
-                    </div><!-- media -->
-                    <a href="" class="btn btn-purple">Export</a>
+
+                <div class="az-dashboard-nav"> 
+                    <nav class="nav">
+                        <a href="{{ path('CourseBack') }}" class="nav-link {% if app.request.attributes.get('_route') == 'CourseBack' %}active{% endif %}">Add Course</a>
+                        <a href="{{ path('admin_courses_list') }}" class="nav-link {% if app.request.attributes.get('_route') == 'admin_courses_list' %}active{% endif %}">View Courses</a>
+                         <a href="{{ path('courses_statistics') }}" class="nav-link {% if app.request.attributes.get('_route') == 'courses_statistics' %}active{% endif %}">Charts</a>
+                        <a class="nav-link" data-toggle="tab" href="#">More</a>
+                    </nav>
                 </div>
-            </div><!-- az-dashboard-one-title -->
-
-            <!-- Navigation Tabs -->
-            <div class="az-dashboard-nav"> 
-                <nav class="nav">
-                    <a href="{{ path('CourseBack') }}" class="nav-link {% if app.request.attributes.get('_route') == 'CourseBack' %}active{% endif %}">Add Course</a>
-                    <a href="{{ path('admin_courses_list') }}" class="nav-link {% if app.request.attributes.get('_route') == 'admin_courses_list' %}active{% endif %}">View Courses</a>
-                    <a class="nav-link" data-toggle="tab" href="#">charts</a>
-                    <a class="nav-link" data-toggle="tab" href="#">More</a>
-                </nav>
-
-                <nav class="nav">
-                    <a class="nav-link" href="#"><i class="far fa-save"></i> Save Report</a>
-                    <a class="nav-link" href="#"><i class="far fa-file-pdf"></i> Export to PDF</a>
-                    <a class="nav-link" href="#"><i class="far fa-envelope"></i> Send to Email</a>
-                    <a class="nav-link" href="#"><i class="fas fa-ellipsis-h"></i></a>
-                </nav>
-            </div>
 
                 <div class="form-container">
                     <h3>Course Information</h3>
 
                     {{ form_start(form, {'attr': {'novalidate': 'novalidate', 'class': 'form-horizontal'}}) }}
-
 
                     <div class="form-group">
                         {{ form_label(form.title, 'Course Title') }}
@@ -157,18 +177,25 @@
                         </div>
                     </div>
 
+                    <!-- Toggle Switch for Premium -->
+                    <div class="form-group toggle-switch">
+                        <label class="switch-label">Premium Course:</label>
+                        <label class="switch">
+                            {{ form_widget(form.isPremium, {'attr': {'class': 'switch-input'}}) }}
+                            <span class="switch-slider"></span>
+                        </label>
+                    </div>
+
                     <button type="submit" class="btn btn-primary">Create Course</button>
 
                     {{ form_end(form) }}
                 </div>
-
-            </div><!-- az-content-body -->
-        </div><!-- container -->
-    </div><!-- az-content -->
+            </div>
+        </div>
+    </div>
 
     <script>
         $(document).ready(function() {
-            // Apply text counter to description field
             $('#course_description').simpleTxtCounter({
                 maxLength: 255,
                 countText: 'Characters remaining',

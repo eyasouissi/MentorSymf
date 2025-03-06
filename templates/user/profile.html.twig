@@ -3,88 +3,302 @@
 {% block stylesheets %}
     {{ parent() }}
     <link rel="stylesheet" href="{{ asset('css/profile.css') }}">
+    <style>
+        /* Progress Bar Container */
+        #profile-progress {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* Progress Percentage Text */
+        #progress-percentage {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #4caf50;
+            transition: color 0.3s ease;
+        }
+
+        /* Progress Bar */
+        #progress-bar {
+            width: 100%;
+            height: 12px;
+            border-radius: 6px;
+            background: #e0e0e0;
+            overflow: hidden;
+            margin-top: 8px;
+            position: relative;
+        }
+
+        #progress-bar::-webkit-progress-bar {
+            background: #e0e0e0;
+            border-radius: 6px;
+        }
+
+        #progress-bar::-webkit-progress-value {
+            background: #4caf50;
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+
+        #progress-bar::-moz-progress-bar {
+            background: #4caf50;
+            border-radius: 6px;
+        }
+
+        /* Tooltip for Progress Bar */
+        #progress-bar::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: -25px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 0.9em;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 3px 8px;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #progress-bar:hover::after {
+            opacity: 1;
+        }
+
+        /* Loading Indicator */
+        #loading-indicator {
+            display: none;
+            font-size: 0.9em;
+            color: #ff9800;
+            margin-top: 5px;
+        }
+
+        #loading-indicator.visible {
+            display: inline-block;
+        }
+
+        /* Hidden class for badge and progress bar */
+        .hidden {
+            display: none;
+        }
+
+        /* Badge Styling */
+        #profile-badge {
+            width: 24px;
+            height: 24px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+    </style>
 {% endblock %}
 
 {% block body %}
 <section class="h-100 gradient-custom-2">
-  <div class="container py-5 h-100">
-    <div class="row d-flex justify-content-center">
-      <div class="col col-lg-9 col-xl-8">
-        <div class="card">
-          <div class="rounded-top text-white d-flex flex-row" style="background-color: #000; height:200px;">
-            <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
-              {# Display the user's profile picture, if it exists #}
-              <img src="{{ asset('uploads/pfp/' ~ user.pfp) }}" alt="Profile Picture" class="img-fluid img-thumbnail mt-4 mb-2" style="width: 150px; z-index: 1">
-<a href="{{ path('profile_edit') }}" class="btn btn-outline-dark text-body" data-mdb-ripple-init data-mdb-ripple-color="dark" style="z-index: 1;">
-    Edit profile
-</a>
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center">
+            <div class="col col-lg-9 col-xl-8">
+                <div class="card">
+                    <div class="rounded-top text-white d-flex flex-row" style="background-color: #000; height: 200px;
+                        background-image: url('{{ asset('uploads/bg/' ~ (user.bg is not null and user.bg != '' ? user.bg : 'default-bg.jpg')) }}');
+                        background-size: cover; background-position: center center; background-repeat: no-repeat;">
+                        
+                        <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
+                            {# Display the user's profile picture, if it exists #}
+                            <div class="d-flex flex-column" style="width: 150px; height: 150px; 
+                                background-image: url('{{ asset('uploads/pfp/' ~ (user.pfp is not null ? user.pfp : (user.gender == 'male' ? 'male.jpg' : 'female.jpg'))) }}');
+                                background-size: cover; background-position: top left; background-repeat: no-repeat; border-radius: 50%;">
+                            </div>
+                        </div>
+                        <div class="ms-3 d-flex flex-column justify-content-center" style="margin-top: 25px;">
+                            {# Add any additional information about the user here, if needed #}
+                        </div>
+                    </div>
 
+                    <div class="ms-3" style="margin-top: 10px;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <h5 class="mb-0">{{ user.name }}</h5>
+                                <a href="{{ path('profile_edit') }}" class="text-body ms-3" style="z-index: 1;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-round-pen">
+                                        <path d="M2 21a8 8 0 0 1 10.821-7.487"/>
+                                        <path d="M21.378 16.626a1 1 0 0 0-3.004-3.004l-4.01 4.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/>
+                                        <circle cx="10" cy="8" r="5"/>
+                                    </svg>
+                                </a>
+                                <!-- Badge Placement (Next to the Edit Icon) -->
+                                <svg id="profile-badge" style="display: none;" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="24" viewBox="0,0,256,256">
+                                    <g fill="none" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal">
+                                        <g transform="scale(5.33333,5.33333)">
+                                            <circle cx="24" cy="24" r="20" fill="#bc5ac7"></circle>
+                                            <path d="M22.491,30.69c-0.576,0 -1.152,-0.22 -1.591,-0.659l-6.083,-6.084c-0.879,-0.878 -0.879,-2.303 0,-3.182c0.878,-0.879 2.304,-0.879 3.182,0l6.083,6.084c0.879,0.878 0.879,2.303 0,3.182c-0.439,0.439 -1.015,0.659 -1.591,0.659z" fill="#ffffff"></path>
+                                            <path d="M22.491,30.69c-0.576,0 -1.152,-0.22 -1.591,-0.659c-0.879,-0.878 -0.879,-2.303 0,-3.182l9.539,-9.539c0.878,-0.879 2.304,-0.879 3.182,0c0.879,0.878 0.879,2.303 0,3.182l-9.539,9.539c-0.439,0.439 -1.015,0.659 -1.591,0.659z" fill="#ffffff"></path>
+                                        </g>
+                                    </g>
+                                </svg>
+                            </div>
+                        <div class="d-flex flex-column align-items-end" style="margin-right: 30px;">
+                        <div class="d-flex align-items-center">
+                            <p class="small text-muted mb-0" style="margin-bottom: 0;">Age:</p>
+                            <p class="mb-1 h5 ms-1" style="margin-bottom: 0;">{{ user.age }}</p>
+                        </div>
+                        <div class="karma-points mt-1">
+                            {% set karmaPoints = user.karmaPoints %}
+                            {% if karmaPoints > 0 %}
+                                <span class="small text-muted">Karma:</span>
+                                <span class="ms-1" id="karmaPoints">{{ karmaPoints }} ⭐</span> {# Affiche le nombre d'étoiles suivi d'une étoile #}
+                            {% else %}
+                                <span class="small text-muted">No karma points yet</span> {# Afficher un message si l'utilisateur n'a pas de karma points #}
+                            {% endif %}
+                        </div>
+                        </div>
+                    </div>
+                        <p>{{ user.country }}</p>
+                        <p class="font-italic mb-1">Bio: {{ user.bio ? user.bio : 'No bio available' }}</p>
+                    </div>
+                    {# Nouvelle section pour l'Achievement #}
+                    <div class="achievement-container" style="padding: 10px;">
+                        <h5 class="mb-0" style="font-weight: bold; font-size: 1.2rem;">Achievement: 
+                            <span id="achievementTitle" class="achievement-text" style="background: linear-gradient(to right, #96bdc4, #df89cb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold;">loading...</span>
+                        </h5>
+                    </div>
 
-            </div>
-            <div class="ms-3" style="margin-top: 130px;">
-              <h5>{{ user.name }}</h5>
-              <p>{{ user.country }}</p>
-            </div>
-          </div>
-          <div class="p-4 text-black bg-body-tertiary">
-            <div class="d-flex justify-content-end text-center py-1 text-body">
-              <div>
-                <p class="mb-1 h5">{{ user.age }}</p>
-                <p class="small text-muted mb-0">Age</p>
-              </div>
-              <div class="px-3">
-                <p class="mb-1 h5">{{ user.email }}</p>
-                <p class="small text-muted mb-0">Email</p>
-              </div>
-            </div>
-          </div>
-          <div class="card-body p-4 text-black">
-            <div class="mb-5 text-body">
-              <p class="lead fw-normal mb-1">About</p>
-              <div class="p-4 bg-body-tertiary">
-                <p class="font-italic mb-1">Bio: {{ user.bio ? user.bio : 'No bio available' }}</p>
-                <p class="font-italic mb-1">Speciality: {{ user.speciality ? user.speciality : 'No speciality available' }}</p>
-<p class="font-italic mb-0">Diplôme: 
-    {% if user.diplome %}
-        <a href="{{ asset('uploads/pfp/' ~ user.diplome) }}" target="_blank">Voir le diplôme</a>
-    {% else %}
-        No diploma available
-    {% endif %}
-</p>
-              </div>
-            </div>
-            
+                    <!-- Progress Bar -->
+                    <div id="profile-progress">
+                        <p>Profile Completion: <span id="progress-percentage">0</span>%</p>
+                        <progress id="progress-bar" value="0" max="100"></progress>
+                        <span id="loading-indicator">Calculating...</span>
+                    </div>
 
-            
-            <div class="d-flex justify-content-between align-items-center mb-4 text-body">
-              <p class="lead fw-normal mb-0">Recent photos</p>
-              <p class="mb-0"><a href="#!" class="text-muted">Show all</a></p>
+                    <div class="card-body p-4 text-black">
+                        <div class="mb-5 text-body">
+                            <p class="lead fw-normal mb-1">About</p>
+                            <div class="p-4 bg-body-tertiary">
+                                <p class="font-italic mb-1">Speciality: {{ user.speciality ? user.speciality : 'No speciality available' }}</p>
+                                <p class="font-italic mb-0">Diplôme: 
+                                    {% if user.diplome %}
+                                        <a href="{{ asset('uploads/pfp/' ~ user.diplome) }}" target="_blank">Voir le diplôme</a>
+                                    {% else %}
+                                        No diploma available
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-4 text-body">
+                            <p class="lead fw-normal mb-0">Recent photos</p>
+                            <p class="mb-0"><a href="#!" class="text-muted">Show all</a></p>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col mb-2">
+                                <img src="https://mdbcdn.b-cdn.net/img/Photos/Lightbox/Original/img%20(112).webp" alt="image 1"
+                                    class="w-100 rounded-3">
+                            </div>
+                            <div class="col mb-2">
+                                <img src="https://mdbcdn.b-cdn.net/img/Photos/Lightbox/Original/img%20(107).webp" alt="image 1"
+                                    class="w-100 rounded-3">
+                            </div>
+                        </div>
+                        <div class="row g-2">
+                            <div class="col">
+                                <img src="https://mdbcdn.b-cdn.net/img/Photos/Lightbox/Original/img%20(108).webp" alt="image 1"
+                                    class="w-100 rounded-3">
+                            </div>
+                            <div class="col">
+                                <img src="https://mdbcdn.b-cdn.net/img/Photos/Lightbox/Original/img%20(114).webp" alt="image 1"
+                                    class="w-100 rounded-3">
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="row g-2">
-              <div class="col mb-2">
-                <img src="https://mdbcdn.b-cdn.net/img/Photos/Lightbox/Original/img%20(112).webp" alt="image 1"
-                  class="w-100 rounded-3">
-              </div>
-              <div class="col mb-2">
-                <img src="https://mdbcdn.b-cdn.net/img/Photos/Lightbox/Original/img%20(107).webp" alt="image 1"
-                  class="w-100 rounded-3">
-              </div>
-            </div>
-            <div class="row g-2">
-              <div class="col">
-                <img src="https://mdbcdn.b-cdn.net/img/Photos/Lightbox/Original/img%20(108).webp" alt="image 1"
-                  class="w-100 rounded-3">
-              </div>
-              <div class="col">
-                <img src="https://mdbcdn.b-cdn.net/img/Photos/Lightbox/Original/img%20(114).webp" alt="image 1"
-                  class="w-100 rounded-3">
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
 </section>
 
+<!-- JavaScript for Immediate Progress Updates -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const progressPercentage = document.getElementById('progress-percentage');
+    const progressBar = document.getElementById('progress-bar');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const profileBadge = document.getElementById('profile-badge');
+    const profileProgressContainer = document.getElementById('profile-progress');
+
+    function updateProgress() {
+        // Show loading indicator
+        loadingIndicator.style.display = 'inline-block';
+        progressPercentage.textContent = 'Calculating...';
+        progressBar.value = 0;
+
+        fetch('{{ path('calculate_profile_progress') }}', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update progress values
+            progressPercentage.textContent = data.progress + '';
+            progressBar.value = data.progress;
+            progressBar.setAttribute('data-tooltip', `${data.progress}% Complete`);
+
+            // Show or hide badge and progress container
+            if (data.progress === 100) {
+                profileBadge.style.display = 'inline-block'; // Show badge
+                profileProgressContainer.style.display = 'none'; // Hide progress bar section
+            } else {
+                profileBadge.style.display = 'none'; // Hide badge
+                profileProgressContainer.style.display = 'block'; // Show progress bar section
+            }
+
+            // Hide loading indicator
+            loadingIndicator.style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            progressPercentage.textContent = 'Error';
+            loadingIndicator.style.display = 'none';
+        });
+    }
+
+    // Initial progress update
+    updateProgress();
+});
+
+
+      document.addEventListener("DOMContentLoaded", function () {
+    const karmaPoints = parseInt(document.getElementById("karmaPoints").textContent);
+    const achievementTitle = document.getElementById("achievementTitle");
+    const achievementContainer = document.querySelector(".achievement-container");
+
+    // Fonction pour déterminer le titre de l'achievement basé sur les points de karma
+    function getAchievementTitle(karma) {
+        if (karma < 10) {
+            return "no Achievement";
+        } else if (karma < 20) {
+            return "Novice";
+        } else if (karma < 30) {
+            return "Intermédiaire";
+        } else if (karma < 40) {
+            return "Avancé";
+        } else {
+            return "Expert";
+        }
+    }
+
+    // Déterminer le titre de l'achievement
+    const achievement = getAchievementTitle(karmaPoints);
+    achievementTitle.textContent = achievement;
+
+    // Si l'achievement est différent de "Aucun Achievement", ajouter une classe CSS
+    if (achievement !== "no Achievement") {
+        achievementContainer.classList.add("achievement-active");
+    } else {
+        achievementContainer.classList.remove("achievement-active");
+    }
+});
+
+  </script>
 {% endblock %}

@@ -2,80 +2,128 @@
 
 namespace App\Controller;
 
-use App\Entity\Groupe; // Changed from Group to Groupe
-use App\Form\GroupType; // Kept as GroupType (assuming it's already named correctly)
-use App\Repository\GroupRepository; // Kept as GroupRepository (assuming it's correct)
+use App\Entity\GroupStudent;
+use App\Entity\User;
+use App\Form\GroupType;
+use App\Repository\GroupRepository;
+use App\Repository\UserRepository; // Assure-toi que UserRepository est importé
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-#[Route('/group')] // No change here, assuming you want to keep the URL as '/group'
+#[Route('/group')]
 final class GroupController extends AbstractController
 {
     #[Route('/', name: 'app_group_index', methods: ['GET'])]
     public function index(GroupRepository $groupRepository): Response
     {
         return $this->render('back/group/index.html.twig', [
-            'groups' => $groupRepository->findAll(),
+            'groupStudents' => $groupRepository->findAll(),
         ]);
     }
 
     #[Route('/new', name: 'app_group_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $group = new Groupe(); // Changed from Group to Groupe
-        $form = $this->createForm(GroupType::class, $group); // Kept as GroupType (assumed correct)
+        $groupStudent = new GroupStudent();
+        $form = $this->createForm(GroupType::class, $groupStudent);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($group);
+            $this->handleImageUpload($form, $groupStudent);
+            $entityManager->persist($groupStudent);
             $entityManager->flush();
-
-            return $this->redirectToRoute('app_group_index', [], Response::HTTP_SEE_OTHER);
+            
+            $this->addFlash('success', '✅ Group successfully created!');
+            return $this->redirectToRoute('app_group_index');
         }
 
         return $this->render('back/group/new.html.twig', [
-            'group' => $group,
-            'form' => $form,
+            'groupStudent' => $groupStudent,
+            'form' => $form->createView(),
         ]);
+    }
+    
+
+    private function handleImageUpload($form, $groupStudent): void
+    {
+        $file = $form->get('image')->getData();
+
+        if ($file instanceof UploadedFile) {
+            $uploadsDirectory = $this->getParameter('groupimage_directory');
+            $newFilename = uniqid() . '.' . $file->guessExtension();
+
+            $allowedExtensions = ['jpg', 'jpeg', 'png'];
+            $fileExtension = strtolower($file->guessExtension());
+
+            if (!in_array($fileExtension, $allowedExtensions)) {
+                $this->addFlash('danger', '❌ Invalid file type. Only JPG, JPEG, PNG are allowed.');
+                return;
+            }
+
+            try {
+                $file->move($uploadsDirectory, $newFilename);
+                $groupStudent->setImage($newFilename);
+                $this->addFlash('success', '✅ Image uploaded successfully!');
+            } catch (FileException $e) {
+                $this->addFlash('danger', '❌ Failed to upload the image: ' . $e->getMessage());
+            }
+        }
     }
 
     #[Route('/{id}', name: 'app_group_show', methods: ['GET'])]
-    public function show(Groupe $group): Response // Changed from Group to Groupe
+    public function show(GroupStudent $groupStudent): Response
     {
         return $this->render('back/group/show.html.twig', [
-            'group' => $group,
+            'groupStudent' => $groupStudent,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_group_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Groupe $group, EntityManagerInterface $entityManager): Response // Changed from Group to Groupe
+    public function edit(Request $request, GroupStudent $groupStudent, EntityManagerInterface $entityManager): Response
     {
-        $form = $this->createForm(GroupType::class, $group); // Kept as GroupType (assumed correct)
+        $form = $this->createForm(GroupType::class, $groupStudent);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-
             return $this->redirectToRoute('app_group_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('back/group/edit.html.twig', [
-            'group' => $group,
-            'form' => $form,
+            'groupStudent' => $groupStudent,
+            'form' => $form->createView(),
         ]);
     }
 
     #[Route('/{id}', name: 'app_group_delete', methods: ['POST'])]
-    public function delete(Request $request, Groupe $group, EntityManagerInterface $entityManager): Response // Changed from Group to Groupe
+    public function delete(Request $request, GroupStudent $groupStudent, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$group->getId(), $request->get('_token'))) {
-            $entityManager->remove($group);
+        if ($this->isCsrfTokenValid('delete'.$groupStudent->getId(), $request->request->get('_token'))) {
+            $entityManager->remove($groupStudent);
             $entityManager->flush();
         }
 
         return $this->redirectToRoute('app_group_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/delete_all', name: 'app_group_delete_all', methods: ['POST'])]
+    public function deleteAllGroups(EntityManagerInterface $entityManager, GroupRepository $groupRepository): RedirectResponse
+    {
+        $groups = $groupRepository->findAll();
+
+        foreach ($groups as $group) {
+            $entityManager->remove($group);
+        }
+
+        $entityManager->flush();
+
+        $this->addFlash('success', 'All groups have been deleted.');
+        return $this->redirectToRoute('app_group_index');
     }
 }

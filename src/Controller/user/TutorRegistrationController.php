@@ -76,15 +76,7 @@ class TutorRegistrationController extends AbstractController
                 'email' => $user->getEmail()
             ]);
 
-            $this->addFlash(
-                'success',
-                'Your data has been successfully stored in the database! User ID: ' . $user->getId()
-            );
-            $this->addFlash(
-                'success',
-                'Registration successful! Please check your email to verify your account.'
-            );
-
+        
             // Send verification email
             $verificationUrl = $urlGenerator->generate(
                 'verify_email',

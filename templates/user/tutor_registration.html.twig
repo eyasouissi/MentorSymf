@@ -5,6 +5,184 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tutor Registration | Your App Name</title>
   <link rel="stylesheet" href="{{ asset('assets/css/registration.css') }}">
+
+<style>
+    /* Global Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Open Sans", sans-serif;
+    }
+
+    /* Form Wrapper */
+    .wrapper {
+      width: 400px;
+      border-radius: 8px;
+      padding: 30px;
+      text-align: center;
+      border: 1px solid rgba(0, 0, 0, 0.5); /* Changed border color to black */
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.8); /* Lightened background for better contrast */
+    }
+
+    /* Form Title */
+    h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+      color: #000; /* Changed to black */
+    }
+
+    /* Input Fields */
+    .input-field {
+      position: relative;
+      border-bottom: 2px solid #ccc;
+      margin: 15px 0;
+    }
+
+    .input-field label {
+      position: relative;
+      color: #000; /* Changed to black */
+      font-size: 16px;
+      pointer-events: none;
+      transition: 0.15s ease;
+    }
+
+    .input-field input,
+    .input-field select {
+      width: 100%;
+      height: 40px;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      color: #000; /* Changed to black */
+    }
+
+    .input-field input:focus ~ label,
+    .input-field input.filled ~ label {
+      font-size: 0.8rem;
+      top: 10px;
+      transform: translateY(-120%);
+    }
+
+    /* Gender Field */
+    .gender-options {
+      display: flex; /* Display options in a row */
+      gap: 20px; /* Space between the options */
+      margin-top: 10px;
+    }
+
+    .gender-option {
+      display: flex;
+      align-items: center; /* Align radio button and label vertically */
+      gap: 5px; /* Space between the radio button and label */
+    }
+
+    .gender-options input[type="radio"] {
+      margin: 0; /* Remove default margin */
+    }
+
+    .gender-label {
+      margin: 0; /* Remove default margin */
+      color: #000; /* Changed to black */
+    }
+
+    /* Target the country dropdown specifically */
+    #studentRegistrationForm_country {
+      color: #000; /* Changed to black */
+    }
+
+    /* Target the dropdown options */
+    #studentRegistrationForm_country option {
+      color: #000; /* Black text for the options */
+      background-color: #fff; /* White background for the options */
+    }
+
+    /* Submit Button */
+    .btn {
+      background: #fff;
+      color: #000; /* Changed to black */
+      font-weight: 600;
+      border: none;
+      padding: 12px 20px;
+      cursor: pointer;
+      border-radius: 3px;
+      font-size: 16px;
+      border: 2px solid transparent;
+      transition: 0.3s ease;
+    }
+
+    .btn:hover {
+      color: #000; /* Changed to black */
+      border-color: #000; /* Changed to black */
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    /* Link Back to Registration Choice */
+    .register {
+      text-align: center;
+      margin-top: 30px;
+      color: #000; /* Changed to black */
+    }
+
+    .wrapper a {
+      color: #000; /* Changed to black */
+      text-decoration: none;
+    }
+
+    .wrapper a:hover {
+      text-decoration: underline;
+    }
+
+    /* Error Messages */
+    .form-error {
+      color: #ff4d4d; /* Red color for errors (unchanged) */
+      font-size: 14px;
+      margin-top: 5px;
+      text-align: left;
+      display: block;
+    }
+
+    /* Remove default Symfony error list styling */
+    .form-error ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    /* Add spacing between error messages */
+    .form-error ul li:not(:last-child) {
+      margin-bottom: 10px;
+    }
+
+    /* Highlight input fields with errors */
+    .input-field.has-error {
+      border-bottom: 2px solid #ff4d4d;
+    }
+
+    .input-field.has-error label {
+      color: #ff4d4d; /* Red color for error labels (unchanged) */
+    }
+
+    /* Responsive Design */
+    @media (max-width: 480px) {
+      .wrapper {
+        width: 100%;
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .gender-options {
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+</style>
 </head>
 <body>
   <div class="wrapper">
@@ -68,19 +246,23 @@
       </div>
     {% endif %}
 
-    {# Gender Field #}
+  {# Gender Field #}
     <div class="input-field {{ form_errors(tutorRegistrationForm.gender) ? 'has-error' }}">
-      {{ form_widget(tutorRegistrationForm.gender, { 'attr': { 'class': 'form-control' } }) }}
-    </div>
-    {% if form_errors(tutorRegistrationForm.gender) %}
-      <div class="form-error">
-        {{ form_errors(tutorRegistrationForm.gender) }}
+      <label>Gender:</label>
+      <div class="gender-options">
+        {% for child in tutorRegistrationForm.gender %}
+          <div class="gender-option">
+            {{ form_widget(child) }} {# Render the radio button #}
+            {{ form_label(child, null, { 'label_attr': { 'class': 'gender-label' } }) }} {# Render the label #}
+          </div>
+        {% endfor %}
       </div>
-    {% endif %}
+      {{ form_errors(tutorRegistrationForm.gender) }}
+    </div>
 
     {# Age Field #}
     <div class="input-field {{ form_errors(tutorRegistrationForm.age) ? 'has-error' }}">
-      {{ form_widget(tutorRegistrationForm.age, { 'attr': { 'class': 'form-control' } }) }}
+      {{ form_widget(tutorRegistrationForm.age, { 'attr': { 'class': 'form-control' , 'placeholder': 'Enter your age'} }) }}
     </div>
     {% if form_errors(tutorRegistrationForm.age) %}
       <div class="form-error">

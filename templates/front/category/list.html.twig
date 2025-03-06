@@ -1,6 +1,6 @@
 {% extends 'front/base.html.twig' %}
 
-{% block title %}Catégories{% endblock %}
+{% block title %}Categories{% endblock %}
 
 {% block body %}
 <main class="main">
@@ -10,8 +10,8 @@
         <div class="container text-center">
             <div class="row justify-content-center">
                 <div class="col-lg-8">
-                    <h1 class="text-white fw-bold">Catégories</h1>
-                    <p class="text-light fs-5">Explorez différentes catégories de cours disponibles sur notre plateforme.</p>
+                    <h1 class="text-white fw-bold animate__animated animate__fadeInDown">Categories</h1>
+                    <p class="text-light fs-5 animate__animated animate__fadeInUp">Explore different categories of courses available on our platform</p>
                 </div>
             </div>
         </div>
@@ -21,21 +21,36 @@
     <section id="categories" class="categories section py-5">
         <div class="container">
             <div class="owl-carousel category-carousel">
-                
                 {% for category in categories %}
-                <div class="category-card card border-0 shadow-sm">
-                    <div class="card-body text-center">
-                        <h3 class="fw-bold">
-                            <a href="{{ path('category_details', {'id': category.id}) }}" class="text-decoration-none text-dark">
-                                {{ category.name }}
-                            </a>
-                        </h3>
-                        <p class="text-muted">{{ category.description|length > 100 ? category.description|slice(0, 100) ~ '...' : category.description }}</p>
-                        <a href="{{ path('category_details', {'id': category.id}) }}" class="btn btn-outline-primary rounded-pill px-3">Voir les cours</a>
-                    </div>
-                </div>
-                {% endfor %}
+                    <div class="category-card card border-0 shadow-sm">
+                        <!-- Conteneur pour l'image ou la vidéo -->
+                        <div class="category-media-container">
+                            {% if category.icon %}
+                                {% if category.icon matches '/\.(mp4|webm|ogg)$/' %}
+                                    <video class="category-media" autoplay loop muted>
+                                        <source src="{{ asset('uploads/images/' ~ category.icon) }}" type="video/mp4">
+                                        Votre navigateur ne supporte pas la vidéo.
+                                    </video>
+                                {% else %}
+                                    <img src="{{ asset('uploads/images/' ~ category.icon) }}" alt="{{ category.name }}" class="category-media">
+                                {% endif %}
+                            {% endif %}
+                        </div>
 
+                        <!-- Contenu de la carte -->
+                        <div class="card-body text-center">
+                            <h3 class="fw-bold">
+                                <a href="{{ path('category_details', {'id': category.id}) }}" class="text-decoration-none text-dark">
+                                    {{ category.name }}
+                                </a>
+                            </h3>
+                            <p class="text-muted">
+                                {{ category.description|length > 100 ? category.description|slice(0, 100) ~ '...' : category.description }}
+                            </p>
+                            <a href="{{ path('category_details', {'id': category.id}) }}" class="btn btn-outline-primary rounded-pill px-3">courses</a>
+                        </div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
     </section>
@@ -58,7 +73,7 @@
           nav: true,
           dots: false,
           autoplay: true,
-          autoplayTimeout: 1000,
+          autoplayTimeout: 1500,
           autoplayHoverPause: true,
           responsive: {
               0: { items: 1 },
@@ -69,54 +84,43 @@
   });
 </script>
 
+<!-- Styles -->
 <style>
     /* Hero Section */
     .categories-hero {
         background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url("https://source.unsplash.com/1600x900/?education,learning") center/cover no-repeat;
-        padding: 80px 0;
+        padding: 100px 0;
         color: white;
+        text-align: center;
     }
 
-/* Category Card */
-.category-card {
-    border-radius: 12px;
-    padding: 20px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    min-height: 220px;
-    background: white;
-    border: 2px solid #f0f0f0;  /* Ajout d'une bordure claire */
-    margin: 10px; /* Espacement entre les cartes */
-}
+    .categories-hero h1, .categories-hero p {
+        animation-duration: 1s;
+    }
 
-.category-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2); /* Ombre plus marquée */
-}
+    /* Category Card */
+    .category-card {
+        border-radius: 12px;
+        padding: 20px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        min-height: 220px;
+        background: white;
+        border: 2px solid #f0f0f0;  /* Ajout d'une bordure claire */
+        margin: 10px; /* Espacement entre les cartes */
+    }
 
-.category-card .card-body {
-    padding: 15px;
-    background-color: #f8f9fa;  /* Légère couleur de fond pour distinguer le contenu */
-    border-radius: 10px;
-}
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2); /* Ombre plus marquée */
+    }
 
-/* Modifier la couleur de fond du bouton pour plus de contraste */
-.btn-outline-primary {
-    border-color: #007bff;
-    color: #007bff;
-    transition: 0.3s;
-}
+    .category-card .card-body {
+        padding: 15px;
+        background-color: #f8f9fa;  /* Légère couleur de fond pour distinguer le contenu */
+        border-radius: 10px;
+    }
 
-.btn-outline-primary:hover {
-    background-color: #007bff;
-    color: white;
-}
-
-/* Augmenter l'espacement entre les éléments du carousel */
-.owl-carousel .owl-item {
-    margin-right: 20px;
-}
-
-
+    /* Modifier la couleur de fond du bouton pour plus de contraste */
     .btn-outline-primary {
         border-color: #007bff;
         color: #007bff;
@@ -128,7 +132,12 @@
         color: white;
     }
 
-    /* Owl Carousel */
+    /* Augmenter l'espacement entre les éléments du carousel */
+    .owl-carousel .owl-item {
+        margin-right: 20px;
+    }
+
+    /* Owl Carousel Navigation */
     .owl-nav button {
         position: absolute;
         top: 50%;
@@ -150,6 +159,63 @@
 
     .owl-nav button:hover {
         background: rgba(0, 0, 0, 0.7) !important;
+    }
+
+    /* Conteneur pour les médias (images ou vidéos) */
+    .category-media-container {
+        height: 200px; /* Hauteur fixe pour les médias */
+        overflow: hidden; /* Cache les débordements */
+        border-radius: 12px 12px 0 0; /* Arrondi uniquement en haut */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa; /* Fond léger pour les médias */
+    }
+
+    /* Style pour les médias (images ou vidéos) */
+    .category-media {
+        width: 100%; /* Prend toute la largeur du conteneur */
+        height: 100%; /* Prend toute la hauteur du conteneur */
+        object-fit: cover; /* Couvre tout l'espace sans déformation */
+        transition: transform 0.3s ease; /* Animation au survol */
+    }
+
+    /* Effet de zoom au survol */
+    .category-card:hover .category-media {
+        transform: scale(1.1); /* Zoom léger */
+    }
+
+    /* Ajustements pour la carte */
+    .category-card {
+        border-radius: 12px;
+        overflow: hidden; /* Cache les débordements */
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: white;
+        border: 1px solid #e0e0e0; /* Bordure légère */
+        margin: 10px; /* Espacement entre les cartes */
+    }
+
+    .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2); /* Ombre plus marquée */
+    }
+
+    /* Contenu de la carte */
+    .category-card .card-body {
+        padding: 20px;
+        text-align: center;
+    }
+
+    /* Bouton */
+    .btn-outline-primary {
+        border-color: #007bff;
+        color: #007bff;
+        transition: 0.3s;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: #007bff;
+        color: white;
     }
 </style>
 

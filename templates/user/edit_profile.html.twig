@@ -1,10 +1,126 @@
 {% extends 'front/base.html.twig' %}
 
 {% block body %}
-<div class="container mt-5">
-    <h2>Modifier le profil</h2>
+<style>
+    .form-container {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    .form-group, .mb-3 {
+        margin-bottom: 15px;
+    }
+    .form-label {
+        font-weight: bold;
+        color: #fff;
+    }
+    input, select, textarea {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: none;
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+        outline: none;
+    }
+    input::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
+    .btn {
+        padding: 10px 15px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .btn-primary {
+        background: rgba(0, 123, 255, 0.8);
+        color: #fff;
+    }
+    .btn-primary:hover {
+        background: rgba(0, 123, 255, 1);
+    }
+    .btn-secondary {
+        background: rgba(108, 117, 125, 0.8);
+        color: #fff;
+    }
+    .btn-secondary:hover {
+        background: rgba(108, 117, 125, 1);
+    }
+
+    /* Progress Bar Styles */
+    #profile-progress {
+        margin-top: 20px;
+        text-align: center;
+    }
+    #progress-percentage {
+        font-size: 1.2em;
+        font-weight: bold;
+        color: #4caf50;
+        transition: color 0.3s ease;
+    }
+    #progress-bar {
+        width: 100%;
+        height: 12px;
+        border-radius: 6px;
+        background: #e0e0e0;
+        overflow: hidden;
+        margin-top: 8px;
+        position: relative;
+    }
+    #progress-bar::-webkit-progress-bar {
+        background: #e0e0e0;
+        border-radius: 6px;
+    }
+    #progress-bar::-webkit-progress-value {
+        background: #4caf50;
+        border-radius: 6px;
+        transition: width 0.5s ease;
+    }
+    #progress-bar::-moz-progress-bar {
+        background: #4caf50;
+        border-radius: 6px;
+    }
+
+    /* Tooltip for Progress Bar */
+    #progress-bar::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        top: -25px;
+        left: 0;
+        width: 100%;
+        text-align: center;
+        font-size: 0.9em;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 3px 8px;
+        border-radius: 4px;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    #progress-bar:hover::after {
+        opacity: 1;
+    }
+
+    /* Loading Indicator */
+    #loading-indicator {
+        display: none;
+        font-size: 0.9em;
+        color: #ff9800;
+        margin-top: 5px;
+    }
+    #loading-indicator.visible {
+        display: inline-block;
+    }
+</style>
+
+<div class="form-container">
+    <h2>Edit profile</h2>
     
-    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+    {{ form_start(form, {'attr': {'id': 'edit-profile-form', 'enctype': 'multipart/form-data'}}) }}
         <div class="form-group">
             {{ form_label(form.name) }}
             {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
@@ -34,9 +150,94 @@
             {{ form_widget(form.pfp, {'attr': {'class': 'form-control'}}) }}
         </div>
 
-        <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
+        <div class="form-group">
+            {{ form_label(form.bg) }}
+            {{ form_widget(form.bg, {'attr': {'class': 'form-control'}}) }}
+        </div>
+
+        <!-- Progress Bar -->
+        <div id="profile-progress">
+            <p>Profile Completion: <span id="progress-percentage">0</span>%</p>
+            <progress id="progress-bar" value="0" max="100"></progress>
+            <span id="loading-indicator">Calculating...</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary mt-3">Save</button>
     {{ form_end(form) }}
 
-    <a href="{{ path('profile') }}" class="btn btn-secondary mt-3">Annuler</a>
+    <a href="{{ path('profile') }}" class="btn btn-secondary mt-3">cancel</a>
 </div>
+
+<!-- JavaScript for Immediate Progress Updates -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('edit-profile-form');
+    const progressPercentage = document.getElementById('progress-percentage');
+    const progressBar = document.getElementById('progress-bar');
+    const loadingIndicator = document.getElementById('loading-indicator');
+
+    // Function to calculate and update progress
+    const updateProgress = function () {
+        const formData = new FormData(form);
+
+        // Show loading indicator
+        loadingIndicator.style.display = 'inline-block';
+        progressPercentage.textContent = 'Calculating...';
+        progressBar.value = 0;
+
+        fetch('{{ path('calculate_profile_progress') }}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Update progress bar and percentage
+progressPercentage.textContent = data.progress; // Only update the number            progressBar.value = data.progress;
+            progressBar.setAttribute('data-tooltip', `${data.progress}% Complete`);
+
+            // Hide loading indicator
+            loadingIndicator.style.display = 'none';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            progressPercentage.textContent = 'Error';
+            loadingIndicator.style.display = 'none';
+        });
+    };
+
+    // Update progress instantly when bio field changes
+    const bioField = form.querySelector('textarea[name="bio"]');
+    if (bioField) {
+        bioField.addEventListener('input', updateProgress);
+    }
+
+    // Update progress instantly when profile picture is uploaded
+    const pfpField = form.querySelector('input[name="pfp"]');
+    if (pfpField) {
+        pfpField.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file && !['male.jpg', 'female.jpg'].includes(file.name)) {
+                updateProgress();
+            }
+        });
+    }
+
+    // Update progress instantly when background image is uploaded
+    const bgField = form.querySelector('input[name="bg"]');
+    if (bgField) {
+        bgField.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                updateProgress();
+            }
+        });
+    }
+
+    // Initial progress calculation when the page loads
+    updateProgress();
+});
+</script>
 {% endblock %}

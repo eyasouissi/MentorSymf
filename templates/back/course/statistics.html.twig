@@ -1,0 +1,347 @@
+{% extends 'back/baseback.html.twig' %}
+
+{% block body %}
+
+<div class="container">
+        <div class="az-content-body">
+            <!-- Dashboard Title -->
+            <div class="az-dashboard-one-title">
+                <div>
+                    <h2 class="az-dashboard-title">Hi, welcome back!</h2>
+                    <p class="az-dashboard-text">Your web analytics dashboard template.</p>
+                </div>
+                <div class="az-content-header-right">
+                    <div class="media">
+                        <div class="media-body">
+                            <label>Start Date</label>
+                            <h6>Oct 10, 2018</h6>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                    <div class="media">
+                        <div class="media-body">
+                            <label>End Date</label>
+                            <h6>Oct 23, 2018</h6>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                    <div class="media">
+                        <div class="media-body">
+                            <label>Event Category</label>
+                            <h6>All Categories</h6>
+                        </div><!-- media-body -->
+                    </div><!-- media -->
+                    <a href="" class="btn btn-purple">Export</a>
+                </div>
+            </div><!-- az-dashboard-one-title -->
+
+            <!-- Navigation Tabs -->
+            <div class="az-dashboard-nav"> 
+                <nav class="nav">
+                    <a href="{{ path('CourseBack') }}" class="nav-link {% if app.request.attributes.get('_route') == 'CourseBack' %}active{% endif %}">Add Course</a>
+                    <a href="{{ path('admin_courses_list') }}" class="nav-link {% if app.request.attributes.get('_route') == 'admin_courses_list' %}active{% endif %}">View Courses</a>
+
+                     <a href="{{ path('courses_statistics') }}" class="nav-link {% if app.request.attributes.get('_route') == 'courses_statistics' %}active{% endif %}">Charts</a>
+                    <a class="nav-link" data-toggle="tab" href="#">More</a>
+                </nav>
+
+                <nav class="nav">
+                    <a class="nav-link" href="#"><i class="far fa-save"></i> Save Report</a>
+                    <a class="nav-link" href="{{ path('admin_courses_export_pdf') }}"><i class="far fa-file-pdf"></i> Export to PDF</a>                    <a class="nav-link" href="#"><i class="far fa-envelope"></i> Send to Email</a>
+                    <a class="nav-link" href="#"><i class="fas fa-ellipsis-h"></i></a>
+                </nav>
+            </div>
+    <div class="container">
+        <h1 class="text-center mb-4">Courses Statistics</h1>
+
+        <!-- Dropdown pour sélectionner un cours -->
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-6">
+                <div class="custom-dropdown">
+                    <label for="courseSelect" class="form-label">Choose a course:</label>
+                    <div class="select-wrapper">
+                        <select id="courseSelect" class="form-select">
+                            <option value="" disabled selected>Select a course</option>
+                            {% for course in courses %}
+                                <option value="{{ course.id }}" data-name="{{ course.name }}">
+                                    {{ course.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <span class="dropdown-icon">▼</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteneur des statistiques -->
+        <div class="row">
+            <!-- Moyenne des évaluations -->
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Average user rating</h5>
+                        <h2 id="averageRating" class="display-4">-</h2>
+                        <div id="starsContainer" class="my-3">
+                            <span class="stars">★★★★★</span>
+                        </div>
+                        <p class="text-muted">Based on user reviews</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Répartition des votes -->
+            <div class="col-md-8 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Assessment details</h5>
+                        <canvas id="ratingChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteneur pour le graphique en secteurs -->
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">Course Distribution</h5>
+                        <canvas id="pieChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Styles CSS -->
+    <style>
+        /* Styles pour le dropdown personnalisé */
+        .custom-dropdown {
+            position: relative;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            width: 100%;
+            padding: 0.75rem 2.5rem 0.75rem 1rem;
+            font-size: 1rem;
+            border: 2px solid #E3BDFF;
+            border-radius: 8px;
+            background-color: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .select-wrapper select:hover {
+            border-color: #c29fff;
+            box-shadow: 0 0 8px rgba(227, 189, 255, 0.5);
+        }
+
+        .select-wrapper select:focus {
+            outline: none;
+            border-color: #9c6bff;
+            box-shadow: 0 0 12px rgba(156, 107, 255, 0.7);
+        }
+
+        .dropdown-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #E3BDFF;
+            font-size: 0.8rem;
+            transition: color 0.3s ease;
+        }
+
+        .select-wrapper:hover .dropdown-icon {
+            color: #c29fff;
+        }
+
+        /* Styles pour les étoiles */
+        .star {
+            font-size: 1.5rem;
+            color: #ddd;
+            transition: color 0.3s ease;
+        }
+
+        .star.filled {
+            color: #ffc107;
+        }
+
+        .star.half-filled {
+            background: linear-gradient(90deg, #ffc107 50%, #ddd 50%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        /* Styles pour les cartes */
+        .card {
+            border: none;
+            border-radius: 10px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: #ffffff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Styles pour le graphique */
+        #ratingChart {
+            max-height: 300px;
+        }
+
+        /* Styles pour le graphique en secteurs */
+        #pieChart {
+            max-height: 300px;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const courseSelect = document.getElementById("courseSelect");
+            const averageRatingEl = document.getElementById("averageRating");
+            const starsContainer = document.getElementById("starsContainer");
+            const chartContainer = document.getElementById("ratingChart");
+            const pieChartContainer = document.getElementById("pieChart");
+            let chartInstance = null;
+
+            // Liste des données des cours récupérées du backend
+            const courses = {{ courses|json_encode|raw }};
+            const premiumCount = {{ premiumCount }};
+            const normalCount = {{ normalCount }};
+
+            // Fonction pour afficher les statistiques d'un cours
+            function showCourseStatistics(courseId) {
+                const course = courses.find(c => c.id == courseId);
+
+                if (course) {
+                    // Mise à jour de la note moyenne et des étoiles
+                    updateRatingDisplay(course.averageRating);
+                    updateChart(course.ratings);
+                }
+            }
+
+            // Écouteur d'événement pour sélectionner un cours
+            courseSelect.addEventListener("change", function () {
+                const selectedOption = courseSelect.options[courseSelect.selectedIndex];
+                const courseId = selectedOption.value;  // Récupère l'ID du cours sélectionné
+                showCourseStatistics(courseId); // Affiche les statistiques du cours sélectionné
+            });
+
+            // Fonction pour mettre à jour l'affichage de la note moyenne
+            function updateRatingDisplay(averageRating) {
+                averageRatingEl.textContent = `${averageRating.toFixed(1)} / 5`;
+
+                let stars = "";
+                for (let i = 1; i <= 5; i++) {
+                    if (i <= Math.floor(averageRating)) {
+                        // Si l'étoile est entièrement remplie
+                        stars += `<span class="star filled">★</span>`;
+                    } else if (i === Math.floor(averageRating) + 1 && averageRating % 1 > 0) {
+                        // Si l'étoile est partiellement remplie (demi-étoile)
+                        stars += `<span class="star half-filled">★</span>`;
+                    } else {
+                        // Si l'étoile est vide
+                        stars += `<span class="star">★</span>`;
+                    }
+                }
+                starsContainer.innerHTML = stars;
+            }
+
+            // Fonction pour mettre à jour le graphique avec la répartition des votes
+            function updateChart(ratings) {
+                const ctx = chartContainer.getContext("2d");
+
+                // Détruire le graphique précédent s'il existe
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+
+                // Créer un nouveau graphique avec Chart.js
+                chartInstance = new Chart(ctx, {
+                    type: "bar",
+                    data: {
+                        labels: ["5★", "4★", "3★", "2★", "1★"],
+                        datasets: [{
+                            label: "Number of votes",
+                            data: [
+                                ratings[5] || 0, 
+                                ratings[4] || 0, 
+                                ratings[3] || 0, 
+                                ratings[2] || 0, 
+                                ratings[1] || 0
+                            ],
+                            backgroundColor: [
+                                "#E3BDFF", // Violet
+                                "#28a745", // Vert
+                                "#fd7e14", // Orange
+                                "#ffc107", // Jaune
+                                "#dc3545"  // Rouge
+                            ]
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: { 
+                                beginAtZero: true,
+                                grid: {
+                                    display: false
+                                }
+                            },
+                            y: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Fonction pour mettre à jour le graphique en secteurs
+            function updatePieChart(premiumCount, normalCount) {
+                const ctxPie = pieChartContainer.getContext("2d");
+                const pieChartInstance = new Chart(ctxPie, {
+                    type: "pie",
+                    data: {
+                        labels: ["Premium Courses", "Normal Courses"],
+                        datasets: [{
+                            data: [premiumCount, normalCount],
+                            backgroundColor: ["#EC3C4C", "#24D26D"]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: "top" }
+                        }
+                    }
+                });
+            }
+
+            // Appel de la fonction pour mettre à jour le graphique en secteurs
+            updatePieChart(premiumCount, normalCount);
+        });
+    </script>
+{% endblock %}

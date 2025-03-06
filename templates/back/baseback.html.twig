@@ -312,29 +312,49 @@
                 </div><!-- media -->
               </div><!-- az-notification-list -->
               <div class="dropdown-footer"><a href="">View All Notifications</a></div>
-            </div><!-- dropdown-menu -->
+                     </div><!-- dropdown-menu -->
           </div><!-- az-header-notification -->
-          <div class="dropdown az-profile-menu">
-            <a href="" class="az-img-user"><img src="../img/faces/face1.jpg" alt=""></a>
-            <div class="dropdown-menu">
-              <div class="az-dropdown-header d-sm-none">
-                <a href="" class="az-header-arrow"><i class="icon ion-md-arrow-back"></i></a>
-              </div>
-              <div class="az-header-profile">
-                <div class="az-img-user">
-                  <img src="../img/faces/face1.jpg" alt="">
-                </div><!-- az-img-user -->
-                <h6>Aziana Pechon</h6>
-                <span>Premium Member</span>
-              </div><!-- az-header-profile -->
+       
+       
+       
+       
+         <div class="dropdown az-profile-menu">
+    <a href="" class="az-img-user">
+        <!-- Dynamic Profile Picture -->
+        <img src="{{ asset('uploads/pfp/' ~ app.user.pfp) }}" alt="Profile Picture" class="rounded-circle" width="50" height="50">
+    </a>
+    <div class="dropdown-menu">
+        <div class="az-dropdown-header d-sm-none">
+            <a href="" class="az-header-arrow"><i class="icon ion-md-arrow-back"></i></a>
+        </div>
+        <div class="az-header-profile">
+            <div class="az-img-user">
+                <!-- Dynamic Profile Picture -->
+                <img src="{{ asset('uploads/pfp/' ~ app.user.pfp) }}" alt="Profile Picture" class="rounded-circle" width="50" height="50">
+            </div><!-- az-img-user -->
+           <h6>{{ app.user.name }}</h6>
 
-              <a href="" class="dropdown-item"><i class="typcn typcn-user-outline"></i> My Profile</a>
-              <a href="" class="dropdown-item"><i class="typcn typcn-edit"></i> Edit Profile</a>
-              <a href="" class="dropdown-item"><i class="typcn typcn-time"></i> Activity Logs</a>
-              <a href="" class="dropdown-item"><i class="typcn typcn-cog-outline"></i> Account Settings</a>
-              <a href="page-signin.html" class="dropdown-item"><i class="typcn typcn-power-outline"></i> Sign Out</a>
-            </div><!-- dropdown-menu -->
-          </div>
+            <span>admin</span>
+        </div><!-- az-header-profile -->
+
+        <a href="{{ path('admin_profile') }}" class="dropdown-item">
+            <i class="typcn typcn-user-outline"></i> My Profile
+        </a>
+       <a href="{{ path('admin_edit_profile') }}" class="dropdown-item">
+    <i class="typcn typcn-edit"></i> Edit Profile
+</a>
+        <a href="" class="dropdown-item"><i class="typcn typcn-time"></i> Activity Logs</a>
+        <a href="" class="dropdown-item"><i class="typcn typcn-cog-outline"></i> Account Settings</a>
+        <a  href="{{ path('logout') }}" class="dropdown-item"><i class="typcn typcn-power-outline"></i> Sign Out</a>
+       
+    </div><!-- dropdown-menu -->
+</div>
+      
+      
+      
+      
+      
+      
         </div><!-- az-header-right -->
       </div><!-- container -->
     </div><!-- az-header -->

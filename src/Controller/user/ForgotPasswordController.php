@@ -58,7 +58,7 @@ class ForgotPasswordController extends AbstractController
             // For security, always flash the same message regardless of whether the user exists
             $this->addFlash('success', 'If the email exists, a password reset link has been sent.');
 
-            return $this->redirectToRoute('login');
+            return $this->redirectToRoute('forgot_password');
         }
 
         return $this->render('user/forgot_password.html.twig', [

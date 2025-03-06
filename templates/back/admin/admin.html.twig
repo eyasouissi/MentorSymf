@@ -21,25 +21,39 @@
                 </nav>
             </div>
 
-    <!-- Add Chatbot PDF Upload Section -->
-            <div class="card mt-4">
-                <div class="card-header">
-                    <h3>Chatbot Knowledge Management</h3>
-                </div>
-                <div class="card-body">
-                    {{ form_start(form, {'attr': {'id': 'pdfUploadForm', 'class': 'form-horizontal'}}) }}
-                        <div class="form-group">
-                            {{ form_label(form.file, 'Upload PDF Knowledge Base', {'label_attr': {'class': 'control-label'}}) }}
-                            {{ form_widget(form.file, {'attr': {'class': 'form-control-file'}}) }}
-                        </div>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-upload"></i> Upload PDF
-                        </button>
-                    {{ form_end(form) }}
+            <a href="{{ path('user_register') }}" class="btn btn-primary mb-4">Add User</a>
+            <a href="#" class="btn btn-secondary mb-4">Pending Premium Users</a>
 
-                    <div id="uploadStatus" class="mt-3"></div>
+            <!-- Search Bar -->
+            <div class="mb-4">
+                <div class="input-group" style="display: flex; align-items: center;">
+                    <!-- SVG Search Icon -->
+                    <div id="searchIcon" style="cursor: pointer; margin-right: 10px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </div>
+                    <!-- Search Input and Label -->
+                    <div id="searchContainer" style="display: none; flex-grow: 1; transition: all 0.3s ease;">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search by name..." style="flex-grow: 1;">
+                        <span id="searchLabel" style="margin-left: 10px; opacity: 0; transition: opacity 0.3s ease;">Search by name</span>
+                    </div>
+                    <!-- Clear Search Button -->
+                    <div id="clearSearch" class="input-group-append" style="display: none;">
+                        <button class="btn btn-outline-secondary" onclick="clearSearch()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            <!-- Sort Button for Sorting Tutors First, Then Students -->
+            <div class="sort-container mb-4">
+                <button class="btn btn-primary" onclick="applySort()">Sort Tutors First</button>
+                <button class="btn btn-warning" onclick="resetSort()">Reset</button>
+            </div>
+
             <h3 class="mt-4">User Overview</h3>
             <table class="table table-striped">
                 <thead>
@@ -52,78 +66,132 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="userTableBody">
                     {% for user in users %}
-                    <tr>
-                        <td>{{ user.id }}</td>
-                        <td>{{ user.name }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>
-                            {% if 'ROLE_ADMIN' in user.roles %} Admin
-                            {% elseif 'ROLE_TUTOR' in user.roles %} Tutor
-                            {% elseif 'ROLE_ENTREPRISE' in user.roles %} Entreprise
-                            {% else %} Étudiant {% endif %}
-                        </td>
-                        <td>{{ user.bio|default('N/A') }}</td>
-                       <td>
-    <a href="{{ path('admin_edit_user', {'id': user.id}) }}" class="btn btn-warning btn-sm">Edit</a>
-    <form method="post" action="{{ path('admin_delete_user', {'id': user.id}) }}" style="display:inline;">
-        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">Delete</button>
-    </form>
-</td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center">Aucun utilisateur trouvé.</td>
-                    </tr>
+                        {% if 'ROLE_ADMIN' not in user.roles %}
+                            <tr id="user-row-{{ user.id }}">
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% if 'ROLE_TUTOR' in user.roles %} Tutor
+                                    {% elseif 'ROLE_ENTREPRISE' in user.roles %} Entreprise
+                                    {% else %} Étudiant {% endif %}
+                                </td>
+                                <td>{{ user.bio|default('N/A') }}</td>
+                                <td>
+                                    <a href="{{ path('admin_edit_user', {'id': user.id}) }}" class="btn btn-warning btn-sm">Edit</a>
+                                    <form method="post" action="{{ path('admin_delete_user', {'id': user.id}) }}" style="display:inline;">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">Delete</button>
+                                    </form>
+                                    <input type="hidden" id="csrf-token-{{ user.id }}" value="{{ csrf_token('restrict' ~ user.id) }}">
+                                    <button class="btn btn-sm {% if user.isRestricted %}btn-success{% else %}btn-danger{% endif %}" onclick="toggleRestrict({{ user.id }})">
+                                        {% if user.isRestricted %}Unrestrict{% else %}Restrict{% endif %}
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endif %}
                     {% endfor %}
                 </tbody>
             </table>
+
+            <!-- Pagination Controls -->
+            <div class="pagination-container">
+                {{ knp_pagination_render(users, '@KnpPaginator/Pagination/bootstrap_v5_pagination.html.twig') }}
+            </div>
         </div>
     </div>
 </div>
 
-
-
-<!-- Add JavaScript for PDF Upload -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-document.getElementById('pdfUploadForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const formData = new FormData();
-    const fileInput = document.querySelector('#pdfUploadForm input[type="file"]');
-    const statusDiv = document.getElementById('uploadStatus');
-    
-    formData.append('file', fileInput.files[0]);
-
-    try {
-        statusDiv.innerHTML = '<div class="alert alert-info">Processing PDF...</div>';
-        
-        const response = await fetch('{{ path('upload_pdf') }}', {
-            method: 'POST',
-            body: formData
+    // Activate the search bar
+    $(document).ready(function () {
+        $('#searchIcon').on('click', function () {
+            $('#searchContainer').css('display', 'flex').hide().fadeIn(300);
+            $('#searchLabel').css('opacity', 1);
+            $('#clearSearch').css('display', 'block');
+            $('#searchInput').focus();
         });
-        
-        const result = await response.json();
-        
-        if (result.status === 'success') {
-            statusDiv.innerHTML = `
-                <div class="alert alert-success">
-                    ${result.message}<br>
-                    Processed ${Object.keys(result.responses).length} responses
-                </div>
-            `;
-        } else {
-            throw new Error(result.message);
-        }
-    } catch (error) {
-        statusDiv.innerHTML = `
-            <div class="alert alert-danger">
-                Error: ${error.message}
-            </div>
-        `;
+
+        $('#searchInput').on('input', function () {
+            const searchText = $(this).val().toLowerCase();
+            filterTable(searchText);
+        });
+    });
+
+    // Function to filter the table rows based on the search text
+    function filterTable(searchText) {
+        $('#userTableBody tr').each(function () {
+            const name = $(this).find('td:nth-child(2)').text().toLowerCase();
+            if (name.includes(searchText)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
     }
-});
+
+    // Function to clear the search input and reset the table
+    function clearSearch() {
+        $('#searchInput').val('');
+        filterTable('');
+        $('#searchInput').blur();
+        $('#searchContainer').fadeOut(300);
+        $('#searchLabel').css('opacity', 0);
+        $('#clearSearch').css('display', 'none');
+    }
+
+    // Function to toggle user restriction
+    function toggleRestrict(userId) {
+        const url = "{{ path('admin_restrict_user', {'id': 'USER_ID'}) }}".replace("USER_ID", userId);
+        const token = document.querySelector(`#csrf-token-${userId}`).value;
+
+        $.ajax({
+            url: url,
+            method: 'POST',
+            data: {
+                _token: token
+            },
+            success: function (response) {
+                if (response.success) {
+                    const button = $(`#user-row-${userId} button:last`);
+                    button.text(response.isRestricted ? 'Unrestrict' : 'Restrict');
+                    button.toggleClass('btn-danger btn-success');
+                    alert(response.message);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error(xhr.responseText);
+                alert('An error occurred while processing your request. Check the console for details.');
+            }
+        });
+    }
+
+    // Function to sort tutors first then students
+    function applySort() {
+        let rows = $('#userTableBody tr').get();
+
+        rows.sort(function (a, b) {
+            const roleA = $(a).find('td:nth-child(4)').text().trim();
+            const roleB = $(b).find('td:nth-child(4)').text().trim();
+            
+            if (roleA === 'Tutor' && roleB !== 'Tutor') return -1;
+            if (roleA !== 'Tutor' && roleB === 'Tutor') return 1;
+            return 0;
+        });
+
+        $.each(rows, function (index, row) {
+            $('#userTableBody').append(row);
+        });
+    }
+
+    // Reset sort
+    function resetSort() {
+        location.reload();
+    }
 </script>
 {% endblock %}

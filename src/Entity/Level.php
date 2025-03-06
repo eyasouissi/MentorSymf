@@ -28,8 +28,39 @@ class Level
      */
     #[ORM\OneToMany(targetEntity: File::class, mappedBy: 'level', cascade: ['persist', 'remove'])]
     private Collection $files;
-    
 
+
+    #[ORM\ManyToOne(targetEntity: Level::class)]
+    #[ORM\JoinColumn(name: 'previous_level_id', referencedColumnName: 'id', nullable: true)]
+    private ?Level $previousLevel = null;
+
+
+    public function isUnlocked(User $user): bool
+    {
+        // Le niveau 1 est toujours déverrouillé
+        if ($this->previousLevel === null) {
+            return true;
+        }
+    
+        // Vérifiez si l'utilisateur a complété le niveau précédent
+        return $user->hasCompletedLevel($this->previousLevel);
+    }
+
+// Level.php
+#[ORM\Column(type: 'boolean')]
+private bool $isComplete = false;
+
+public function getIsComplete(): bool
+{
+    return $this->isComplete;
+}
+
+public function setIsComplete(bool $isComplete): self
+{
+    $this->isComplete = $isComplete;
+    return $this;
+}
+    
     public function __construct()
     {
         $this->files = new ArrayCollection();
@@ -93,4 +124,19 @@ class Level
 
         return $this;
     }
+
+    public function getPreviousLevel(): ?Level
+    {
+        return $this->previousLevel;
+    }
+    
+    public function setPreviousLevel(?Level $previousLevel): static
+    {
+        $this->previousLevel = $previousLevel;
+        return $this;
+    }
+    
+ 
+
 }
+

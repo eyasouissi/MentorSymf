@@ -1,0 +1,70 @@
+{# templates/emails/new_course_email.html.twig #}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouveau Cours Ajouté</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #F0F0F0; /* Couleur de fond générale */
+        }
+        .header {
+            background-color: #CDB2DA; /* Couleur de fond de l'en-tête */
+            padding: 20px;
+            text-align: center;
+        }
+        .header h1 {
+            color: #CDB2DA; /* Couleur du titre spécifiée */
+        }
+        .content {
+            padding: 20px;
+            background-color: #B9DCFE; /* Couleur de fond du corps du mail */
+            border-radius: 8px;
+        }
+        .footer {
+            background-color: #CDB2DA; /* Couleur de fond du pied de page */
+            padding: 10px;
+            text-align: center;
+        }
+        .footer p {
+            color: #4A4A4A;
+        }
+        h1, p {
+            font-family: 'Arial', sans-serif;
+        }
+        .logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+        .link-button {
+            display: inline-block;
+            background-color: #FFABC5;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <!-- Ajout du logo -->
+        <img src="https://i.ibb.co/S7WWFK2y/Mentor.png" alt="Logo" class="logo">
+        <h1>Un Nouveau Cours a Été Ajouté</h1>
+    </div>
+    <div class="content">
+        <p>Bonjour,</p>
+        <p>Un nouveau cours intitulé <strong>{{ course.title }}</strong> vient d'être ajouté à la catégorie <strong>{{ course.category.name }}</strong>.</p>
+        <p>Description: <em>{{ course.description }}</em></p>
+        <p>Vérifiez le tableau de bord et acceptez la demande d'ajout.</p>
+        <!-- Lien vers le tableau de bord des cours admin -->
+        <p><a href="{{ path('admin_courses_list') }}" class="link-button">Voir le Tableau de Bord</a></p>
+    </div>
+    <div class="footer">
+        <p>Merci de gérer votre plateforme de cours !</p>
+    </div>
+</body>
+</html>

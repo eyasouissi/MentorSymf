@@ -31,8 +31,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var list<string> The user roles
      */
-    #[ORM\Column(type: "json")] // Change to json to handle the array properly
+    #[ORM\Column] // Change to json to handle the array properly
     private array $roles = [];
+
 
     /**
      * @var string The hashed password
@@ -88,6 +89,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $pfp = null;
+  
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $bg = null;
 
     // Add the inverse relationship with Post
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Post::class)]
@@ -95,6 +99,158 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\ManyToMany(targetEntity: Post::class, mappedBy: 'likedByUsers')]
     private Collection $likedPosts;
+
+
+ /**
+     * OAuth2 fields
+     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $oauthId = null; // Unique identifier from the OAuth provider
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $oauthType = null; // Type of OAuth provider (e.g., 'google', 'facebook')
+
+    #[ORM\Column(type: 'boolean')]
+    private bool $isRestricted = false;
+
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $googleId = null; // Unique identifier from Google
+
+////////////added by eya ////////////
+#[ORM\ManyToMany(targetEntity: Level::class)]
+#[ORM\JoinTable(name: 'user_completed_levels')]
+private Collection $completedLevels;
+
+#[ORM\Column(type: "integer")]
+private int $karmaPoints = 0;
+
+    /**
+     * @var Collection<int, Rating>
+     */
+    #[ORM\OneToMany(targetEntity: Rating::class, mappedBy: 'user', orphanRemoval: true)]
+    private Collection $ratings;
+
+public function getKarmaPoints(): int
+{
+    return $this->karmaPoints;
+}
+
+public function addKarmaPoints(int $points): self
+{
+    $this->karmaPoints += $points;
+    return $this;
+}
+public function calculateKarmaPoints(): void
+{
+    // Calculer le karma en fonction du nombre de niveaux complétés
+    $this->karmaPoints = $this->completedLevels->count();
+}
+
+
+public function getCompletedLevels(): Collection
+{
+    return $this->completedLevels;
+}
+
+public function completeLevel(Level $level): self
+{
+    if (!$this->completedLevels->contains($level)) {
+        $this->completedLevels->add($level);
+                // Ajoute 1 karma point pour chaque niveau complété
+         $this->addKarmaPoints(1); 
+
+                // Recalculer les karma points (bien que ce soit redondant ici car on les calcule déjà dans `addKarmaPoints()`)
+        $this->calculateKarmaPoints();  
+    }
+    return $this;
+}
+
+public function hasCompletedLevel(Level $level): bool
+{
+    return in_array($level, $this->completedLevels->toArray(), true);
+}
+
+
+
+
+    
+
+    /**
+     * @return Collection<int, Rating>
+     */
+    public function getRatings(): Collection
+    {
+        return $this->ratings;
+    }
+
+    public function addRating(Rating $rating): self
+    {
+        if (!$this->ratings->contains($rating)) {
+            $this->ratings[] = $rating;
+            $rating->setUser($this);
+        }
+        return $this;
+    }
+
+    public function removeRating(Rating $rating): self
+    {
+        if ($this->ratings->removeElement($rating)) {
+            if ($rating->getUser() === $this) {
+                $rating->setUser(null);
+            }
+        }
+        return $this;
+    }
+////////////////////////////////////////////////////////////////////////////////////
+
+    
+    public function getGoogleId(): ?string
+{
+    return $this->googleId;
+}
+
+public function setGoogleId(?string $googleId): self
+{
+    $this->googleId = $googleId;
+    return $this;
+}
+
+    public function getIsRestricted(): ?bool
+    {
+        return $this->isRestricted;
+    }
+
+    public function setIsRestricted(bool $isRestricted): self
+    {
+        $this->isRestricted = $isRestricted;
+
+        return $this;
+    }
+
+    public function getOauthId(): ?string
+    {
+        return $this->oauthId;
+    }
+
+    public function setOauthId(?string $oauthId): self
+    {
+        $this->oauthId = $oauthId;
+        return $this;
+    }
+
+    public function getOauthType(): ?string
+    {
+        return $this->oauthType;
+    }
+
+    public function setOauthType(?string $oauthType): self
+    {
+        $this->oauthType = $oauthType;
+        return $this;
+    }
+
+
 
     #[ORM\Column(length: 5, options: ["default" => "en"])] // Changed from nullable
     private string $locale = 'en';
@@ -111,6 +267,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+ public function getBg(): ?string
+    {
+        return $this->bg;
+    }
+    
+    public function setBg(?string $bg): self
+    {
+        $this->bg = $bg;
+        return $this;
+    }
+    
+
 
     public function __construct()
     {
@@ -120,7 +288,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->posts = new ArrayCollection();
         $this->likedPosts = new ArrayCollection();
         $this->locale = 'en';
-
+        $this->groups = new ArrayCollection();
+        $this->googleId = null;
+        $this->completedLevels = new ArrayCollection();
+        $this->ratings = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -383,4 +554,37 @@ public function setLocale(string $locale): self
     $this->locale = in_array($locale, ['en', 'fr', 'es', 'de', 'it', 'pt']) ? $locale : 'en';
     return $this;
 }
+
+
+    /**
+ * @ORM\ManyToMany(targetEntity=GroupStudent::class, mappedBy="members")
+ * @var Collection<int, GroupStudent>
+ */
+#[ORM\ManyToMany(targetEntity: GroupStudent::class, mappedBy: 'members')]
+private Collection $groups;
+public function getGroups(): Collection
+{
+    return $this->groups;
+}
+
+public function addGroup(GroupStudent $group): self
+{
+    if (!$this->groups->contains($group)) {
+        $this->groups[] = $group;
+        $group->addMember($this);
+    }
+
+    return $this;
+}
+
+public function removeGroup(GroupStudent $group): self
+{
+    if ($this->groups->removeElement($group)) {
+        $group->removeMember($this);
+    }
+
+    return $this;
+}
+
+
 }

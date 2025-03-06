@@ -4,118 +4,417 @@
 
 {% block body %}
 <main class="container mt-5">
-    <h1 class="text-center mb-4">{{ course.title }}</h1>
-    
-    <div class="course-description mb-5">
-        <h4>Description du Cours :</h4>
-        <p class="lead">{{ course.description|raw }}</p>
+    <!-- Courses Course Details Section -->
+    <section id="courses-course-details" class="courses-course-details section">
+        <div class="container" data-aos="fade-up">
+            <div class="row">
+                <div class="col-lg-8">
+                    <img src="{{ asset('assets/img/course-details.jpg') }}" class="img-fluid" alt="">
+                </div>
+                <div class="col-lg-4">
+<div class="course-info d-flex justify-content-between align-items-center">
+    <h5>Tutor</h5>
+    <p>
+        {% if course.tutorName %}
+            <a href="#">{{ course.tutorName }}</a>
+        {% else %}
+            <span class="text-muted">No Tutor available</span>
+        {% endif %}
+    </p>
+</div>
+
+                    <div class="course-info d-flex justify-content-between align-items-center">
+                        <h5>Course Title:</h5>
+                            <p>{{ course.title }}</p>
+                    </div>
+                    <div class="course-info d-flex justify-content-between align-items-center">
+                        <h5>Course Description:</h5>
+                            <p>{{ course.description|raw}}</p>
+                    </div>
+    <div class="course-info d-flex justify-content-between align-items-center">
+        <button class="btn btn-blended" data-bs-toggle="modal" data-bs-target="#ratingModal">
+            <i class="bi bi-star-fill"></i>Rate this course
+        </button>
     </div>
-
-    {# Bouton pour ajouter un niveau #}
-    <a href="{{ path('add_level', {'id': course.id}) }}" class="btn btn-success mb-3">
-        Ajouter un Niveau
-    </a>
-
-    <h2 class="mt-4">Niveaux</h2>
-    <div class="row">
-        {% for level in course.levels %}
-            <div class="col-md-4">
-                <div class="card mb-3 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title text-primary">{{ level.name }}</h5>
-                        <p class="card-text">Contenu du niveau à venir...<br><small class="text-muted">À compléter par l'instructeur</small></p>
-
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <!-- Bouton Modifier -->
-                                <a href="{{ path('edit_level', {'id': level.id}) }}" class="btn btn-warning btn-sm">
-                                    <i class="bi bi-pencil-square"></i>
-                                </a>
-
-                                <!-- Bouton Supprimer -->
-                                <form action="{{ path('delete_level', {'id': level.id}) }}" method="post" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer ce niveau ?');">
-                                    <input type="hidden" name="_method" value="DELETE">
-                                    <button type="submit" class="btn btn-danger btn-sm">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-
-                        <h6 class="mt-3">Fichiers :</h6>
-                        {% if level.files is not empty %}
-                            <ul class="list-unstyled">
-                                {% for file in level.files %}
-                                    <li>
-                                        <i class="bi bi-file-earmark-text"></i>
-                                        <a href="{{ asset('uploads/images/' ~ file.fileName) }}" target="_blank">
-                                            {{ file.fileName }}
-                                        </a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <p>Aucun fichier disponible pour ce niveau.</p>
-                        {% endif %}
-
-                        {# Bouton Upload 📂 #}
-                        <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#uploadModal{{ level.id }}">
-                            <i class="bi bi-folder-plus"></i> Upload Fichiers
-                        </button>
                     </div>
                 </div>
             </div>
-        {% else %}
-            <p class="text-center col-12">Aucun niveau ajouté pour ce cours.</p>
-        {% endfor %}
-    </div>
-</main>
+        </div>
 
-{# Modals pour l'upload des fichiers #}
-{% for level in course.levels %}
-    <div class="modal fade" id="uploadModal{{ level.id }}" tabindex="-1" aria-labelledby="uploadModalLabel{{ level.id }}" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="uploadModalLabel{{ level.id }}">Uploader un fichier pour {{ level.name }}</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+<!-- Rating Modal -->
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ratingModalLabel">Noter ce cours</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="rating" data-course-id="{{ course.id }}">
+                    {% for i in 1..5 %}
+                        <input type="radio" name="rating" value="{{ i }}" id="star{{ i }}" {% if user_rating == i %}checked{% endif %}>
+                        <label for="star{{ i }}" class="star-label" data-rating="{{ i }}">★</label>
+                    {% endfor %}
                 </div>
-                <div class="modal-body">
-                    <form action="{{ path('upload_file', {'id': level.id}) }}" method="post" enctype="multipart/form-data" class="upload-form">
-                        <div class="mb-3">
-                            <label for="fileInput{{ level.id }}" class="form-label">Sélectionner un fichier (PDF, DOCX, PPTX, TXT)</label>
-                            <input type="file" name="file" id="fileInput{{ level.id }}" class="form-control" accept=".pdf, .docx, .pptx, .txt" required>
-                        </div>
-                        <div class="d-flex justify-content-end">
-                            <button type="submit" class="btn btn-success">
-                                <i class="bi bi-cloud-upload"></i> Envoyer
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                <div id="rating-feedback" class="mt-2"></div>
             </div>
         </div>
     </div>
+</div>
+
+
+    </section><!-- /Courses Course Details Section -->
+
+    <!-- Tabs Section -->
+    <section id="tabs" class="tabs section">
+        <div class="container" data-aos="fade-up" data-aos-delay="100">
+            <div class="row">
+                <div class="col-lg-3">
+                    <ul class="nav nav-tabs flex-column">
+                        {% for level in course.levels %}
+                            <li class="nav-item">
+                                <a class="nav-link {% if loop.first %}active show{% endif %}" data-bs-toggle="tab" href="#tab-{{ level.id }}">
+                                    {{ level.name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="col-lg-9 mt-4 mt-lg-0">
+                    <div class="tab-content">
+                        {% for level in course.levels %}
+                            <div class="tab-pane {% if loop.first %}active show{% endif %}" id="tab-{{ level.id }}">
+                                <div class="row">
+                                    <div class="col-lg-8 details order-2 order-lg-1">
+                                        <!-- Lien vers la page de description du niveau -->
+                                        <h3 class="level-name">
+                                            <a class="nav-link" href="{{ path('level_view', {'id': level.id}) }}">
+                                                {{ level.name }}
+                                            </a>
+                                        </h3>
+                                            <!-- Bouton d'édition pour les tuteurs -->
+
+{% if is_granted('ROLE_TUTOR') %}
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <a href="{{ path('edit_level', {'id': level.id}) }}" class="btn btn-warning btn-sm">
+                <i class="bi bi-pencil-square"></i>
+            </a>
+            <button type="button" class="btn btn-danger btn-sm delete-level" data-id="{{ level.id }}">
+                <i class="bi bi-trash"></i>
+            </button>
+            <form id="delete-form-{{ level.id }}" action="{{ path('delete_level', {'id': level.id}) }}" method="post" style="display:none;">
+                <input type="hidden" name="_method" value="DELETE">
+            </form>
+        </div>
+    </div>
+{% endif %}
+                                        
+
+                                        <!-- Afficher la liste des fichiers -->
+                                        <h6>Fichiers :</h6>
+                                        {% if level.files is not empty %}
+                                            <ul class="list-group list-group-flush">
+                                                {% for file in level.files %}
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <i class="bi bi-file-earmark-text me-2"></i>
+                                                            <a href="{{ asset('uploads/images/' ~ file.fileName) }}" target="_blank">
+                                                                {{ file.fileName }}
+                                                            </a>
+                                                        </div>
+                                                        {% if is_granted('ROLE_TUTOR') %}
+                                                            <form action="{{ path('delete_file', {'fileId': file.id}) }}" method="post" style="display:inline;" onsubmit="return confirm('Voulez-vous vraiment supprimer ce fichier ?');">
+                                                                <input type="hidden" name="_method" value="DELETE">
+                                                                <button type="submit" class="btn btn-danger btn-sm" title="Supprimer le fichier" style="border: none; background: none; cursor: pointer;">
+                                                                    ❌
+                                                                </button>
+                                                            </form>
+                                                        {% endif %}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            <p class="text-muted">Aucun fichier disponible pour ce niveau.</p>
+                                        {% endif %}
+
+                                        <!-- Bouton d'upload (pour les tuteurs) -->
+                                        {% if is_granted('ROLE_TUTOR') %}
+                                            <button class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#uploadModal{{ level.id }}">
+                                                <i class="bi bi-folder-plus"></i> Upload Fichiers
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-lg-4 text-center order-1 order-lg-2">
+                                        <img src="{{ asset('assets/img/tabs/tab-4.png') }}" alt="Default Image" class="img-fluid">
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><!-- /Tabs Section -->
+
+    <!-- Add Level Button (for Tutors) -->
+    {% if is_granted('ROLE_TUTOR') %}
+        <div class="text-center mb-4">
+            <a href="{{ path('add_level', {'id': course.id}) }}" class="btn btn-success btn-lg">
+                <i class="bi bi-plus-circle"></i> Ajouter un Niveau
+            </a>
+        </div>
+    {% endif %}
+</main>
+
+
+
+<!-- File Upload Modals -->
+{% for level in course.levels %}
+    {% if is_granted('ROLE_TUTOR') %}
+        <div class="modal fade" id="uploadModal{{ level.id }}" tabindex="-1" aria-labelledby="uploadModalLabel{{ level.id }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="uploadModalLabel{{ level.id }}">Uploader un fichier pour {{ level.name }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ path('upload_file', {'id': level.id}) }}" method="post" enctype="multipart/form-data" class="upload-form">
+                            <div class="mb-3">
+                                <label for="fileInput{{ level.id }}" class="form-label">Sélectionner un fichier (PDF, DOCX, PPTX, TXT)</label>
+                                <input type="file" name="file" id="fileInput{{ level.id }}" class="form-control" accept=".pdf, .docx, .pptx, .txt" required>
+                            </div>
+                            <div class="d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-cloud-upload"></i> Envoyer
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
 {% endfor %}
 
-{# Script de validation pour vérifier la taille du fichier (max 5 Mo) #}
+<!-- JavaScript for Rating System -->
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-    document.querySelectorAll(".upload-form").forEach(function(form) {
-        form.addEventListener("submit", function(event) {
-            let fileInput = form.querySelector("input[type='file']");
-            if (fileInput.files.length > 0) {
-                let fileSize = fileInput.files[0].size;
-                let maxSize = 5 * 1024 * 1024; // 5 Mo
+document.addEventListener("DOMContentLoaded", function () {
+    const ratingContainer = document.querySelector('.rating');
+    const ratingFeedback = document.getElementById('rating-feedback');
+    const stars = ratingContainer.querySelectorAll('.star-label');
 
-                if (fileSize > maxSize) {
-                    alert("Le fichier est trop volumineux. Taille maximale : 5 Mo.");
-                    event.preventDefault();
-                }
+    // Define colors for each rating
+    const ratingColors = {
+        1: 'red',
+        2: 'orange',
+        3: 'yellow',
+        4: 'green',
+        5: 'violet',
+    };
+
+    // Function to update star colors
+    const updateStars = (rating) => {
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.style.color = ratingColors[rating]; // Apply the color for the selected rating
+            } else {
+                star.style.color = '#ccc'; // Reset unselected stars to gray
+            }
+        });
+    };
+
+    // Hover effect for stars
+    stars.forEach((star) => {
+        star.addEventListener('mouseover', () => {
+            const rating = star.dataset.rating;
+            updateStars(rating);
+        });
+
+        star.addEventListener('mouseout', () => {
+            const selectedRating = ratingContainer.querySelector('input[name="rating"]:checked');
+            if (selectedRating) {
+                updateStars(selectedRating.value);
+            } else {
+                stars.forEach((star) => (star.style.color = '#ccc')); // Reset all stars to gray
             }
         });
     });
+
+    // Handle rating submission
+    ratingContainer.addEventListener('change', function (event) {
+        const selectedRating = event.target.value;
+        const courseId = ratingContainer.dataset.courseId;
+
+        // Show loading spinner
+        ratingFeedback.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>';
+
+        // Send rating via AJAX
+        fetch(`/course/${courseId}/rate`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `rating=${selectedRating}`,
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update star colors based on the selected rating
+                updateStars(selectedRating);
+
+                // Display success message with the same color as the rating
+                ratingFeedback.innerHTML = `<div class="alert alert-${data.color}">${data.message}</div>`;
+            } else {
+                // Display error message
+                ratingFeedback.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+            }
+        })
+        .catch(error => {
+            ratingFeedback.innerHTML = `<div class="alert alert-danger">Une erreur s'est produite. Veuillez réessayer.</div>`;
+        });
+    });
 });
+
+ document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".delete-level").forEach(button => {
+            button.addEventListener("click", function() {
+                let levelId = this.getAttribute("data-id");
+                let form = document.getElementById("delete-form-" + levelId);
+
+                swal({
+                    title: "Êtes-vous sûr ?",
+                    text: "Cette action est irréversible !",
+                    icon: "warning",
+                    buttons: {
+                        cancel: {
+                            text: "Annuler",
+                            visible: true,
+                            className: "btn btn-secondary"
+                        },
+                        confirm: {
+                            text: "Oui, supprimer !",
+                            className: "btn btn-danger"
+                        }
+                    },
+                    dangerMode: true
+                }).then((willDelete) => {
+                    if (willDelete) {
+                        form.submit();
+                    } else {
+                        swal("Annulé", "Le niveau est toujours là !", "error");
+                    }
+                });
+            });
+        });
+    });
 </script>
 
+<!-- Styles for Rating System and Lavender Buttons -->
+<style>
+.level-name {
+    font-size: 2.5rem; /* Taille de police plus grande */
+    font-weight: bold; /* Texte en gras */
+    color: #007bff; /* Couleur bleue (vous pouvez la modifier) */
+    margin-bottom: 1rem; /* Espacement en bas */
+}
+
+.level-name a {
+    text-decoration: none; /* Supprimer le soulignement du lien */
+    color: inherit; /* Hériter de la couleur du parent */
+}
+
+.level-name a:hover {
+    color: #0056b3; /* Changer la couleur au survol */
+}
+
+.rating {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.rating input[type="radio"] {
+    display: none;
+}
+
+.rating .star-label {
+    font-size: 2.5rem;
+    color: #ccc; /* Default color for unselected stars */
+    cursor: pointer;
+    transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+}
+
+.rating .star-label:hover {
+    transform: scale(1.2);
+}
+
+#rating-feedback .alert {
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* Custom Alert Colors */
+.alert-violet {
+    background-color: #e6e6fa; /* Lavender */
+    border-color: #d8bfd8;
+    color: #000;
+}
+
+.alert-yellow {
+    background-color: #fff3cd; /* Light Yellow */
+    border-color: #ffeeba;
+    color: #856404;
+}
+
+/* Lavender Buttons */
+.btn-lavender {
+    background-color: #e6e6fa; /* Lavender color */
+    border-color: #e6e6fa;
+    color: #000; /* Black text for contrast */
+
+}
+
+.btn-lavender:hover {
+    background-color: #d8bfd8; /* Darker lavender on hover */
+    border-color: #d8bfd8;
+    color: #000;
+}
+
+.btn-blended {
+    background-color: transparent; /* Fond transparent */
+    border: 1px solidrgb(217, 67, 255); /* Bordure bleue */
+    color:rgb(220, 44, 255); /* Texte bleu */
+    padding: 0.5rem 1rem; /* Espacement intérieur */
+    transition: all 0.3s ease; /* Animation fluide */
+}
+
+.btn-blended:hover {
+    background-color:rgb(228, 140, 255); /* Fond bleu au survol */
+    color: #fff; /* Texte blanc au survol */
+    border-color:rgb(216, 73, 255); /* Bordure bleue au survol */
+}
+
+<!-- Styles pour le bouton et le modal -->
+.btn-lavender {
+    background-color: #e6e6fa; /* Lavender color */
+    border-color: #e6e6fa;
+    color: #000; /* Black text for contrast */
+    display: inline-block; /* Assurez-vous qu'il est affiché */
+    visibility: visible; /* Assurez-vous qu'il est visible */
+}
+
+.star-label {
+    font-size: 2rem;
+    color: #ccc;
+    cursor: pointer;
+    transition: color 0.2s ease-in-out;
+}
+
+.star-label:hover {
+    color: #ffc107; /* Yellow color on hover */
+}
+</style>
 {% endblock %}
