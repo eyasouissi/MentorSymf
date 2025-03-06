@@ -24,7 +24,7 @@ security:
                 check_path: login
             logout:
                 path: logout             # Path to logout
-                target: app_index # After logging out, redirect to login page
+                target: login # After logging out, redirect to login page
                 invalidate_session: true
             remember_me:
                 secret: '%kernel.secret%'    # Secret key for "Remember Me" functionality
@@ -32,13 +32,15 @@ security:
                 path: /                      # Path to set the remember-me cookie for
 
     access_control:
-      #  - { path: ^/register, roles: PUBLIC_ACCESS }  # Allow unauthenticated access to registration
-      # - { path: ^/login, roles: PUBLIC_ACCESS }
-       # - { path: ^/forgot-password, roles: PUBLIC_ACCESS }  # Allow unauthenticated access to forgot password page
-      #  - { path: ^/reset_password, roles: PUBLIC_ACCESS }      # Allow unauthenticated access to login
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
-       # - { path: ^/index, roles: ROLE_USER }          # Only authenticated users can access /home
+    - { path: ^/index, roles: PUBLIC_ACCESS }
+    - { path: ^/login, roles: PUBLIC_ACCESS }
+    - { path: ^/register, roles: PUBLIC_ACCESS }
+    - { path: ^/forgot-password, roles: PUBLIC_ACCESS }
+    - { path: ^/reset_password, roles: PUBLIC_ACCESS }
+    - { path: ^/admin, roles: ROLE_ADMIN }
+    - { path: ^/, roles: ROLE_USER }  # Restrict everything else to authenticated users
+    
+
 
 when@test:
     security:

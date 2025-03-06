@@ -2,15 +2,16 @@
 
 namespace App\Entity;
 
-use App\Repository\GroupRepository;
+use App\Repository\GroupeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: GroupRepository::class)]
-#[ORM\Table(name: '`group`')]
-class Group
+#[ORM\Entity(repositoryClass: GroupeRepository::class)]
+#[ORM\Table(name: 'groupe')]
+class Groupe
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -18,25 +19,30 @@ class Group
     private ?int $id = null;
 
     #[ORM\Column]
-    private ?int $id_group = null;
+    #[Assert\NotBlank(message: "Le nombre de membres ne peut pas être vide.")]
+    private ?int $nbrMembers = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $description_group = null;
+    #[Assert\NotBlank(message: "La description ne peut pas être vide.")]
+    private ?string $descriptionGroup = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $nom_createur = null;
+    #[Assert\NotBlank(message: "Le nom du groupe ne peut pas être vide.")]
+    private ?string $nomGroup = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $statut = null;
+    #[Assert\NotBlank(message: "Le champ des membres ne peut pas être vide.")]
+    private ?string $members = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $date_creation_group = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateCreationGroup = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $image = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $date_meet = null;
+    #[Assert\GreaterThanOrEqual("today", message: "La date de rencontre doit être aujourd'hui ou plus tard.")]
+    private ?\DateTimeInterface $dateMeet = null;
 
     /**
      * @var Collection<int, Project>
@@ -54,62 +60,62 @@ class Group
         return $this->id;
     }
 
-    public function getIdGroup(): ?int
+    public function getNbrMembers(): ?int
     {
-        return $this->id_group;
+        return $this->nbrMembers;
     }
 
-    public function setIdGroup(int $id_group): static
+    public function setNbrMembers(int $nbrMembers): static
     {
-        $this->id_group = $id_group;
+        $this->nbrMembers = $nbrMembers;
 
         return $this;
     }
 
     public function getDescriptionGroup(): ?string
     {
-        return $this->description_group;
+        return $this->descriptionGroup;
     }
 
-    public function setDescriptionGroup(?string $description_group): static
+    public function setDescriptionGroup(?string $descriptionGroup): static
     {
-        $this->description_group = $description_group;
+        $this->descriptionGroup = $descriptionGroup;
 
         return $this;
     }
 
-    public function getNomCreateur(): ?string
+    public function getNomGroup(): ?string
     {
-        return $this->nom_createur;
+        return $this->nomGroup;
     }
 
-    public function setNomCreateur(string $nom_createur): static
+    public function setNomGroup(string $nomGroup): static
     {
-        $this->nom_createur = $nom_createur;
+        $this->nomGroup = $nomGroup;
 
         return $this;
     }
 
-    public function getStatut(): ?string
+    public function getMembers(): ?string
     {
-        return $this->statut;
+        return $this->members;
     }
 
-    public function setStatut(string $statut): static
+    public function setMembers(string $members): static
     {
-        $this->statut = $statut;
+        $this->members = $members;
 
         return $this;
     }
 
     public function getDateCreationGroup(): ?\DateTimeInterface
     {
-        return $this->date_creation_group;
+        return $this->dateCreationGroup;
     }
 
-    public function setDateCreationGroup(\DateTimeInterface $date_creation_group): static
+    public function setDateCreationGroup(?\DateTimeInterface $dateCreationGroup): static
     {
-        $this->date_creation_group = $date_creation_group;
+        $this->dateCreationGroup = $dateCreationGroup;
 
         return $this;
     }
@@ -128,12 +134,12 @@ class Group
 
     public function getDateMeet(): ?\DateTimeInterface
     {
-        return $this->date_meet;
+        return $this->dateMeet;
     }
 
-    public function setDateMeet(?\DateTimeInterface $date_meet): static
+    public function setDateMeet(?\DateTimeInterface $dateMeet): static
     {
-        $this->date_meet = $date_meet;
+        $this->dateMeet = $dateMeet;
 
         return $this;
     }

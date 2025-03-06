@@ -9,6 +9,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'user')]
@@ -21,6 +24,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Assert\NotBlank(message: 'Email cannot be blank', groups: ['Registration'])]
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
@@ -39,6 +43,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $bio = null;
 
+    
+    #[Assert\NotBlank(message: 'Name cannot be blank', groups: ['Registration'])]
+    #[Assert\Length(min: 6, minMessage: 'Name should be at least 2 characters long')]
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $name = null;
 
@@ -82,6 +89,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $pfp = null;
 
+    // Add the inverse relationship with Post
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Post::class)]
+    private Collection $posts;
+
+    #[ORM\ManyToMany(targetEntity: Post::class, mappedBy: 'likedByUsers')]
+    private Collection $likedPosts;
+
+    #[ORM\Column(length: 5, options: ["default" => "en"])] // Changed from nullable
+    private string $locale = 'en';
+
     public function getPfp(): ?string
     {
         return $this->pfp;
@@ -100,6 +117,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->roles = [];
         $this->date_creation = new \DateTimeImmutable(); // Use DateTimeImmutable for consistency
         $this->is_verified = false;
+        $this->posts = new ArrayCollection();
+        $this->likedPosts = new ArrayCollection();
+        $this->locale = 'en';
+
     }
 
     public function getId(): ?int
@@ -295,5 +316,71 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    
+     // Getter for posts
+    public function getPosts(): Collection
+    {
+        return $this->posts;
+    }
+
+    public function addPost(Post $post): static
+    {
+        if (!$this->posts->contains($post)) {
+            $this->posts->add($post);
+            $post->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePost(Post $post): static
+    {
+        if ($this->posts->removeElement($post)) {
+            // set the owning side to null (unless already changed)
+            if ($post->getUser() === $this) {
+                $post->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+
+     /**
+     * @return Collection<int, Post>
+     */
+    public function getLikedPosts(): Collection
+    {
+        return $this->likedPosts;
+    }
+
+    public function addLikedPost(Post $post): self
+    {
+        if (!$this->likedPosts->contains($post)) {
+            $this->likedPosts[] = $post;
+            $post->addLikedByUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeLikedPost(Post $post): self
+    {
+        if ($this->likedPosts->removeElement($post)) {
+            $post->removeLikedByUser($this);
+        }
+
+        return $this;
+    }
+
+    public function getLocale(): ?string
+{
+    return $this->locale;
+}
+
+public function setLocale(string $locale): self
+{
+    $locale = strtolower(substr($locale, 0, 2));
+    $this->locale = in_array($locale, ['en', 'fr', 'es', 'de', 'it', 'pt']) ? $locale : 'en';
+    return $this;
+}
 }

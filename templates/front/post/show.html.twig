@@ -1,0 +1,1985 @@
+{% extends 'front/base.html.twig' %}
+
+
+{% block body %}
+<div class="header-container" style="background-color: #8c84a1; padding: 20px 0; margin-bottom: 20px; text-align: center;">
+    <div class="container">
+        <div style="margin-bottom: 15px;">
+            <h2 style="font-size: 24px; margin: 0; color: white;">What's on your mind? 💡</h2>
+            <p style="font-size: 14px; color: white; margin: 5px 0 0;">Share your thoughts with the community!</p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="post-container">
+        <article class="card mb-3" id="post-{{ post.id }}">
+            <div class="card-body">
+                <!-- Post Header -->
+                <div class="post-header">
+                    <img src="{{ asset('uploads/pfp/' ~ post.user.pfp) }}" 
+                         alt="{{ post.user.name }}" 
+                         class="user-photos">
+                    <div class="user-info">
+                        <span class="user-name">{{ post.user.name }}</span>
+                        <span class="post-date">{{ post.createdAt|date('Y-m-d H:i') }}</span>
+                    </div>
+                </div>
+
+                <!-- Post Content -->
+                <div class="post-content">
+                    <p class="card-text">{{ post.content|raw }}</p>
+                    {% if post.photos %}
+                        <div class="post-photos-container">
+                            <div class="post-photos-slider" id="slider-{{ post.id }}">
+                                {% for photo in post.photos %}
+                                    <div class="slide" data-index="{{ loop.index0 }}">
+                                        <img src="{{ asset('uploads/photos/' ~ photo) }}" 
+                                             class="post-photo"
+                                             loading="lazy">
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            
+                            {% if post.photos|length > 1 %}
+                                <div class="gallery-nav">
+                                    <button class="nav-arrow prev-arrow" onclick="slide(-1, {{ post.id }})">
+                                        <svg viewBox="0 0 24 24" width="24" height="24">
+                                            <path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/>
+                                        </svg>
+                                    </button>
+                                    <button class="nav-arrow next-arrow" onclick="slide(1, {{ post.id }})">
+                                        <svg viewBox="0 0 24 24" width="24" height="24">
+                                            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="gallery-indicator" id="indicator-{{ post.id }}">
+                                    <span class="current-index">1</span>/{{ post.photos|length }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="translation-controls">
+        <button class="translate-button" data-translated="false">
+            <span class="icon">
+                <svg class="language-icon" viewBox="0 0 122.88 92.91">
+                    <path d="M20.15,83.63,31.63,73.4a2.89,2.89,0,0,1,1.91-.73h27.8a.92.92,0,0,0,.93-.93V65.9H68v5.84a6.71,6.71,0,0,1-6.68,6.68H34.62L19.3,92.07a2.87,2.87,0,0,1-4.9-2V78.42H6.69A6.71,6.71,0,0,1,0,71.74V28.59a6.76,6.76,0,0,1,6.69-6.68H43.35v5.75H6.69a1,1,0,0,0-.94.93V71.74a.91.91,0,0,0,.28.65,1,1,0,0,0,.66.28H17.27a2.88,2.88,0,0,1,2.88,2.88v8.08Zm.21-19.48L29.6,36.24h8.83l9.24,27.91H40.35L38.8,59.07H29.15l-1.51,5.08ZM30.79,53.24h6.37L34,41.81,30.79,53.24ZM76.63,13.35h8.7V11.11a.69.69,0,0,1,.69-.69h4.65a.68.68,0,0,1,.68.69v2.24h9.76a.68.68,0,0,1,.68.69V18.5a.68.68,0,0,1-.68.68H99.56a26.3,26.3,0,0,1-.91,3.88l0,.06a26.07,26.07,0,0,1-1.74,4.15,32.34,32.34,0,0,1-2.14,3.43c-.67,1-1.41,1.9-2.2,2.83a35.78,35.78,0,0,0,3.68,3.83,41.43,41.43,0,0,0,5.09,3.74.68.68,0,0,1,.21.94l-2.39,3.73a.69.69,0,0,1-1,.2,45.88,45.88,0,0,1-5.58-4.08l0,0a41.42,41.42,0,0,1-4-4.1C87.3,38.93,86.15,40,85,41l0,0c-1.36,1.12-2.79,2.2-4.47,3.36a.69.69,0,0,1-1-.17L77,40.53a.69.69,0,0,1,.17-1c1.66-1.14,3-2.19,4.36-3.28,1.16-1,2.28-2,3.49-3.16a44.82,44.82,0,0,1-2.77-4.45A28.84,28.84,0,0,1,80,22.9a.68.68,0,0,1,.47-.84l4.27-1.19a.68.68,0,0,1,.84.47A22.62,22.62,0,0,0,89,28.7L90.27,27a26.33,26.33,0,0,0,1.51-2.47l0,0A19.43,19.43,0,0,0,93,21.62a24,24,0,0,0,.66-2.44h-17a.69.69,0,0,1-.69-.68V14a.69.69,0,0,1,.69-.69Zm27,56.82L88.26,56.51H61.54a6.73,6.73,0,0,1-6.69-6.68V6.69a6.71,6.71,0,0,1,2-4.72l.2-.18A6.67,6.67,0,0,1,61.54,0h54.65a6.69,6.69,0,0,1,4.71,2l.19.2a6.69,6.69,0,0,1,1.79,4.51V49.83a6.73,6.73,0,0,1-6.69,6.68h-7.7V68.13a2.88,2.88,0,0,1-4.91,2ZM91.26,51.49l11.47,10.23V53.64a2.88,2.88,0,0,1,2.88-2.88h10.58a.92.92,0,0,0,.65-.28.91.91,0,0,0,.29-.65V6.69a1,1,0,0,0-.22-.58L116.84,6a1,1,0,0,0-.65-.29H61.54A.94.94,0,0,0,61,6L60.89,6a.92.92,0,0,0-.28.65V49.83a.92.92,0,0,0,.93.93H89.35a2.86,2.86,0,0,1,1.91.73Z"/>
+                </svg>
+            </span>
+            <span class="label">Translate Post</span>
+            <span class="loading-spinner" style="display: none;">
+                <svg aria-hidden="true" width="12" height="12" viewBox="0 0 12 12">
+                    <circle cx="6" cy="6" r="5" fill="none" stroke-width="1.5" stroke="#1877F2"/>
+                </svg>
+            </span>
+        </button>
+    </div>
+
+                <!-- Post Actions -->
+                <div class="post-actions">
+                    <button class="like-btn {{ app.user and post.isLikedByUser(app.user) ? 'liked' : '' }}" 
+                            data-post-id="{{ post.id }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 107.68" width="20" height="20">
+                            <path d="M61.43,13.53C66.76,7.51,72.8,3.69,78.96,1.69c6.48-2.1,13.07-2.15,19.09-0.6c6.05,1.55,11.52,4.72,15.74,9.03 c5.58,5.7,9.09,13.36,9.09,22.02c0,13.7-6.6,26.75-17.42,39.37c-10.14,11.83-24.05,23.35-39.61,34.73 c-2.58,1.89-5.98,1.88-8.5,0.22l0,0.01l-0.03-0.02l0,0.01l-0.02-0.01l-0.21-0.15c-4.46-2.92-8.75-5.91-12.8-8.94 c-4.05-3.03-8.01-6.22-11.83-9.56C12.58,70.42,0,51.4,0,32.13c0-8.8,3.44-16.44,8.93-22.08c4.25-4.37,9.73-7.51,15.79-9.03V1.02 c5.99-1.5,12.57-1.4,19.05,0.69C49.99,3.71,56.09,7.54,61.43,13.53L61.43,13.53L61.43,13.53z"/>
+                        </svg>
+                        <span class="like-count">{{ post.likes|length }}</span>
+                    </button>
+
+                    <button class="toggle-comment-btn" data-post-id="{{ post.id }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 111.686 122.879">
+                            <path d="M83.896,5.08H27.789c-12.491,0-22.709,10.219-22.709,22.71v40.079c0,12.489,10.22,22.71,22.709,22.71h17.643 c-2.524,9.986-5.581,18.959-14.92,27.241c17.857-4.567,31.642-13.8,41.759-27.241h3.051c12.488,0,31.285-10.219,31.285-22.71V27.79 C106.605,15.299,96.387,5.08,83.896,5.08z M81.129,41.069c-4.551,0-8.24,3.691-8.24,8.242s3.689,8.242,8.24,8.242 c4.553,0,8.242-3.691,8.242-8.242S85.682,41.069,81.129,41.069z M30.556,41.069c-4.552,0-8.242,3.691-8.242,8.242 s3.69,8.242,8.242,8.242c4.551,0,8.242-3.691,8.242-8.242S35.107,41.069,30.556,41.069z M55.843,41.069 c-4.551,0-8.242,3.691-8.242,8.242s3.691,8.242,8.242,8.242c4.552,0,8.241-3.691,8.241-8.242S60.395,41.069,55.843,41.069z"/>
+                        </svg>
+                    </button>
+
+                    <button class="copy-btn">
+                        <svg viewBox="0 0 115.77 122.88" width="20" height="20">
+                            <path d="M89.62,13.96v7.73h12.19h0.01v0.02c3.85,0.01,7.34,1.57,9.86,4.1c2.5,2.51,4.06,5.98,4.07,9.82h0.02v0.02 v73.27v0.01h-0.02c-0.01,3.84-1.57,7.33-4.1,9.86c-2.51,2.5-5.98,4.06-9.82,4.07v0.02h-0.02h-61.7H40.1v-0.02 c-3.84-0.01-7.34-1.57-9.86-4.1c-2.5-2.51-4.06-5.98-4.07-9.82h-0.02v-0.02V92.51H13.96h-0.01v-0.02c-3.84-0.01-7.34-1.57-9.86-4.1 c-2.5-2.51-4.06-5.98-4.07-9.82H0v-0.02V13.96v-0.01h0.02c0.01-3.85,1.58-7.34,4.1-9.86c2.51-2.5,5.98-4.06,9.82-4.07V0h0.02h61.7 h0.01v0.02c3.85,0.01,7.34,1.57,9.86,4.1c2.5,2.51,4.06,5.98,4.07,9.82h0.02V13.96L89.62,13.96z M79.04,21.69v-7.73v-0.02h0.02 c0-0.91-0.39-1.75-1.01-2.37c-0.61-0.61-1.46-1-2.37-1v0.02h-0.01h-61.7h-0.02v-0.02c-0.91,0-1.75,0.39-2.37,1.01 c-0.61,0.61-1,1.46-1,2.37h0.02v0.01v64.59v0.02h-0.02c0,0.91,0.39,1.75,1.01,2.37c0.61,0.61,1.46,1,2.37,1v-0.02h0.01h12.19V35.65 v-0.01h0.02c0.01-3.85,1.58-7.34,4.1-9.86c2.51-2.5,5.98-4.06,9.82-4.07v-0.02h0.02H79.04L79.04,21.69z M105.18,108.92V35.65v-0.02 h0.02c0-0.91-0.39-1.75-1.01-2.37c-0.61-0.61-1.46-1-2.37-1v0.02h-0.01h-61.7h-0.02v-0.02c-0.91,0-1.75,0.39-2.37,1.01 c-0.61,0.61-1,1.46-1,2.37h0.02v0.01v73.27v0.02h-0.02c0,0.91,0.39,1.75,1.01,2.37c0.61,0.61,1.46,1,2.37,1v-0.02h0.01h61.7h0.02 v0.02c0.91,0,1.75-0.39,2.37-1.01c0.61-0.61,1-1.46,1-2.37h-0.02V108.92L105.18,108.92z"/>
+                        </svg>
+                    </button>
+
+                    
+                </div>
+
+                <!-- Comments Section -->
+                <section class="comments">
+                    <div class="comment-form-container" id="comment-form-{{ post.id }}">
+                            {{ form_start(commentForm, {'attr': {'class': 'comment-form'}}) }}
+
+                            {{ form_widget(commentForm.content, {'attr': {'class': 'comment-input', 'placeholder': 'Write a comment...'}}) }}
+                            <button type="submit" class="submit-comment-btn">
+                                <svg viewBox="0 0 122.56 122.88" width="20" height="20">
+                                    <path d="M112.27,10.31l-99,38.07,30,14.37L89.21,33.18,60.44,80.53l14,29.06,37.81-99.28ZM2.42,44.49,117.16.37a3.73,3.73,0,0,1,3-.12,3.78,3.78,0,0,1,2.19,4.87L78.4,120.45a3.78,3.78,0,0,1-6.92.3l-22.67-47L2.14,51.39a3.76,3.76,0,0,1,.28-6.9Z"/>
+                                </svg>
+                            </button>
+                        {{ form_end(commentForm) }}
+                    </div>
+
+                    <div class="comments-container">
+                        {% for comment in post.comments|slice(0, 2)|reverse %}
+                            <div class="comment">
+                                <div class="comment-header">
+                                    <img src="{{ asset('uploads/pfp/' ~ comment.user.pfp) }}" 
+                                         alt="{{ comment.user.name }}" 
+                                         class="profile-pic">
+                                    <span class="username">{{ comment.user.name }}</span>
+                                    <span class="comment-date">{{ comment.createdAt|date('Y-m-d H:i') }}</span>
+                                </div>
+                                <p class="comment-content">{{ comment.content }}</p>
+                            </div>
+                        {% endfor %}
+
+                        {% if post.comments|length > 2 %}
+                            <div id="hidden-comments-{{ post.id }}" class="hidden-comments" style="display: none;">
+                                {% for comment in post.comments|slice(2, null)|reverse %}
+                                    <div class="comment">
+                                        <div class="comment-header">
+                                            <img src="{{ asset('uploads/pfp/' ~ comment.user.pfp) }}" 
+                                                 alt="{{ comment.user.name }}" 
+                                                 class="profile-pic">
+                                            <span class="username">{{ comment.user.name }}</span>
+                                            <span class="comment-date">{{ comment.createdAt|date('Y-m-d H:i') }}</span>
+                                        </div>
+                                        <p class="comment-content">{{ comment.content }}</p>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <button class="show-more-btn" data-post-id="{{ post.id }}">
+                                Show More Comments ({{ post.comments|length - 2 }})
+                            </button>
+                        {% endif %}
+                    </div>
+                </section>
+            </div>
+        </article>
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div class="image-modal" id="image-modal">
+    <div class="modal-overlay" onclick="closeModal()"></div>
+    <div class="modal-content">
+        <img class="modal-image" id="modal-image">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+</div>
+
+
+{% block javascripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Like functionality
+    document.querySelectorAll('.like-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            const likeCount = this.querySelector('.like-count');
+            const isLiked = this.classList.contains('liked');
+            
+            fetch(`/post/${postId}/like`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    likeCount.textContent = data.likes;
+                    this.classList.toggle('liked');
+                }
+            });
+        });
+    });
+
+    // Toggle comment form
+    document.querySelectorAll('.toggle-comment-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            const form = document.getElementById(`comment-form-${postId}`);
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        });
+    });
+
+    // Show more comments
+    document.querySelectorAll('.show-more-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.dataset.postId;
+            const hiddenComments = document.getElementById(`hidden-comments-${postId}`);
+            hiddenComments.style.display = 'block';
+            this.remove();
+        });
+    });
+
+    // Image slider functionality
+    window.slide = function(direction, postId) {
+        const slider = document.getElementById(`slider-${postId}`);
+        const slides = slider.querySelectorAll('.slide');
+        const currentIndex = Math.round(slider.scrollLeft / slider.clientWidth);
+        let newIndex = currentIndex + direction;
+        
+        newIndex = Math.max(0, Math.min(newIndex, slides.length - 1));
+        slider.scrollTo({ left: newIndex * slider.clientWidth, behavior: 'smooth' });
+        
+        // Update indicator
+        const indicator = document.getElementById(`indicator-${postId}`);
+        if(indicator) indicator.querySelector('.current-index').textContent = newIndex + 1;
+    };
+
+    // Image modal handling
+    document.querySelectorAll('.post-photo').forEach(img => {
+        img.addEventListener('click', () => {
+            document.getElementById('modal-image').src = img.src;
+            document.getElementById('image-modal').style.display = 'flex';
+        });
+    });
+});
+
+function closeModal() {
+    document.getElementById('image-modal').style.display = 'none';
+}
+
+// Copy functionality
+document.querySelectorAll('.copy-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const postContent = this.closest('.card').querySelector('.card-text').textContent;
+        navigator.clipboard.writeText(postContent)
+            .then(() => {
+                const originalHTML = this.innerHTML;
+                this.innerHTML = '✓ Copied!';
+                setTimeout(() => this.innerHTML = originalHTML, 2000);
+            });
+    });
+});
+
+
+// Main form submission handler
+document.querySelectorAll('.ajax-form').forEach(form => {
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        
+        try {
+            const response = await fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                showNotification(data.message, 'success');
+                this.reset();
+                // Optional: Clear file input display
+                document.getElementById('file-name').textContent = 'Choose photos';
+            } else {
+                showNotification(data.errors.join(', '), 'danger');
+            }
+        } catch (error) {
+            showNotification('An error occurred', 'danger');
+        }
+    });
+});
+    document.addEventListener('DOMContentLoaded', function () {
+      // Word counter with input limitation
+const textarea = document.getElementById('post_content');
+const counter = document.getElementById('word-count');
+
+textarea.addEventListener('input', () => {
+    const maxLength = 2000;
+    let currentText = textarea.value;
+    
+    // Trim text if exceeds max length
+    if (currentText.length > maxLength) {
+        textarea.value = currentText.substring(0, maxLength);
+        currentText = textarea.value; // Get trimmed text
+    }
+
+    const count = currentText.length;
+    counter.textContent = `${count}/${maxLength}`;
+    counter.style.color = count >= maxLength ? '#ff4500' : '#878a8c';
+});
+
+// Optional: Prevent paste overflow
+textarea.addEventListener('paste', (e) => {
+    const pastedText = e.clipboardData.getData('text');
+    if ((textarea.value.length + pastedText.length) > 2000) {
+        e.preventDefault();
+        const remaining = 2000 - textarea.value.length;
+        textarea.value += pastedText.substring(0, remaining);
+    }
+});
+
+        // Like functionality
+       document.querySelectorAll('.like-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const postId = this.getAttribute('data-post-id');
+        const likeCount = this.querySelector('.like-count');
+        const wasLiked = this.classList.contains('liked');
+        
+        // Optimistic update
+        const currentCount = parseInt(likeCount.textContent);
+        likeCount.textContent = wasLiked ? currentCount - 1 : currentCount + 1;
+        this.classList.toggle('liked', !wasLiked);
+        
+        // Add temporary animation class
+        likeCount.classList.add('pop');
+        setTimeout(() => likeCount.classList.remove('pop'), 200);
+
+        // Send request
+        fetch(`/post/like/${postId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .catch(error => {
+            // Revert optimistic update on error
+            likeCount.textContent = currentCount;
+            this.classList.toggle('liked', wasLiked);
+            console.error('Error:', error);
+        });
+    });
+});
+
+        // File upload handling
+        const fileInput = document.getElementById('post_photos');
+        const fileNameLabel = document.getElementById('file-name');
+        if (fileInput) {
+            fileInput.addEventListener('change', function () {
+                const fileName = fileInput.files.length > 0 ? fileInput.files[0].name : 'Choose a photos';
+                fileNameLabel.textContent = fileName;
+            });
+        }
+
+        // Toggle comment form visibility
+        document.querySelectorAll('.toggle-comment-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const postId = this.getAttribute('data-post-id');
+                const commentForm = document.getElementById(`comment-form-${postId}`);
+                commentForm.style.display = (commentForm.style.display === 'none' || commentForm.style.display === '') ? 'flex' : 'none';
+            });
+        });
+
+        // Handle AJAX comment submission
+        document.querySelectorAll('.submit-comment-btn').forEach(button => {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const postId = this.getAttribute('data-post-id');
+                const commentInput = document.getElementById(`comment-input-${postId}`);
+                const content = commentInput.value.trim();
+
+                if (!content) {
+                    alert('Comment cannot be empty!');
+                    return;
+                }
+
+                // Prepare form data
+                const formData = new FormData();
+                formData.append('content', content);
+
+                // Send AJAX request
+                fetch(`/comment/${postId}`, {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Create the new comment element
+                        const newComment = document.createElement('div');
+                        newComment.classList.add('comment');
+
+                        newComment.innerHTML = `
+                            <div class="comment-header">
+                                <img src="/uploads/pfp/${data.comment.user.pfp}" alt="Profile Picture" class="profile-pic">
+                                <span class="username">${data.comment.user.name}</span>
+                                <span class="comment-date">${data.comment.createdAt}</span>
+                            </div>
+                            <p class="comment-content">${data.comment.content}</p>
+                        `;
+
+                        // Append the new comment to the comments container
+                        const commentsContainer = document.querySelector(`#post-${postId} .comments-container`);
+                        commentsContainer.appendChild(newComment);
+
+                        // Clear the comment input
+                        commentInput.value = '';
+
+                        // Hide the comment form
+                        const commentForm = document.getElementById(`comment-form-${postId}`);
+                        commentForm.style.display = 'none';
+                    } else {
+                        alert('Error posting comment.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+
+        
+
+        const emojiPickerBtn = document.querySelector('.emoji-picker-btn');
+        const emojiList = document.getElementById('emoji-list');
+        const postContent = document.getElementById('post_content');
+
+        // List of emojis
+        const emojis = ["😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣", "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰", "😘", "😗", "😙", "😚", "😋", "😛", "😝", "😜", "🤪", "🤨", "🧐", "🤓", "😎", "🤩", "🥳", "😏", "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣", "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠", "😡", "🤬", "🤯", "😳", "🥵", "🥶", "😱", "😨", "😰", "😥", "😓", "🤗", "🤔", "🤭", "🤫", "🤥", "😶", "😐", "😑", "😬", "🙄", "😯", "😦", "😧", "😮", "😲", "🥱", "😴", "🤤", "😪", "😵", "🤐", "🥴", "🤢", "🤮", "🤧", "😷", "🤒", "🤕", "🤑", "🤠", "😈", "👿", "👹", "👺", "🤡", "💩", "👻", "💀", "☠️", "👽", "👾", "🤖", "🎃", "😺", "😸", "😹", "😻", "😼", "😽", "🙀", "😿", "😾"];
+
+        // Populate emoji list
+        emojis.forEach(emoji => {
+            const span = document.createElement('span');
+            span.textContent = emoji;
+            span.addEventListener('click', () => {
+                postContent.value += emoji; // Add emoji to textarea
+                emojiList.style.display = 'none'; // Hide emoji list
+            });
+            emojiList.appendChild(span);
+        });
+
+        // Toggle emoji list visibility
+        emojiPickerBtn.addEventListener('click', () => {
+            emojiList.style.display = emojiList.style.display === 'block' ? 'none' : 'block';
+        });
+
+        // Hide emoji list when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!emojiPickerBtn.contains(event.target) && !emojiList.contains(event.target)) {
+                emojiList.style.display = 'none';
+            }
+        });
+
+        // Toggle edit mode
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const postId = this.getAttribute('data-post-id');
+                const postContent = document.getElementById(`post-content-${postId}`);
+                const editForm = document.getElementById(`edit-form-${postId}`);
+
+                // Toggle visibility
+                postContent.style.display = 'none';
+                editForm.style.display = 'block';
+            });
+        });
+
+        // Cancel edit mode
+        document.querySelectorAll('.cancel-edit-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const postId = this.getAttribute('data-post-id');
+                const postContent = document.getElementById(`post-content-${postId}`);
+                const editForm = document.getElementById(`edit-form-${postId}`);
+
+                // Toggle visibility
+                postContent.style.display = 'block';
+                editForm.style.display = 'none';
+            });
+        });
+
+        // Handle form submission via AJAX
+        document.querySelectorAll('.edit-post-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const postId = this.getAttribute('data-post-id');
+                const formData = new FormData(this);
+
+                // Manually add remove_photos checkboxes to FormData
+                const removePhotosCheckboxes = form.querySelectorAll('input[name="remove_photos[]"]:checked');
+                removePhotosCheckboxes.forEach(checkbox => {
+                    formData.append('remove_photos[]', checkbox.value);
+                });
+
+                fetch(`/post/${postId}/edit`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest' // Indicate AJAX request
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the post content
+                        const postContent = document.getElementById(`post-content-${postId}`);
+                        postContent.querySelector('.card-text').textContent = data.post.content;
+
+                        // Toggle back to display mode
+                        postContent.style.display = 'block';
+                        document.getElementById(`edit-form-${postId}`).style.display = 'none';
+                    } else {
+                        alert('Error updating post: ' + data.error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            });
+        });
+    });
+
+
+    document.querySelectorAll('.show-more-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const postId = this.getAttribute('data-post-id');
+        const hiddenComments = document.getElementById(`hidden-comments-${postId}`);
+        
+        // Toggle display
+        if (hiddenComments.style.display === 'none') {
+            hiddenComments.style.display = 'block';
+            this.textContent = 'Show Less';
+        } else {
+            hiddenComments.style.display = 'none';
+            this.textContent = `Show More Comments (${this.dataset.count})`;
+        }
+        
+        // Scroll to bottom when expanding
+        if (hiddenComments.style.display === 'block') {
+            hiddenComments.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+});
+
+function slide(direction, postId) {
+    const slider = document.getElementById(`slider-${postId}`);
+    const slides = slider.querySelectorAll('.slide');
+    const currentIndex = Math.round(slider.scrollLeft / slider.clientWidth);
+    let newIndex = currentIndex + direction;
+
+    // Boundary checks
+    newIndex = Math.max(0, Math.min(newIndex, slides.length - 1));
+    
+    slider.scrollTo({
+        left: newIndex * slider.clientWidth,
+        behavior: 'smooth'
+    });
+
+    // Update indicator
+    const indicator = document.getElementById(`indicator-${postId}`);
+    if(indicator) {
+        indicator.querySelector('.current-index').textContent = newIndex + 1;
+    }
+
+    // Update arrow visibility
+    const container = slider.parentElement;
+    container.setAttribute('data-show-prev', newIndex > 0);
+    container.setAttribute('data-show-next', newIndex < slides.length - 1);
+}
+
+// Initialize slider states
+document.querySelectorAll('.post-photos-container').forEach(container => {
+    container.setAttribute('data-show-next', container.querySelectorAll('.slide').length > 1);
+});
+
+function openModal(imgElement) {
+    const modal = document.getElementById('image-modal');
+    const modalImg = document.getElementById('modal-image');
+    
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    modalImg.src = imgElement.src;
+    
+    // Add keyboard navigation
+    document.addEventListener('keydown', handleKeyPress);
+}
+
+function closeModal() {
+    const modal = document.getElementById('image-modal');
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+    document.removeEventListener('keydown', handleKeyPress);
+}
+
+function handleKeyPress(event) {
+    if (event.key === 'Escape') closeModal();
+}
+
+// Add click handlers to all images
+document.querySelectorAll('.post-photo').forEach(img => {
+    img.addEventListener('click', () => openModal(img));
+});
+
+document.querySelectorAll('.copy-btn').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const postContainer = this.closest('.card');
+        const postContent = postContainer.querySelector('.card-text').textContent;
+        const originalHTML = this.innerHTML;
+
+        // Your custom SVG
+        const successSVG = `<svg width="20" height="20" viewBox="0 0 122.877 101.052" style="fill:#00c853;">
+            <path d="M4.43,63.63c-2.869-2.755-4.352-6.42-4.427-10.11c-0.074-3.689,1.261-7.412,4.015-10.281 c2.752-2.867,6.417-4.351,10.106-4.425c3.691-0.076,7.412,1.255,10.283,4.012l24.787,23.851L98.543,3.989l1.768,1.349l-1.77-1.355 c0.141-0.183,0.301-0.339,0.479-0.466c2.936-2.543,6.621-3.691,10.223-3.495V0.018l0.176,0.016c3.623,0.24,7.162,1.85,9.775,4.766 c2.658,2.965,3.863,6.731,3.662,10.412h0.004l-0.016,0.176c-0.236,3.558-1.791,7.035-4.609,9.632l-59.224,72.09l0.004,0.004 c-0.111,0.141-0.236,0.262-0.372,0.368c-2.773,2.435-6.275,3.629-9.757,3.569c-3.511-0.061-7.015-1.396-9.741-4.016L4.43,63.63 L4.43,63.63z"/>
+        </svg>`;
+
+        navigator.clipboard.writeText(postContent).then(() => {
+            // Show checkmark SVG
+            this.innerHTML = successSVG;
+            
+            setTimeout(() => {
+                // Restore original button content
+                this.innerHTML = originalHTML;
+            }, 2000);
+            
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+            this.innerHTML = 'Error';
+            setTimeout(() => this.innerHTML = originalHTML, 2000);
+        });
+    });
+});
+
+document.querySelectorAll('.translate-button').forEach(button => {
+    button.addEventListener('click', async function(e) {
+        const container = this.closest('.post-container');
+        const content = container.querySelector('.post-content');
+        const originalText = content.innerHTML.trim();
+        const isTranslated = this.dataset.translated === 'true';
+        
+        // Toggle between original/translated
+        if (isTranslated) {
+            content.innerHTML = container.dataset.original;
+            this.querySelector('.label').textContent = 'Translate Post';
+            this.dataset.translated = 'false';
+            return;
+        }
+
+        // Show loading state
+        const label = this.querySelector('.label');
+        const spinner = this.querySelector('.loading-spinner');
+        label.textContent = 'Translating';
+        spinner.style.display = 'inline-block';
+        this.disabled = true;
+
+        try {
+            const response = await fetch('{{ path('app_translate_post') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({
+                    text: originalText,
+                    sourceLang: container.dataset.sourceLang,
+                    targetLang: container.dataset.targetLang
+                })
+            });
+
+            const { translatedText } = await response.json();
+            
+            // Cache original content
+            container.dataset.original = originalText;
+            content.innerHTML = translatedText;
+            label.textContent = 'Show Original';
+            this.dataset.translated = 'true';
+
+        } catch (error) {
+            label.textContent = 'Translation Failed';
+            setTimeout(() => {
+                label.textContent = 'Translate Post';
+            }, 2000);
+        } finally {
+            spinner.style.display = 'none';
+            this.disabled = false;
+        }
+    });
+});
+
+</script>
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+/* Add all the CSS styles from the desired version here */
+.post-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.user-photos {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.post-date {
+    font-size: 0.8em;
+    color: #666;
+}
+
+.post-photos-container {
+    position: relative;
+    margin: 15px 0;
+}
+
+.post-photos-slider {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+}
+
+.slide {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    min-height: 300px;
+}
+
+.post-photo {
+    max-width: 100%;
+    max-height: 500px;
+    object-fit: contain;
+    border-radius: 8px;
+}
+
+.gallery-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+
+.nav-arrow {
+    background: rgba(0,0,0,0.5);
+    border: none;
+    padding: 8px;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.comments-container {
+    margin-top: 20px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.comment {
+    margin: 10px 0;
+    padding: 10px;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+
+
+.like-btn {
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+.like-btn.liked path {
+    fill:rgb(236, 141, 241); /* Red color for liked state */
+}
+
+.like-btn:not(.liked) path {
+    fill: #666; /* Default color */
+}
+
+.like-count {
+    display: inline-block;
+    transition: transform 0.2s ease;
+    margin-left: 5px;
+}
+    .create-post-container {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+    }
+    .create-post-form .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .posts-container {
+    max-height: 500px; /* Adjust height as needed */
+    overflow-y: auto; /* Enables vertical scrolling */
+}
+
+    .post-content {
+        padding: 15px;
+        background: #fff;
+        border-radius: 10px;
+    }
+    
+.post-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end; /* Move buttons to right */
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+  .like-btn {
+    fill: #8c84a1;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    transition: color 0.3s, transform 0.3s; /* Add smooth transitions */
+}
+
+.like-btn:hover {
+    color: blue; /* Turns the icon color blue when hovered */
+    transform: scale(1.1); /* Slightly enlarges the icon on hover */
+}
+
+.like-btn svg {
+    fill: #8c84a1;
+}
+
+.like-btn .like-count {
+    font-size: 1.1em;
+    transition: color 0.3s; /* Smooth transition for like count color */
+}
+
+.like-btn:hover .like-count {
+    color: blue; /* Changes the like count color to blue on hover */
+}
+
+    /* Create Post Section */
+.create-post-container {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+.create-post-container h2 {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.create-post-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Content field */
+.create-post-form .form-group {
+    position: relative;
+}
+
+.create-post-form .form-control {
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ced4da;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+.create-post-form .form-control.is-invalid {
+    border-color: #dc3545;
+    background-color: #f8d7da;
+}
+
+.create-post-form .form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(38, 143, 255, 0.25);
+    outline: none;
+}
+
+/* Word count text */
+#word-count {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+/* Error message styling */
+.create-post-form .text-danger {
+    font-size: 14px;
+    color: #dc3545;
+}
+
+.upload-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.upload-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s ease;
+}
+
+.upload-label:hover {
+    background-color: #f1f1f1;
+}
+
+
+
+.add-photos-svg {
+    width: 24px;
+    height: 24px;
+    fill: #8c84a1; /* Change color as needed */
+}
+
+#file-name {
+    font-size: 14px;
+    color: #555;
+}
+
+.delete-btn svg {
+    fill: #8c84a1; /* Default color for delete button */
+}
+
+.delete-btn:hover svg {
+    fill: red; /* Turns red when hovered */
+}
+
+.delete-btn {
+    cursor: pointer;
+    transition: transform 0.3s, fill 0.3s;
+}
+
+.delete-btn:hover {
+    transform: scale(1.1); /* Enlarges the delete button on hover */
+}
+
+/* General Post Actions Styles */
+.post-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+/* Button Styles */
+.post-actions button,
+.post-actions a {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+    transition: background 0.3s, transform 0.3s;
+}
+
+/* Hover effects */
+.post-actions button:hover,
+.post-actions a:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
+}
+
+/* Like Button */
+.like-btn {
+    color: #007bff;
+    font-size: 16px;
+}
+
+/* Copy Button */
+.copy-btn {
+    color: #28a745;
+    font-size: 16px;
+    display: inline-flex; /* Ensures proper alignment with the SVG */
+    justify-content: center;
+    align-items: center;
+}
+
+.copy-btn svg {
+    fill: #8c84a1;
+    width: 20px; /* Ensures the SVG has a consistent size */
+    height: 20px; /* Ensures the SVG has a consistent size */
+    transition: fill 0.3s, transform 0.3s; /* Added transform transition for smooth scaling */
+}
+
+.copy-btn:hover svg {
+    fill: #218838;
+    transform: scale(1.1); /* Added scaling effect on hover */
+}
+
+/* Edit Button */
+.edit-btn {
+    color: #8c84a1;
+    font-size: 16px;
+    display: inline-flex; /* Ensures the button's content is centered */
+    justify-content: center;
+    align-items: center;
+    cursor: pointer; /* Makes the button clickable */
+}
+
+/* SVG for Edit */
+.edit-btn svg {
+    fill: #8c84a1;
+    width: 20px; /* Ensures consistent size */
+    height: 20px; /* Ensures consistent size */
+    transition: fill 0.3s, transform 0.3s; /* Adds smooth transition effects */
+    vertical-align: middle; /* Aligns the SVG properly with text */
+}
+
+/* Hover effect for Edit Button */
+.edit-btn:hover svg {
+    fill: #e0a800; /* Change color on hover */
+    transform: scale(1.1); /* Slight scale-up effect */
+}
+
+
+
+
+/* Optional: Add spacing around the buttons */
+.post-actions button,
+.post-actions a {
+    margin-left: 8px;
+}
+
+
+
+/* The overlay that covers the entire page */
+.modal-overlay {
+    display: none; /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Semi-transparent black */
+    z-index: 1000; /* Make sure it appears above other content */
+    align-items: center;
+    justify-content: center;
+    overflow: auto; /* Allow scrolling inside the modal if needed */
+}
+
+/* Modal content */
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 600px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* Close button */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.user-photos {
+    width: 40px; /* Set the size of the user's photos */
+    height: 40px; /* Make it a perfect circle */
+    border-radius: 50%; /* Makes the image circular */
+    object-fit: cover; /* Ensures the image fits well inside the circle */
+    margin-right: 10px; /* Adds space between the photos and the name */
+}
+
+.user-name {
+    font-family: 'Roboto', sans-serif; /* Beautiful font (you can choose any font you like) */
+    font-weight: bold;
+    font-size: 16px; /* Adjust the font size */
+    color: #8c84a1; /* Example color (you can change this to your preferred color) */
+    line-height: 1.2;
+}
+
+
+
+
+.post-container {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            background: #fff;
+        }
+        .post-header, .comment-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+.profile-pic {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+.username {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+.comment-date {
+    color: #666;
+    font-size: 0.85em;
+}
+        .post-date {
+            display: block; /* Make it a block element to appear on new line */
+            font-size: 12px; /* Smaller font size */
+            color: #666;
+            margin-top: 2px; /* Small space between username and date */
+            line-height: 1.4;
+        }
+        .post-image {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .toggle-comment-btn, .submit-comment-btn {
+            margin-top: 10px;
+            padding: 5px 10px;
+            border: none;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .comment {
+            padding: 10px;
+            margin-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+
+.comment-content {
+    color: #1a1a1a;
+    margin: 0;
+    font-size: 0.95em;
+    line-height: 1.4;
+}
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* File Upload Icon */
+input[type="file"] {
+    display: none;
+}
+
+.upload-icon {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.upload-icon:hover {
+    transform: scale(1.1);
+}
+
+/* Comment Button (SVG Animation) */
+.toggle-comment-btn svg {
+    width: 30px;
+    height: 30px;
+    fill: transparent; /* Make the fill transparent */
+    stroke: #8c84a1; /* Set the edge color */
+    stroke-width: 7; /* Make the stroke (edges) thicker */
+    transition: transform 0.3s ease, stroke 0.3s ease; /* Smooth transition for animation */
+}
+
+
+.toggle-comment-btn:hover svg {
+    transform: rotate(45deg);
+}
+
+
+/* Textarea for Comment Input */
+.comment-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    resize: vertical;
+}
+
+.comment-input:focus {
+    border-color: #007bff;
+}
+
+.comment-input::placeholder {
+    color: #aaa;
+    font-style: italic;
+}
+
+.submit-comment-btn {
+    background: none; /* Remove default background */
+    border: none; /* Remove default border */
+    cursor: pointer; /* Change cursor to pointer */
+    padding: 10px; /* Add padding around the button */
+    transition: transform 0.2s ease; /* Add transition for smooth effect */
+}
+
+.comment-form-container {
+    margin-top: 15px;
+    display: none; /* Hidden by default */
+}
+
+
+/* Style for Comments */
+.comments-container {
+    margin-top: 20px;
+    padding-left: 15px;
+    border-left: 3px solid #eee;
+}
+
+.comment {
+    margin: 12px 0;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    position: relative;
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+.comment-date {
+    font-size: 0.9em;
+    color: #777;
+    margin-left: auto;
+}
+
+.comment-content {
+    margin-top: 10px;
+    font-size: 1em;
+    color: #555;
+}
+
+/* Hide comment form by default */
+.comment-form-container {
+    display: none;
+    margin-top: 15px;
+    padding: 15px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Style for Comment Icon */
+.comment-icon-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 1.2em;
+    color: #007bff;
+    margin-top: 10px;
+}
+
+.comment-icon-container svg {
+    margin-right: 8px;
+}
+
+/* Add hover effect for comment icon */
+.comment-icon-container:hover {
+    color: #0056b3;
+}
+
+/* Style for Submit Comment Button */
+.submit-comment-btn {
+    background: none; /* Remove default background */
+    border: none; /* Remove default border */
+    cursor: pointer; /* Change cursor to pointer */
+    padding: 10px; /* Add padding around the button */
+    transition: transform 0.2s ease; /* Add transition for smooth effect */
+    
+}
+
+/* Hover effect */
+.submit-comment-btn:hover {
+    transform: scale(1.1); /* Scale the button on hover */
+}
+
+/* Animation for the SVG */
+.submit-comment-btn svg {
+    width: 30px; /* Set the width of the SVG */
+    height: 30px; /* Set the height of the SVG */
+    fill: #8c84a1; /* Change fill color (optional) */
+    transition: fill 0.2s ease; /* Smooth color change on hover */
+}
+
+/* Change SVG color on hover */
+.submit-comment-btn:hover svg {
+    fill: #0056b3; /* Change to a darker color on hover */
+}
+
+.comment-container {
+    position: relative; /* Create a positioning context */
+    display: flex; /* Use Flexbox */
+    flex-direction: column; /* Stack children vertically */
+    justify-content: space-between; /* Space between content and button */
+    min-height: 100px; /* Set a minimum height for the comment container */
+    padding: 10px; /* Add padding for spacing */
+    border: 1px solid #ddd; /* Optional: Add a border for visual clarity */
+    border-radius: 8px; /* Optional: Add rounded corners */
+    background-color: #f9f9f9; /* Optional: Add a background color */
+}
+
+.emoji-picker-container {
+    position: relative;
+    margin-top: 10px;
+}
+
+.emoji-picker-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.emoji-picker-btn:hover {
+    background-color: #f1f1f1;
+}
+
+.emoji-svg {
+    width: 24px;
+    height: 24px;
+    fill: #8c84a1; /* Change color as needed */
+}
+
+.emoji-list {
+    display: none;
+    position: absolute;
+    bottom: 40px;
+    left: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    max-height: 150px;
+    overflow-y: auto;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.emoji-list span {
+    cursor: pointer;
+    font-size: 20px;
+    margin: 4px;
+    display: inline-block;
+}
+
+.emoji-list span:hover {
+    transform: scale(1.2);
+}
+
+/* Edit Form Container */
+.edit-form-container {
+    display: none; /* Hidden by default */
+    margin-top: 15px;
+    padding: 20px;
+    background: #f9f9f9;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Group Styling */
+.edit-form-container .form-group {
+    margin-bottom: 15px;
+}
+
+/* Textarea Styling */
+.edit-form-container textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    resize: vertical; /* Allow vertical resizing */
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.edit-form-container textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+/* File Input Styling */
+.edit-form-container input[type="file"] {
+    display: none; /* Hide the default file input */
+}
+
+.edit-form-container .file-upload-label {
+    display: inline-block;
+    padding: 8px 12px;
+    background: #007bff;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.edit-form-container .file-upload-label:hover {
+    background: #0056b3;
+}
+
+/* Button Styling */
+.edit-form-container .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.edit-form-container .btn-primary {
+    background: #007bff;
+    color: #fff;
+}
+
+.edit-form-container .btn-primary:hover {
+    background: #0056b3;
+}
+
+.edit-form-container .btn-secondary {
+    background: #6c757d;
+    color: #fff;
+    margin-left: 10px;
+}
+
+.edit-form-container .btn-secondary:hover {
+    background: #5a6268;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .edit-form-container {
+        padding: 15px;
+    }
+
+    .edit-form-container textarea {
+        font-size: 16px; /* Larger font for mobile */
+    }
+
+    .edit-form-container .btn {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .edit-form-container .btn-secondary {
+        margin-left: 0;
+    }
+}
+
+.delete-comment-form {
+    position: absolute; /* Allows precise positioning */
+    bottom: 10px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
+}
+
+.position-relative {
+    position: relative;
+}
+
+
+.delete-comment-btn {
+    background: none; /* Remove default button background */
+    border: none; /* Remove default button border */
+    padding: 0; /* Remove default button padding */
+    cursor: pointer; /* Change cursor to pointer */
+    color: #8c84a1; /* Default color */
+    transition: color 0.3s ease;
+
+}
+
+.delete-comment-btn svg {
+    width: 13px; /* Set SVG width */
+    height: 13px;
+}
+
+.delete-comment-btn:hover svg {
+    color: #dc3545;
+}
+.delete-comment-btn:hover {
+    transform: scale(1.1); /* Enlarges the delete button on hover */
+}
+
+.comments-container {
+    max-height: 300px; /* Adjust based on your needs */
+    overflow-y: auto;
+    margin: 10px 0;
+}
+
+/* Custom scrollbar */
+.comments-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.comments-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.comments-container::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.comments-container::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.show-more-btn {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    padding: 5px;
+    margin-top: 10px;
+    font-size: 0.9em;
+}
+
+.show-more-btn:hover {
+    text-decoration: underline;
+}
+
+.post-photos-container {
+    position: relative;
+    margin: 15px 0;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #000;
+    max-width: 600px;  /* Limits maximum width */
+    width: 90%;        /* Responsive width */
+    margin-left: auto;
+    margin-right: auto; /* Centers the container */
+    min-height: 300px;  /* Minimum height for smaller images */
+    max-height: 70vh;   /* Maximum height relative to viewport */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow */
+}
+
+.post-photo {
+    max-width: 100%;
+    max-height: 65vh;   /* Slightly less than container height */
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    margin: 0 auto;
+    display: block;
+    transition: opacity 0.3s ease;
+}
+.post-photos-slider {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.post-photos-slider::-webkit-scrollbar {
+    display: none;
+}
+
+.slide {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    position: relative;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.post-photo {
+    max-width: 100%;
+    max-height: 600px;
+    object-fit: contain;
+    border-radius: 4px;
+    transition: opacity 0.3s ease;
+}
+
+.gallery-nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+}
+
+.nav-arrow {
+    pointer-events: all;
+    background: rgba(0,0,0,0.5);
+    border: none;
+    padding: 12px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin: 0 10px;
+}
+
+.nav-arrow:hover {
+    background: rgba(0,0,0,0.7);
+}
+
+.nav-arrow svg {
+    fill: white;
+    width: 28px;
+    height: 28px;
+}
+
+.gallery-indicator {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+/* Hide arrows when at boundaries */
+.post-photos-container:not([data-show-prev]) .prev-arrow,
+.post-photos-container:not([data-show-next]) .next-arrow {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.image-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2); /* Light foggy background */
+    backdrop-filter: blur(5px) brightness(0.9);
+    -webkit-backdrop-filter: blur(5px) brightness(0.9);
+}
+
+.modal-content {
+    position: relative;
+    z-index: 1001;
+    max-width: 90%;
+    max-height: 90vh;
+    background: rgba(255, 255, 255, 0.1); /* Slight white overlay */
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.modal-image {
+    max-width: 100%;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 8px;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: white;
+    font-size: 32px;
+    background: rgba(0, 0, 0, 0.3);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.modal-close:hover {
+    background: rgba(0, 0, 0, 0.5);
+    transform: scale(1.1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Keep existing post-photo styles */
+.post-photo {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+/* Post SVG styling */
+.submit-button svg {
+    width: 20px;        /* Adjust size to match your design */
+    height: 20px;
+    vertical-align: middle; /* Align with text */
+    margin-right: 8px;  /* Space between icon and text */
+    fill: #8c84a1; /* Inherits text color from button */
+    transition: fill 0.2s ease-in-out;
+}
+
+/* Optional hover states */
+.submit-button:hover svg {
+    fill:rgb(70, 68, 73);         /* Change color on hover if needed */
+}
+
+.submit-button:active svg {
+    transform: scale(0.95); /* Slight press effect */
+}
+
+/* If you need to specifically target the Layer_1 ID */
+#Layer_1 {
+    /* Add any specific transformations here */
+}
+
+.media-input-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.upload-container {
+    position: relative;
+}
+
+.upload-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.upload-label:hover {
+    background: #e9ecef;
+}
+
+.emoji-picker-container {
+    position: relative;
+}
+
+.emoji-picker-btn {
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    background: #f8f9fa;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.emoji-picker-btn:hover {
+    background: #e9ecef;
+}
+
+.emoji-list {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    display: none;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 4px;
+    gap: 4px;
+    flex-wrap: wrap;
+    width: 200px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.emoji-list.show {
+    display: flex;
+}
+
+.emoji-option {
+    cursor: pointer;
+    padding: 4px;
+    font-size: 1.2rem;
+    width: 32px;
+    text-align: center;
+    border-radius: 4px;
+}
+
+.emoji-option:hover {
+    background: #f8f9fa;
+}
+
+.add-photos-svg,
+.emoji-svg {
+    width: 20px;
+    height: 20px;
+}
+/* Notifications */
+.notification-container {
+    max-width: 350px;
+}
+
+.alert {
+    position: relative;
+    padding: 1rem 1.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+    opacity: 0.95;
+}
+
+.alert-success {
+    background-color: #d1fae5;
+    border-color: #34d399;
+    color: #065f46;
+}
+
+.alert-danger {
+    background-color: #fee2e2;
+    border-color: #f87171;
+    color: #991b1b;
+}
+
+.alert-dismissible {
+    padding-right: 3.5rem;
+}
+
+.btn-close {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    padding: 0.5rem;
+    background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23000'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+    border: 0;
+    opacity: 0.7;
+}
+
+.btn-close:hover {
+    opacity: 1;
+}
+
+/* Animation */
+.fade {
+    transition: opacity 0.3s linear;
+}
+
+.fade:not(.show) {
+    opacity: 0;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+.alert {
+    animation: slideIn 0.3s ease-out;
+}
+
+.translate-button {
+    background: none;
+    border: none;
+    color: #1877F2;
+    cursor: pointer;
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 6px;
+}
+
+.translate-button:hover {
+    background: rgba(24, 119, 242, 0.1);
+}
+
+.language-icon {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+
+.loading-spinner {
+    animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+[data-translated="true"] .label {
+    color: #65676B;
+}
+</style>
+
+{% endblock %}
+{% endblock %}

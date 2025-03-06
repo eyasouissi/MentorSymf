@@ -1,0 +1,19 @@
+<!-- templates/comment/_comment.html.twig -->
+<div class="comment mb-3" id="comment-{{ comment.id }}">
+    <div class="comment-header">
+        <!-- User profile picture -->
+        <img src="{{ asset('uploads/pfp/' ~ comment.user.pfp) }}" alt="{{ comment.user.name }}" class="user-photo">
+        <!-- User name -->
+        <span class="user-name">{{ comment.user.name }}</span>
+    </div>
+    <div class="comment-body">
+        <!-- Comment content -->
+        <p>{{ comment.content }}</p>
+        <!-- If the comment has a file attached, display it -->
+        {% if comment.file %}
+            <img src="{{ asset('uploads/photos/' ~ comment.file) }}" class="img-fluid" style="max-width: 150px;">
+        {% endif %}
+        <!-- Display the date and time when the comment was created -->
+        <p class="text-muted">Commented on {{ comment.createdAt|date('Y-m-d H:i') }}</p>
+    </div>
+</div>

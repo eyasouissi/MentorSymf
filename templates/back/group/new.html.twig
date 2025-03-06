@@ -1,11 +1,13 @@
-{% extends 'front/baseback.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}New Group{% endblock %}
 
 {% block body %}
-    <h1>Create new Group</h1>
+    <h1>Create New Group</h1>
 
-    {{ include('front/group/_form.html.twig') }}
+    {{ include('group/_form.html.twig') }}
 
-    <a href="{{ path('app_group_index') }}">back to list</a>
+    <a href="{{ path('app_group_index') }}" class="btn btn-secondary">
+        <i class="bi bi-arrow-left-circle"></i> Back to List
+    </a>
 {% endblock %}

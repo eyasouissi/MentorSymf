@@ -29,9 +29,9 @@ class Forum
     #[ORM\Column(nullable: true)]
     private ?int $totalposts = 0;
 
-    #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'forum')]
+    #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'forum', cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $posts;
-
+    
     #[ORM\Column(nullable: true)]
     private ?bool $isPublic = false;
 

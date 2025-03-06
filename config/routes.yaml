@@ -4,4 +4,18 @@ controllers:
         namespace: App\Controller
     type: attribute
 
+upload_pdf:
+    path: /upload-pdf
+    controller: App\Controller\ChatbotController::uploadPdf
+    methods: POST
 
+get_responses:
+    path: /get-responses
+    controller: App\Controller\ChatbotController::getResponses
+    methods: GET
+
+
+chatbot:
+    path: /chatbot
+    controller: App\Controller\ChatbotController::chatbot
+    methods: POST

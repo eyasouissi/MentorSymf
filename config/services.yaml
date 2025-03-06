@@ -1,17 +1,35 @@
 # This file is the entry point to configure your own services.
 
 parameters:
+    pdf_upload_directory: '%kernel.project_dir%/public/uploads/pdf'
     diploma_directory: '%kernel.project_dir%/public/uploads/Diplomas'
     upload_directory: '%kernel.project_dir%/public/uploads/images'
     pfp_upload_directory: '%kernel.project_dir%/public/uploads/pfp'
     uploadsDirectory: '%kernel.project_dir%/public/uploads/events'
-    post_photos_directory: '%kernel.project_dir%/public/uploads/photos'
+    photos_directory: '%kernel.project_dir%/public/uploads/photos'
+    uploads_directory: '%kernel.project_dir%/public/uploads/projet'
+    comment_images_directory: '%kernel.project_dir%/public/uploads/comments'
+    prohibited_terms:
+        - 'badword1'
+        - 'badword2'
+        - 'offensive-phrase'
+
 
 
 services:
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    App\EventSubscriber\NotifSubscriber:
+        tags:
+            - { name: kernel.event_subscriber }
+    App\Service\TranslationService:
+        arguments:
+            $httpClient: '@http_client'
+            $cache: '@cache.app'
+
+    App\Controller\TranslationController:
+        tags: ['controller.service_arguments']
 
         
 
@@ -34,5 +52,8 @@ services:
         autowire: true
         autoconfigure: true
         public: true
+    
+    App\Repository\CommentRepository:
+        tags: ['doctrine.repository_service']
 
     

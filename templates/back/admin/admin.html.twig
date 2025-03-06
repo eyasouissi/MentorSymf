@@ -21,6 +21,25 @@
                 </nav>
             </div>
 
+    <!-- Add Chatbot PDF Upload Section -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h3>Chatbot Knowledge Management</h3>
+                </div>
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'id': 'pdfUploadForm', 'class': 'form-horizontal'}}) }}
+                        <div class="form-group">
+                            {{ form_label(form.file, 'Upload PDF Knowledge Base', {'label_attr': {'class': 'control-label'}}) }}
+                            {{ form_widget(form.file, {'attr': {'class': 'form-control-file'}}) }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> Upload PDF
+                        </button>
+                    {{ form_end(form) }}
+
+                    <div id="uploadStatus" class="mt-3"></div>
+                </div>
+            </div>
             <h3 class="mt-4">User Overview</h3>
             <table class="table table-striped">
                 <thead>
@@ -64,4 +83,47 @@
         </div>
     </div>
 </div>
+
+
+
+<!-- Add JavaScript for PDF Upload -->
+<script>
+document.getElementById('pdfUploadForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    const fileInput = document.querySelector('#pdfUploadForm input[type="file"]');
+    const statusDiv = document.getElementById('uploadStatus');
+    
+    formData.append('file', fileInput.files[0]);
+
+    try {
+        statusDiv.innerHTML = '<div class="alert alert-info">Processing PDF...</div>';
+        
+        const response = await fetch('{{ path('upload_pdf') }}', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            statusDiv.innerHTML = `
+                <div class="alert alert-success">
+                    ${result.message}<br>
+                    Processed ${Object.keys(result.responses).length} responses
+                </div>
+            `;
+        } else {
+            throw new Error(result.message);
+        }
+    } catch (error) {
+        statusDiv.innerHTML = `
+            <div class="alert alert-danger">
+                Error: ${error.message}
+            </div>
+        `;
+    }
+});
+</script>
 {% endblock %}

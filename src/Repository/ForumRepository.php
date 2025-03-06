@@ -16,6 +16,17 @@ class ForumRepository extends ServiceEntityRepository
         parent::__construct($registry, Forum::class);
     }
 
+    public function getTotalStats(): array
+{
+    $query = $this->createQueryBuilder('f')
+        ->select('COUNT(p.id) as totalPosts', 'SUM(p.likes) as totalLikes')
+        ->leftJoin('f.posts', 'p')
+        ->where('f.isPublic = true')
+        ->getQuery();
+
+    return $query->getSingleResult();
+}
+
     //    /**
     //     * @return Forum[] Returns an array of Forum objects
     //     */

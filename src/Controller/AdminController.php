@@ -9,15 +9,19 @@ use Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\User;
 use App\Form\UserType;
+use App\Form\PdfUploadType;
 
 final class AdminController extends AbstractController
 {
-    #[Route('/admin', name: 'app_admin')]
-    public function index(EntityManagerInterface $entityManager): Response
+    #[Route('/admin', name: 'admin')]
+    public function index(EntityManagerInterface $entityManager, Request $request): Response
     {
         $users = $entityManager->getRepository(User::class)->findAll();
+        // Create the form (assuming PdfUploadType is intended for the admin page)
+        $form = $this->createForm(PdfUploadType::class);
 
         return $this->render('back/admin/admin.html.twig', [
+            'form' => $form->createView(),
             'users' => $users,
         ]);
     }
@@ -31,7 +35,7 @@ final class AdminController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
             $this->addFlash('success', 'Utilisateur mis à jour avec succès.');
-            return $this->redirectToRoute('app_admin');
+            return $this->redirectToRoute('admin');
         }
 
         return $this->render('back/admin/edit_user.html.twig', [
@@ -49,6 +53,6 @@ final class AdminController extends AbstractController
             $this->addFlash('success', 'Utilisateur supprimé avec succès.');
         }
 
-        return $this->redirectToRoute('app_admin');
+        return $this->redirectToRoute('admin');
     }
 }

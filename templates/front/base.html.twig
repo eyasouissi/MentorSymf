@@ -3,31 +3,571 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token('authenticate') }}">
+
     <title>{% block title %}{% endblock %}</title>
 
     {% block css %}
+    <!-- Favicons -->
+    <link href="assets/img/favicon.png" rel="icon">
+    <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
+    <!-- Fonts -->
+    <link href="{{asset('https://fonts.googleapis.com')}}" rel="preconnect">
+    <link href="{{asset('https://fonts.gstatic.com')}}" rel="preconnect" crossorigin>
+    <link href="{{asset('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap')}}" rel="stylesheet">
+    <link rel="stylesheet" href="{{asset('https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css')}}">
+
+    <!-- Vendor CSS Files -->
+    <link href="{{asset('assets/vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
+    <link href="{{asset('assets/vendor/bootstrap-icons/bootstrap-icons.css')}}" rel="stylesheet">
+    <link href="{{asset('assets/vendor/aos/aos.css')}}" rel="stylesheet">
+    <link href="{{asset('assets/vendor/glightbox/css/glightbox.min.css')}}" rel="stylesheet">
+    <link href="{{asset('assets/vendor/swiper/swiper-bundle.min.css')}}" rel="stylesheet">
+
+    <!-- Main CSS File -->
+    <link href="{{asset('assets/css/main.css')}}" rel="stylesheet">
+       <style>
+        /* Chat Bot Container */
+        .mentor-chatbot {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 9999;
+        }
+
         
-      <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+        /* Chat Trigger Button */
+        .mentor-chatbot__trigger {
+            width: 64px;
+            height: 64px;
+            background: #8c84a1;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding: 12px;
+        }
 
-  <!-- Fonts -->
-  <link href="{{asset('https://fonts.googleapis.com')}}" rel="preconnect">
-  <link href="{{asset('https://fonts.gstatic.com')}}" rel="preconnect" crossorigin>
-  <link href="{{asset('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400;1,500;1,600;1,700;1,800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap')}}" rel="stylesheet">
-<link rel="stylesheet" href="{{asset('https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css')}}">
+        .mentor-chatbot__trigger:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
 
-  <!-- Vendor CSS Files -->
-  <link href="{{asset('assets/vendor/bootstrap/css/bootstrap.min.css')}}" rel="stylesheet">
-  <link href="{{asset('assets/vendor/bootstrap-icons/bootstrap-icons.css')}}" rel="stylesheet">
-  <link href="{{asset('assets/vendor/aos/aos.css')}}" rel="stylesheet">
-  <link href="{{asset('assets/vendor/glightbox/css/glightbox.min.css')}}" rel="stylesheet">
-  <link href="{{asset('assets/vendor/swiper/swiper-bundle.min.css')}}" rel="stylesheet">
+        .mentor-chatbot__trigger svg {
+            width: 100%;
+            height: 100%;
+            fill: white;
+        }
 
-  <!-- Main CSS File -->
-  <link href="{{asset('assets/css/main.css')}}" rel="stylesheet">
+        /* Chat Window */
+        .mentor-chatbot__window {
+            position: absolute;
+            bottom: calc(100% + 20px);
+            right: 0;
+            width: 380px;
+            max-height: 70vh;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            transform: translateY(10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
 
-  
+        .mentor-chatbot__window--active {
+            transform: translateY(0);
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Header */
+        .mentor-chatbot__header {
+            padding: 18px 24px;
+            background: #8c84a1;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mentor-chatbot__title {
+            color: white;
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .mentor-chatbot__close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        /* Messages Container */
+        .mentor-chatbot__messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Message Bubbles */
+        .mentor-chatbot__message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            animation: messageAppear 0.3s ease;
+        }
+
+        .mentor-chatbot__message--bot {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px 20px 20px 4px;
+            align-self: flex-start;
+        }
+
+        .mentor-chatbot__message--user {
+            background: #8c84a1;
+            color: white;
+            border-radius: 20px 4px 20px 20px;
+            align-self: flex-end;
+        }
+
+        /* Input Area */
+        .mentor-chatbot__input {
+            padding: 16px;
+            border-top: 1px solid #eee;
+            background: white;
+            display: flex;
+            gap: 8px;
+        }
+
+        .mentor-chatbot__input-field {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #ddd;
+            border-radius: 24px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .mentor-chatbot__send-btn {
+            background: #8c84a1;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 24px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .mentor-chatbot__send-btn:hover {
+            background: #7a728f;
+        }
+
+        /* Animations */
+        @keyframes messageAppear {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .mentor-chatbot__typing {
+            display: flex;
+            align-items: center;
+            padding: 8px 16px;
+        }
+
+        .mentor-chatbot__typing-dot {
+            width: 6px;
+            height: 6px;
+            margin: 0 2px;
+            background: #ddd;
+            border-radius: 50%;
+            animation: mentorTyping 1.4s infinite ease-in-out;
+        }
+
+        @keyframes mentorTyping {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+    </style>
+    <style>
+    .profile-img {
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 50px; /* Adjust the value to create the desired gap */
+    }
+
+    .profile-dropdown {
+        display: flex;
+        align-items: center;
+    }
+
+    #navmenu li:last-child {
+        margin-right: 50px; /* Adjust the value to create the desired gap */
+    }
+
+    .dropdown-menu {
+        display: none;
+        position: absolute;
+        top: 40px; /* Position the dropdown below the profile picture */
+        right: 0;
+        background-color: white;
+        border-radius: 5px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .dropdown-menu a {
+        padding: 10px;
+        display: block;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .dropdown-menu a:hover {
+        background-color: #f0f0f0;
+    }
+
+/* Dropdown Menu */
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px; /* Increased border radius */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    min-width: 240px; /* Increased width */
+    padding: 16px; /* Added padding */
+}
+
+.profile-dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+/* Dropdown Header */
+.az-header-profile {
+    padding: 16px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.az-img-user {
+    display: flex;
+    justify-content: center; /* Center the image horizontally */
+    margin-bottom: 12px; /* Space below the image */
+}
+
+.az-img-user img {
+    width: 60px; /* Increased size */
+    height: 60px; /* Increased size */
+    border-radius: 50%;
+}
+
+.az-header-profile h6 {
+    margin: 8px 0 4px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.az-header-profile span {
+    font-size: 14px;
+    color: #666;
+}
+
+/* Dropdown Items */
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px; /* Increased padding */
+    color: #333;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.dropdown-item:hover {
+    background-color: #f5f5f5;
+}
+
+/* SVG Icons */
+.dropdown-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px; /* Increased spacing */
+    fill: currentColor;
+}
+
+/* Notification Bell */
+.notification-bell {
+    position: relative;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.bell {
+    position: relative;
+    width: 30px;
+    height: 30px;
+}
+
+.bell-top, .bell-bot {
+    position: absolute;
+    background: #fff;
+}
+
+.bell-top {
+    width: 100%;
+    height: 100%;
+    border-radius: 50% 50% 0 0;
+}
+
+.bell-top:before {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: inherit;
+    top: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 50%;
+}
+
+.bell-top:after {
+    content: '';
+    border-bottom: 4px solid #fff;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.bell-bot {
+    width: 8px;
+    height: 4px;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 0 0 8px 8px;
+}
+
+.bell-notification {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4757;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Animations */
+
+/* Notifications Dropdown */
+.notifications-dropdown {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    width: 350px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1001;
+}
+
+.notifications-header {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notifications-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.notification-item.unread {
+    background: #f8f9fa;
+}
+
+.notification-item:hover {
+    background: #f1f2f6;
+}
+
+.notification-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+/* Notification Bell Container */
+.notification-bell {
+    position: relative;
+    margin-right: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+/* Bell Icon */
+.bell-icon {
+    width: 24px;
+    height: 24px;
+    fill: #8c84a1; /* Adjust the color to match your design */
+}
+
+/* Notification Count */
+.notification-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff4757;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+.notifications-dropdown {
+    display: none;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    width: 350px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1001;
+    padding: 10px;
+}
+
+.notifications-header {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notifications-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notification-item {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.notification-item.unread {
+    background: #f8f9fa;
+}
+
+.notification-item:hover {
+    background: #f1f2f6;
+}
+
+.notification-item img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-time {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+}
+@keyframes bellShake {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(15deg); }
+    50% { transform: rotate(-15deg); }
+    75% { transform: rotate(10deg); }
+    100% { transform: rotate(0deg); }
+}
+
+.continuous-shake {
+    animation: bellShake 0.8s ease-in-out infinite;
+    transform-origin: top center;
+}
+
+.notification-pulse {
+    animation: notificationPulse 0.3s ease-out;
+}
+
+@keyframes notificationPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+</style>
 
     {% endblock %}
 </head>
@@ -50,21 +590,114 @@
                     <li><a href= "{{ path('app_forum') }}">Forum</a></li>
                     <li><a href="{{ path('app_group_index') }}">Groups</a></li>
                     <li><a href="{{ path('app_contact') }}">Contact</a></li>
-                    
                 </ul>
                 <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
             </nav>
 
-{% if app.user %}
-    <a class="btn-getstarted" href="{{ path('logout') }}">log out</a>
-        <a class="btn-getstarted" href="{{ path('profile') }}">profile</a>
+         {% if app.user %}
+    <div class="profile-dropdown">
+    <div class="notification-bell" onclick="toggleNotifications()">
+        <svg class="bell-icon" viewBox="0 0 24 24" width="24" height="24">
+            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/>
+        </svg>
+        <span class="notification-count">0</span>
+    </div>
 
+   
+</div>
 
+<!-- Notifications Dropdown -->
+
+        <!-- Profile Picture -->
+        <img src="{{ asset('uploads/pfp/' ~ (app.user.pfp is not null ? app.user.pfp : (app.user.gender == 'male' ? 'male.jpg' : 'female.jpg'))) }}" 
+             alt="Profile Image" 
+             class="profile-img" 
+             id="profile-pic">
+        
+        <!-- Dropdown Menu -->
+        <div class="dropdown-menu" id="profile-menu">
+            <!-- Dropdown Header with Profile Picture, Name, and Role -->
+            <div class="az-dropdown-header d-sm-none">
+                <a href="" class="az-header-arrow"><i class="icon ion-md-arrow-back"></i></a>
+            </div>
+            <div class="az-header-profile">
+                <div class="az-img-user">
+                    <!-- Dynamic Profile Picture -->
+                    <img src="{{ asset('uploads/pfp/' ~ (app.user.pfp is not null ? app.user.pfp : (app.user.gender == 'male' ? 'male.jpg' : 'female.jpg'))) }}" 
+                         alt="Profile Picture" 
+                         class="rounded-circle" 
+                         width="60" 
+                         height="60">
+                  </div><!-- az-img-user -->
+    <h6>{{ app.user.name }}</h6>
+    <span>
+        {% if 'ROLE_TUTOR' in app.user.roles %}
+            Tutor
+        {% elseif 'ROLE_STUDENT' in app.user.roles %}
+            Student
+        {% elseif 'ROLE_ADMIN' in app.user.roles %}
+            Admin
+        {% else %}
+            User
+        {% endif %}
+    </span>
+            </div><!-- az-header-profile -->
+
+            <!-- Profile Button with SVG -->
+            <a class="dropdown-item" href="{{ path('profile') }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="dropdown-icon">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                Profile
+            </a>
+
+            <!-- Edit Profile Button with SVG -->
+            {% if 'ROLE_ADMIN' in app.user.roles %}
+                <a href="{{ path('admin_edit_profile') }}" class="dropdown-item" id="edit-profile-btn">
+            {% else %}
+                <a href="{{ path('profile_edit') }}" class="dropdown-item" id="edit-profile-btn">
+            {% endif %}
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="dropdown-icon">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                </svg>
+                Edit Profile
+            </a>
+
+            <!-- Dark Mode Button with SVG -->
+            <button class="dropdown-item" id="dark-mode-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="dropdown-icon">
+                    <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1-8.313-12.454z"/>
+                </svg>
+                Dark Mode
+            </button>
+
+            <!-- Log Out Button with SVG -->
+            <a class="dropdown-item" href="{{ path('logout') }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" class="dropdown-icon">
+                    <path d="M10.09 15.59L11.5 17l5-5-5-5-1.41 1.41L12.67 11H3v2h9.67l-2.58 2.59zM19 3H5c-1.11 0-2 .9-2 2v4h2V5h14v14H5v-4H3v4c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+                </svg>
+                Log Out
+            </a>
+        </div>
+    </div>
 {% else %}
+    <!-- Get Started Button for Non-Logged-In Users -->
     <a class="btn-getstarted" href="{{ path('login') }}">Get Started</a>
 {% endif %}
-            
         </div>
+    <div class="notifications-dropdown" id="notificationsDropdown">
+    <div class="notifications-header">
+        <h4>Notifications</h4>
+    </div>
+    <div class="notifications-list" id="notificationsList">
+        <!-- Notifications will be loaded here -->
+    </div>
+</div>
+
+<!-- Existing Profile Dropdown -->
+<div class="profile-dropdown" id="profileDropdown">
+    <!-- ... existing dropdown content ... -->
+</div>
     </header>
     {% endblock %}
 
@@ -139,24 +772,420 @@
             </div>
         </div>
     </footer>
+
+     <!-- Add this at the end of your body block -->
+    <div class="mentor-chatbot">
+    <button class="mentor-chatbot__trigger" onclick="toggleMentorChat()">
+        <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 122.88 119.35">
+            <title>chatbot</title>
+            <path d="M57.49,29.2V23.53a14.41,14.41,0,0,1-2-.93A12.18,12.18,0,0,1,50.44,7.5a12.39,12.39,0,0,1,2.64-3.95A12.21,12.21,0,0,1,57,.92,12,12,0,0,1,61.66,0,12.14,12.14,0,0,1,72.88,7.5a12.14,12.14,0,0,1,0,9.27,12.08,12.08,0,0,1-2.64,3.94l-.06.06a12.74,12.74,0,0,1-2.36,1.83,11.26,11.26,0,0,1-2,.93V29.2H94.3a15.47,15.47,0,0,1,15.42,15.43v2.29H115a7.93,7.93,0,0,1,7.9,7.91V73.2A7.93,7.93,0,0,1,115,81.11h-5.25v2.07A15.48,15.48,0,0,1,94.3,98.61H55.23L31.81,118.72a2.58,2.58,0,0,1-3.65-.29,2.63,2.63,0,0,1-.63-1.85l1.25-18h-.21A15.45,15.45,0,0,1,13.16,83.18V81.11H7.91A7.93,7.93,0,0,1,0,73.2V54.83a7.93,7.93,0,0,1,7.9-7.91h5.26v-2.3A15.45,15.45,0,0,1,28.57,29.2H57.49ZM82.74,47.32a9.36,9.36,0,1,1-9.36,9.36,9.36,9.36,0,0,1,9.36-9.36Zm-42.58,0a9.36,9.36,0,1,1-9.36,9.36,9.36,9.36,0,0,1,9.36-9.36Zm6.38,31.36a2.28,2.28,0,0,1-.38-.38,2.18,2.18,0,0,1-.52-1.36,2.21,2.21,0,0,1,.46-1.39,2.4,2.4,0,0,1,.39-.39,3.22,3.22,0,0,1,3.88-.08A22.36,22.36,0,0,0,56,78.32a14.86,14.86,0,0,0,5.47,1A16.18,16.18,0,0,0,67,78.22,25.39,25.39,0,0,0,72.75,75a3.24,3.24,0,0,1,3.89.18,3,3,0,0,1,.37.41,2.22,2.22,0,0,1,.42,1.4,2.33,2.33,0,0,1-.58,1.35,2.29,2.29,0,0,1-.43.38,30.59,30.59,0,0,1-7.33,4,22.28,22.28,0,0,1-7.53,1.43A21.22,21.22,0,0,1,54,82.87a27.78,27.78,0,0,1-7.41-4.16l0,0ZM94.29,34.4H28.57A10.26,10.26,0,0,0,18.35,44.63V83.18A10.26,10.26,0,0,0,28.57,93.41h3.17a2.61,2.61,0,0,1,2.41,2.77l-1,14.58L52.45,94.15a2.56,2.56,0,0,1,1.83-.75h40a10.26,10.26,0,0,0,10.22-10.23V44.62A10.24,10.24,0,0,0,94.29,34.4Z"/>
+        </svg>
+    </button>
+        
+        <div class="mentor-chatbot__window" id="mentorChatWindow">
+            <div class="mentor-chatbot__header">
+                <h3 class="mentor-chatbot__title">Mentor Assistant</h3>
+                <button class="mentor-chatbot__close" onclick="toggleMentorChat()">×</button>
+            </div>
+            
+            <div class="mentor-chatbot__messages" id="mentorChatMessages">
+                <div class="mentor-chatbot__message mentor-chatbot__message--bot">
+                    Welcome to Mentor! How can I help you today? 😊
+                </div>
+            </div>
+            
+            <div class="mentor-chatbot__input">
+                <input type="text" 
+                       class="mentor-chatbot__input-field" 
+                       id="mentorChatInput" 
+                       placeholder="Type your message..."
+                       onkeypress="handleMentorKeyPress(event)">
+                <button class="mentor-chatbot__send-btn" onclick="sendMentorMessage()">Send</button>
+            </div>
+        </div>
+    </div>
     {% endblock %}
 
     {% block js %}
-        <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-        <script src="{{ asset('assets/vendor/aos/aos.js') }}"></script>
-        <script>
-            AOS.init();
-        </script>
-         <!-- Vendor JS Files -->
-  <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="assets/vendor/php-email-form/validate.js"></script>
-  <script src="assets/vendor/aos/aos.js"></script>
-  <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
-  <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
-  <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/aos/aos.js') }}"></script>
+    <script>
+        AOS.init();
+    </script>
+    <script src="assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/vendor/php-email-form/validate.js"></script>
+    <script src="assets/vendor/aos/aos.js"></script>
+    <script src="assets/vendor/glightbox/js/glightbox.min.js"></script>
+    <script src="assets/vendor/purecounter/purecounter_vanilla.js"></script>
+    <script src="assets/vendor/swiper/swiper-bundle.min.js"></script>
+    <script src="{{asset('assets/js/main.js')}}"></script>
 
-  <!-- Main JS File -->
-  <script src="{{asset('assets/js/main.js')}}"></script>
-    {% endblock %}
+   <script>
+    let mentorChatOpen = false;
+    
+    // Chat Toggle Functionality
+    function toggleMentorChat() {
+        const chatWindow = document.getElementById('mentorChatWindow');
+        mentorChatOpen = !mentorChatOpen;
+        chatWindow.classList.toggle('mentor-chatbot__window--active', mentorChatOpen);
+        
+        if(mentorChatOpen) {
+            document.getElementById('mentorChatInput').focus();
+        }
+    }
+
+    // Input Handling
+    function handleMentorKeyPress(e) {
+        if(e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMentorMessage();
+        }
+    }
+
+    // Main Chat Function
+    async function sendMentorMessage() {
+        const input = document.getElementById('mentorChatInput');
+        const messages = document.getElementById('mentorChatMessages');
+        const userMessage = input.value.trim();
+        
+        if(!userMessage) return;
+
+        // Display User Message
+        messages.innerHTML += `
+            <div class="mentor-chatbot__message mentor-chatbot__message--user">
+                ${userMessage}
+            </div>
+        `;
+
+        // Show Typing Indicator
+        messages.innerHTML += `
+            <div class="mentor-chatbot__typing">
+                <div class="mentor-chatbot__typing-dot"></div>
+                <div class="mentor-chatbot__typing-dot"></div>
+                <div class="mentor-chatbot__typing-dot"></div>
+            </div>
+        `;
+
+        input.value = '';
+        messages.scrollTop = messages.scrollHeight;
+
+        try {
+            // Get PDF-Based Response
+            const response = await getMentorResponse(userMessage);
+            
+            // Remove Typing Indicator
+            document.querySelector('.mentor-chatbot__typing')?.remove();
+            
+            // Display Bot Response
+            messages.innerHTML += `
+                <div class="mentor-chatbot__message mentor-chatbot__message--bot">
+                    ${response}
+                </div>
+            `;
+            
+        } catch (error) {
+            document.querySelector('.mentor-chatbot__typing')?.remove();
+            messages.innerHTML += `
+                <div class="mentor-chatbot__message mentor-chatbot__message--bot">
+                    Sorry, I'm having trouble accessing my knowledge base. Please try again later.
+                </div>
+            `;
+        }
+        
+        messages.scrollTop = messages.scrollHeight;
+    }
+
+    // Response Fetching Logic
+   
+   async function getMentorResponse(message) {
+    try {
+        // Try to get responses from PDF knowledge base first
+        const pdfResponse = await fetchPDFResponse(message);
+        if (pdfResponse) return pdfResponse;
+
+        // Default responses with rich formatting
+        const defaultResponses = {
+            'hi': 'Hello! How can I assist you today? 😊',
+            'hello': 'Hi there! Welcome to Mentor, your go-to platform for students and tutors. Ready to learn something new today?',
+            'how_are_you': "I'm just a chatbot, but if I had feelings, I'd say I'm great! How about you?",
+            'motivation': 'Remember, every expert was once a beginner.<br>Keep pushing forward, and don\'t be afraid to ask for help.<br>You\'ve got this! 💪📚',
+            'study_tips': `Studying can be tough, but here are some tips:<br>
+                          - Set small, achievable goals<br>
+                          - Use the Pomodoro technique (25min work/5min break)<br>
+                          - Teach someone else what you've learned<br>
+                          - Stay hydrated and get enough sleep<br>
+                          Need more advice? Just ask!`,
+            'topics': 'Our forum sections:<br>🗣 General Discussions<br>💡 Feedback & Suggestions<br>👩💼 Professional Networking<br>📚 Academic Help',
+            'help': `I can help with:<br>
+                    - Course information<br>
+                    - Tutor connections<br>
+                    - Forum navigation<br>
+                    - Event updates<br>
+                    - Premium features<br>
+                    What do you need?`,
+            'courses': `Available courses include:<br>
+                       📐 Mathematics<br>
+                       💻 Computer Science<br>
+                       🏗 Engineering<br>
+                       📊 Business & Economics<br>
+                       🩺 Medicine<br>
+                       🎭 Arts & Humanities<br>
+                       🧠 Psychology<br>
+                       ⚖ Law & Politics<br>
+                       🔬 Natural Sciences`,
+            'tutors': `Our tutors can:<br>
+                      👩🏫 Create custom courses<br>
+                      👥 Lead study groups<br>
+                      📂 Manage projects<br>
+                      🤝 Provide 1-on-1 mentoring<br>
+                      Interested in becoming a tutor?`,
+            'projects': `Collaborative projects include:<br>
+                        🧑🔬 Research initiatives<br>
+                        💻 Software development<br>
+                        📈 Business case studies<br>
+                        🏗 Engineering challenges<br>
+                        Find your perfect project match!`,
+            'events': `Upcoming events:<br>
+                      🎓 University fairs<br>
+                      🤝 Networking mixers<br>
+                      💻 Hackathons<br>
+                      📚 Study workshops<br>
+                      Check Events section for dates!`,
+            'forum': `Forum categories:<br>
+                     💬 General Chat<br>
+                     💡 Feedback Corner<br>
+                     👩💼 Career Hub<br>
+                     📖 Study Help<br>
+                     Join the conversation!`,
+            'premium': `Premium benefits:<br>
+                       🔓 All paid courses<br>
+                       👨🏫 Exclusive tutoring<br>
+                       🚀 Priority support<br>
+                       🚫 Ad-free experience<br>
+                       Upgrade in Account settings!`,
+            'post': `On Mentor you can:<br>
+                    📝 Create posts<br>
+                    📸 Share photos<br>
+                    💬 Join discussions<br>
+                    📢 Exchange ideas<br>
+                    Start contributing today!`,
+            'fun_fact': `Did you know?<br>
+                        The brain processes visuals 60,000x faster than text!<br>
+                        Try using mind maps for studying! 🧠💡`,
+            'relaxation': `Study break ideas:<br>
+                         🚶 Go for a walk<br>
+                         🎧 Listen to music<br>
+                         🧘 Try meditation<br>
+                         🎨 Creative activity<br>
+                         A refreshed mind learns better!`,
+            'fun_chat': `Need a study break?<br>
+                        😄 Tell me a joke<br>
+                        ❓ Ask a riddle<br>
+                        💬 Just chat!<br>
+                        What's your favorite way to relax?`,
+            'goodbye': `Goodbye! Remember:<br>
+                       🚀 Small progress is still progress<br>
+                       📚 Knowledge is power<br>
+                       💪 You're doing amazing!<br>
+                       Come back anytime!`
+        };
+
+        const cleanMessage = message.toLowerCase().trim().replace(/ /g, '_');
+
+        // 1. Exact match
+        if (defaultResponses[cleanMessage]) {
+            return defaultResponses[cleanMessage];
+        }
+
+        // 2. Partial match in keys
+        const matchedKey = Object.keys(defaultResponses).find(key => 
+            key.includes(cleanMessage) || cleanMessage.includes(key)
+        );
+
+        // 3. Fallback to default
+        return matchedKey ? defaultResponses[matchedKey] : defaultResponses['help'];
+        
+    } catch (error) {
+        console.error('Chatbot Error:', error);
+        return "Welcome to Mentor! Try asking:<br>'What courses do you offer?'<br>or<br>'How do I join a project?'";
+    }
+}
+
+async function fetchPDFResponse(message) {
+    try {
+        const response = await fetch('/get-responses');
+        const { status, data } = await response.json();
+        
+        if (status !== 'success' || !data) return null;
+
+        // Normalize data and message
+        const cleanMessage = message.toLowerCase().trim().replace(/ /g, '_');
+        const normalizedData = Object.keys(data).reduce((acc, key) => {
+            acc[key.toLowerCase().trim()] = data[key];
+            return acc;
+        }, {});
+
+        // Check matches
+        return normalizedData[cleanMessage] 
+            || Object.entries(normalizedData).find(([key]) => 
+                key.includes(cleanMessage) || cleanMessage.includes(key)
+               )?.[1];
+        
+    } catch (error) {
+        console.error('PDF Fetch Error:', error);
+        return null;
+    }
+}
+function findPartialMatch(data, searchTerm) {
+    // Check for partial matches in both keys and values
+    const keyMatch = Object.keys(data).find(key => 
+        key.includes(searchTerm) || data[key].toLowerCase().includes(searchTerm)
+    );
+    
+    return keyMatch ? data[keyMatch] : null;
+}
+    // Profile Menu Toggle
+    document.getElementById('profile-pic').addEventListener('click', function() {
+        const menu = document.getElementById('profile-menu');
+        menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+    });
+
+// Notification System - Fixed Version
+let userHasOpened = false;
+let pollingInterval;
+
+document.addEventListener('DOMContentLoaded', function() {
+    fetchNotifications();
+    startPolling();
+});
+
+function startPolling() {
+    pollingInterval = setInterval(fetchNotifications, 5000);
+}
+
+function toggleNotifications() {
+    const dropdown = document.getElementById('notificationsDropdown');
+    const isVisible = dropdown.style.display === 'block';
+    
+    dropdown.style.display = isVisible ? 'none' : 'block';
+    
+    if (!isVisible) {
+        // Immediately reset UI and state
+        userHasOpened = true;
+        const badge = document.querySelector('.notification-count');
+        const bell = document.querySelector('.notification-bell');
+        
+        badge.textContent = '0';
+        badge.style.display = 'none';
+        bell.classList.remove('continuous-shake');
+        
+        // Mark all as read on server
+        markAllAsRead();
+    }
+}
+
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('notificationsDropdown');
+    const bell = document.querySelector('.notification-bell');
+    
+    if (!bell.contains(event.target) && !dropdown.contains(event.target)) {
+        dropdown.style.display = 'none';
+    }
+});
+
+async function fetchNotifications() {
+    try {
+        const response = await fetch('/notifications?_=' + Date.now(), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        
+        if (!response.ok) throw new Error('Network response was not ok');
+        
+        const { notifications } = await response.json();
+        updateNotificationUI(notifications);
+    } catch (error) {
+        console.error('Error fetching notifications:', error);
+    }
+}
+
+function updateNotificationUI(notifications) {
+    const badge = document.querySelector('.notification-count');
+    const bell = document.querySelector('.notification-bell');
+    
+    // Only count notifications if user hasn't opened the dropdown
+    const unreadCount = userHasOpened ? 0 : notifications.filter(n => !n.read).length;
+    
+    badge.textContent = unreadCount;
+    badge.style.display = unreadCount > 0 ? 'flex' : 'none';
+    
+    if (unreadCount > 0) {
+        bell.classList.add('continuous-shake');
+    } else {
+        bell.classList.remove('continuous-shake');
+    }
+    
+    // Update notifications list
+    const list = document.getElementById('notificationsList');
+    if (list) {
+        list.innerHTML = notifications.map(notification => `
+            <div class="notification-item ${notification.read ? '' : 'unread'}" 
+                 data-id="${notification.id}"
+                 data-post="${notification.postId}">
+                <img src="/uploads/pfp/${notification.user.pfp || 'default-pfp.jpg'}" 
+                     class="notification-user-pic" 
+                     alt="${notification.user.name}">
+                <div class="notification-content">
+                    <strong>${notification.user.name}</strong>
+                    ${notification.type === 'like' ? 'liked' : 'commented on'} your post
+                    <div class="notification-time">
+                        ${timeAgo(notification.timestamp)}
+                    </div>
+                </div>
+            </div>
+        `).join('');
+        
+        document.querySelectorAll('.notification-item').forEach(item => {
+            item.addEventListener('click', async () => {
+                const notifId = item.dataset.id;
+                const postId = item.dataset.post;
+                
+                await fetch(`/notifications/${notifId}/read`, { method: 'POST' });
+                window.location.href = `/forum/post/${postId}`;
+            });
+        });
+    }
+}
+
+async function markAllAsRead() {
+    try {
+        await fetch('/notifications/mark-all-read', { method: 'POST' });
+        userHasOpened = true; // Ensure count stays at 0
+    } catch (error) {
+        console.error('Error marking all as read:', error);
+    }
+}
+
+function timeAgo(timestamp) {
+    const intervals = [
+        { label: 'year', seconds: 31536000 },
+        { label: 'month', seconds: 2592000 },
+        { label: 'day', seconds: 86400 },
+        { label: 'hour', seconds: 3600 },
+        { label: 'minute', seconds: 60 }
+    ];
+
+    const seconds = Math.floor(Date.now() - new Date(timestamp)) / 1000;
+    
+    for (const interval of intervals) {
+        const count = Math.floor(seconds / interval.seconds);
+        if (count >= 1) {
+            return `${count} ${interval.label}${count !== 1 ? 's' : ''} ago`;
+        }
+    }
+    return `${Math.floor(seconds)} second${seconds !== 1 ? 's' : ''} ago`;
+}
+
+</script>
+{% endblock %}
 </body>
 </html>

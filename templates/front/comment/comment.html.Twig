@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Comment on Post{% endblock %}
+
+{% block body %}
+    <h1>Comment on Post #{{ post.id }}</h1>
+
+    {# Display the post's content or details #}
+    <div class="post-content">
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.content }}</p>
+        <p><em>Posted on {{ post.createdAt|date('Y-m-d H:i') }}</em></p>
+    </div>
+
+    {# Display the comment form #}
+    <h3>Post a Comment</h3>
+    {{ form_start(commentForm) }}
+        {{ form_row(commentForm.content) }}
+        {{ form_row(commentForm.file) }}
+        <button type="submit">Post Comment</button>
+    {{ form_end(commentForm) }}
+
+    {# Display existing comments for the post #}
+    <h3>Comments</h3>
+    {% for comment in post.comments %}
+        <div class="comment">
+            <p>{{ comment.content }}</p>
+            {% if comment.photo %}
+                <img src="{{ asset('uploads/comment_images/' ~ comment.photo) }}" alt="Comment Photo" />
+            {% endif %}
+            <p><em>Posted on {{ comment.createdAt|date('Y-m-d H:i') }}</em></p>
+        </div>
+    {% else %}
+        <p>No comments yet. Be the first to comment!</p>
+    {% endfor %}
+{% endblock %}

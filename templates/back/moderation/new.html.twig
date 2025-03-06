@@ -1,0 +1,15 @@
+{# new.html.twig #}
+{% extends 'back/baseback.html.twig' %}
+
+{% block title %}New Prohibited Word{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Create New Prohibited Word</h1>
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+        <a href="{{ path('prohibited_words') }}" class="btn btn-light">Cancel</a> {# Corrected route name #}
+    {{ form_end(form) }}
+</div>
+{% endblock %}

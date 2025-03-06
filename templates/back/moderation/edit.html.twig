@@ -1,0 +1,45 @@
+{% extends 'back/baseback.html.twig' %}
+
+{% block title %}Edit Prohibited Word{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h2>Edit Prohibited Word</h2>
+        </div>
+        
+        <div class="card-body">
+            {{ form_start(form) }}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form_row(form.word, {
+                            label: 'Prohibited Term',
+                            attr: {'class': 'form-control'}
+                        }) }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form_row(form.category, {
+                            attr: {'class': 'form-select'}
+                        }) }}
+                    </div>
+                    <div class="col-md-3">
+                        {{ form_row(form.severity, {
+                            attr: {'class': 'form-select'}
+                        }) }}
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Update Word
+                    </button>
+                    <a href="{{ path('prohibited_words') }}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to List
+                    </a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}

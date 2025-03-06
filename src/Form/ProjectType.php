@@ -49,7 +49,7 @@ class ProjectType extends AbstractType
             ])
             ->add('fichier_pdf', FileType::class, [
                 'label' => 'Upload a PDF file',
-                'mapped' => false,  
+                'mapped' => true,  
                 'required' => true,
                 'constraints' => [
                     new File([

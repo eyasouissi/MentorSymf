@@ -1,47 +1,57 @@
-{% extends 'front/baseback.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Project{% endblock %}
 
 {% block body %}
-    <h1>Project</h1>
+    <div class="container mt-4">
+        <h1>Project Details</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ project.id }}</td>
-            </tr>
-            <tr>
-                <th>Id_project</th>
-                <td>{{ project.id }}</td>
-            </tr>
-            <tr>
-                <th>Titre</th>
-                <td>{{ project.titre }}</td>
-            </tr>
-            <tr>
-                <th>Description_project</th>
-                <td>{{ project.description_Project }}</td>
-            </tr>
-          
-            <tr>
-                <th>Date_creation_project</th>
-                <td>{{ project.dateCreationProject ? project.dateCreationProject|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Difficulte</th>
-                <td>{{ project.difficulte }}</td>
-            </tr>
-            <tr>
-                <th>Date_limite</th>
-                <td>{{ project.dateLimite ? project.dateLimite|date('Y-m-d') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ project.id }}</td>
+                </tr>
+                <tr>
+                    <th>Id_project</th>
+                    <td>{{ project.id }}</td>
+                </tr>
+                <tr>
+                    <th>Titre</th>
+                    <td>{{ project.titre }}</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>{{ project.description_Project }}</td>
+                </tr>
+                <tr>
+                    <th>Date Created</th>
+                    <td>{{ project.dateCreationProject ? project.dateCreationProject|date('Y-m-d') : '' }}</td>
+                </tr>
+                <tr>
+                    <th>Difficulty</th>
+                    <td>{{ project.difficulte }}</td>
+                </tr>
+                <tr>
+                    <th>Deadline</th>
+                    <td>{{ project.dateLimite ? project.dateLimite|date('Y-m-d') : '' }}</td>
+                </tr>
+            </tbody>
+        </table>
 
-    <a href="{{ path('app_project_index') }}">back to list</a>
+        <div class="d-flex justify-content-between">
+            <a href="{{ path('app_project_index') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left-circle"></i> Back to List
+            </a>
 
-    <a href="{{ path('project_edit', {'id': project.id}) }}">edit</a>
+            <a href="{{ path('project_edit', {'id': project.id}) }}" class="btn btn-primary">
+                <i class="bi bi-pencil-square"></i> Edit
+            </a>
 
-    {{ include('front/project/_delete_form.html.twig') }}
+            <!-- Delete Form -->
+            <div>
+                {{ include('project/_delete_form.html.twig') }}
+            </div>
+        </div>
+    </div>
 {% endblock %}

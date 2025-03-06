@@ -1,0 +1,156 @@
+{# templates/back/forum/export_pdf.html.twig #}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Forum Export</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f7f8fa;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4e73df;
+            margin-bottom: 30px;
+            font-size: 32px;
+            text-transform: uppercase;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        /* Section Containers */
+        .section-container {
+            margin-bottom: 40px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Card-style Elements for Forum Data */
+        .forum-card, .topic-card {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 20px;
+            padding: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .forum-card h3, .topic-card h3 {
+            color: #4e73df;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .forum-card p, .topic-card p {
+            font-size: 16px;
+            color: #555;
+            margin: 5px 0;
+        }
+
+        .forum-card .status-public, .forum-card .status-private {
+            font-weight: bold;
+        }
+
+        .status-public {
+            color: #28a745;
+        }
+
+        .status-private {
+            color: #dc3545;
+        }
+
+        .topic-card p {
+            font-size: 16px;
+            color: #555;
+        }
+
+        /* Special Section for Footer */
+        .footer {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            margin-top: 40px;
+        }
+
+        /* Topic Statistics Section */
+        .topic-card {
+            background-color: #f9f9f9;
+            border-left: 5px solid #4e73df;
+        }
+
+        .topic-card .topic-info {
+            margin-bottom: 10px;
+        }
+
+        .topic-card .topic-info span {
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Card Styles */
+        .card-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Forum Export</h1>
+
+    <div class="section-container">
+        <h2>Forums</h2>
+        <div class="card-container">
+            {% for forum in forums %}
+                <div class="forum-card">
+                    <h3>{{ forum.title }}</h3>
+                    <p><strong>ID:</strong> {{ forum.id }}</p>
+                    <p><strong>Description:</strong> {{ forum.description|raw }}</p>
+                    <p><strong>Topics:</strong> {{ forum.topics|join(', ') }}</p>
+                    <p><strong>Created At:</strong> {{ forum.createdAt|date('Y-m-d H:i') }}</p>
+                    <p><strong>Updated At:</strong> {{ forum.updatedAt|date('Y-m-d H:i') }}</p>
+                    <p><strong>Views:</strong> {{ forum.views is not defined ? 0 : forum.views }}</p>
+                    <p><strong>Total Posts:</strong> {{ forum.totalPosts is not defined ? 0 : forum.totalPosts }}</p>
+                    <p class="status-{{ forum.isPublic ? 'public' : 'private' }}">
+                        <strong>Visibility:</strong> {{ forum.isPublic ? 'Public' : 'Private' }}
+                    </p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="section-container">
+        <h2>Topic Statistics</h2>
+        <div class="card-container">
+            {% for topic, stats in topicStats %}
+                <div class="topic-card">
+                    <h3>{{ topic }}</h3>
+                    <div class="topic-info">
+                        <p><span>Number of Forums:</span> {{ stats.forumCount }}</p>
+                        <p><span>Number of Posts:</span> {{ stats.postCount }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Forum Export Report | Generated on {{ "now"|date("Y-m-d H:i") }}</p>
+    </div>
+</body>
+</html>

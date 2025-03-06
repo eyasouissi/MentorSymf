@@ -1,0 +1,101 @@
+<style>
+#chat-container {
+    width: 300px;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    font-family: Arial, sans-serif;
+}
+
+#chat-header {
+    font-weight: bold;
+    background: #007bff;
+    color: white;
+    padding: 5px;
+    text-align: center;
+    border-radius: 5px 5px 0 0;
+}
+
+#chat-box {
+    height: 200px;
+    overflow-y: auto;
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    font-size: 14px;
+}
+
+.chat-message {
+    margin: 5px 0;
+}
+
+.user-message {
+    text-align: right;
+    color: #007bff;
+}
+
+.bot-message {
+    text-align: left;
+    color: #333;
+}
+
+#user-input {
+    width: 75%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#send-btn {
+    width: 20%;
+    padding: 5px;
+    border: none;
+    background: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#send-btn:hover {
+    background: #0056b3;
+}
+</style>
+
+<div id="chat-container">
+    <div id="chat-header">Forum Chatbot</div>
+    <div id="chat-box"></div>
+    <input type="text" id="user-input" placeholder="Ask something..." onkeypress="handleKeyPress(event)">
+    <button id="send-btn" onclick="sendMessage()">Send</button>
+</div>
+
+<script>
+async function sendMessage() {
+    let userInput = document.getElementById("user-input").value.trim();
+    if (!userInput) return;
+
+    let chatBox = document.getElementById("chat-box");
+    chatBox.innerHTML += `<div class="chat-message user-message"><b>You:</b> ${userInput}</div>`;
+
+    let response = await fetch("/chatbot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userInput })
+    });
+
+    let data = await response.json();
+    chatBox.innerHTML += `<div class="chat-message bot-message"><b>Bot:</b> ${data.response}</div>`;
+
+    document.getElementById("user-input").value = "";
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function handleKeyPress(event) {
+    if (event.key === "Enter") {
+        sendMessage();
+    }
+}
+</script>

@@ -43,6 +43,15 @@
         font-weight: bold;
     }
 
+    .forum-item {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.forum-item[style*="display: none"] {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
     /* Animated Eye SVG styles */
     @keyframes movePupil {
         0% { transform: translate(0, 0); }
@@ -55,17 +64,30 @@
     }
 
     /* Smooth search bar animation */
-    #searchInput {
-        transition: all 0.5s ease-in-out; /* Updated for smoother transition */
-        width: 0;
-        opacity: 0;
-        display: none;
-    }
+   #searchInput {
+    transition: all 0.5s ease-in-out;
+    width: 0;
+    opacity: 0;
+    display: inline-block; /* Change from 'none' to 'inline-block' */
+    overflow: hidden; /* Prevent content from overflowing during transition */
+    border: 2px solid #ddd;
+    border-radius: 20px;
+    padding: 8px 12px;
+    font-size: 14px;
+    background-color: #f4f4f4;
+    margin-right: 10px; /* Add spacing between input and icon */
+}
 
-    /* Search icon rotation */
-    #searchIcon {
-        transition: transform 0.3s ease; /* Smooth rotation */
-    }
+#searchInput.active {
+    width: 300px; /* Expanded width */
+    opacity: 1;
+}
+
+#searchIcon {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+    
 
     /* Forum item styling */
     .forum-item {
@@ -90,6 +112,7 @@
         width: 16px;
         height: 16px;
     }
+
 </style>
 
 <div class="container" data-aos="fade-up" data-aos-delay="100">
@@ -150,12 +173,18 @@
     {% endfor %}
 {% endfor %}
 
-{# Compute overall stats (assuming each forum has a "likes" property) #}
+{# Compute overall stats #}
 {% set totalPosts = 0 %}
 {% set totalLikes = 0 %}
+
+{# Loop through all public forums #}
 {% for forum in publicForums %}
-    {% set totalPosts = totalPosts + forum.totalposts %}
-    {% set totalLikes = totalLikes + (forum.likes|default(0)) %}
+    {% set totalPosts = totalPosts + forum.posts|length %} {# Add the number of posts in this forum #}
+    
+    {# Loop through all posts in the forum to sum up likes #}
+    {% for post in forum.posts %}
+        {% set totalLikes = totalLikes + post.likes %}
+    {% endfor %}
 {% endfor %}
 
 <!-- Main Content Row: Forum List (left) & Sidebar (right) -->
@@ -170,11 +199,14 @@
                         <div class="forum-item" 
                              data-title="{{ forum.title|lower }}" 
                              data-views="{{ forum.views }}" 
-                             data-posts="{{ forum.totalposts }}"
+                             data-posts="{{ forum.posts|length }}" {# Specific to this forum #}
                              data-topics="{{ forum.topics|lower }}">
                             <div class="forum-title">
                                 <h3 style="margin: 0;">
-                                    <a href="{{ path('app_post', {'forumId': forum.id}) }}" style="text-decoration: none; color: inherit;">
+                                    <a href="{{ path('app_post', {'forumId': forum.id}) }}" 
+                                    class="forum-link" 
+                                    data-forum-id="{{ forum.id }}" 
+                                    style="text-decoration: none; color: inherit;">
                                         <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 5px;" viewBox="0 0 24 24" fill="currentColor">
                                             <path d="M12 3C6.48 3 2 6.48 2 10s4.48 7 10 7c2.44 0 4.7-.88 6.44-2.34L22 20l-2.67-6.67C18.7 12.88 20 10.44 20 10c0-3.52-4.48-7-8-7zm0 12c-3.31 0-6-2.69-6-6s2.69-6 6-6s6 2.69 6 6s-2.69 6-6 6z"/>
                                         </svg>
@@ -209,7 +241,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-dots" viewBox="0 0 16 16">
                                     <path d="M14 1H2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h10l3 3V2a1 1 0 0 0-1-1z"/>
                                 </svg>
-                                <span>{{ forum.totalposts }} Posts</span>
+                                <span>{{ forum.posts|length }} Posts</span> {# Specific to this forum #}
                             </div>
                         </div>
                     {% endfor %}
@@ -220,14 +252,14 @@
                 <div class="sidebar-container">
                     <div class="topics-container">
                         <h4>Popular Topics</h4>
-                        {% for topic in allTopics|slice(0, 10) %}  {# Show top 10 topics #}
-                            <span class="topic-bubble">{{ topic }}</span>
+                        {% for topic in allTopics|slice(0, 10) %}
+                            <span class="topic-bubble" data-topic="{{ topic|lower }}">{{ topic }}</span>
                         {% endfor %}
                     </div>
 
                     <div class="stats-container">
                         <h4>Forum Stats</h4>
-                        <p>Total Posts: {{ totalPosts }}</p>
+                        <p>Total Posts: {{ totalPosts }}</p> {# Total posts across all forums #}
                         <p>Total Likes: {{ totalLikes }}</p>
                     </div>
                 </div>
@@ -236,36 +268,150 @@
     </div>
 </div>
 
-<script>
-    let searchVisible = false;
-    function toggleSearch() {
-        searchVisible = !searchVisible;
-        const searchInput = document.getElementById("searchInput");
-        const searchIcon = document.getElementById("searchIcon");
-        if (searchVisible) {
-            searchInput.style.display = "block";
-            setTimeout(() => searchInput.focus(), 100);
-            searchIcon.style.transform = "rotate(90deg)"; /* Icon rotation on open */
-        } else {
-            searchInput.style.width = '0';
-            searchInput.style.opacity = '0';
-            setTimeout(() => searchInput.style.display = "none", 500);
-            searchIcon.style.transform = "rotate(0deg)"; /* Reset rotation */
-        }
-    }
 
-    function filterForums() {
-        const searchTerm = document.getElementById("searchInput").value.toLowerCase();
-        const forumItems = document.querySelectorAll(".forum-item");
-        forumItems.forEach((forumItem) => {
-            const forumTitle = forumItem.dataset.title;
-            const forumTopics = forumItem.dataset.topics;
-            if (forumTitle.includes(searchTerm) || forumTopics.includes(searchTerm)) {
-                forumItem.style.display = "block";
+<script>
+    //searchbar
+    let searchVisible = false;
+
+        function toggleSearch() {
+            const searchInput = document.getElementById("searchInput");
+            const searchIcon = document.getElementById("searchIcon");
+
+            searchVisible = !searchVisible;
+
+            if (searchVisible) {
+                searchInput.classList.add("active");
+                setTimeout(() => searchInput.focus(), 100); // Focus after transition starts
+                searchIcon.style.transform = "rotate(90deg)"; // Rotate icon
             } else {
-                forumItem.style.display = "none";
+                searchInput.classList.remove("active");
+                searchIcon.style.transform = "rotate(0deg)"; // Reset icon rotation
             }
+        }
+
+        function filterForums() {
+            const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+            const forumItems = document.querySelectorAll(".forum-item");
+
+            forumItems.forEach((forumItem) => {
+                const forumTitle = forumItem.dataset.title;
+                const forumTopics = forumItem.dataset.topics;
+
+                if (forumTitle.includes(searchTerm) || forumTopics.includes(searchTerm)) {
+                    forumItem.style.display = "block";
+                } else {
+                    forumItem.style.display = "none";
+                }
+            });
+        }
+
+          // Function to filter forums by selected topic
+function filterForumsByTopic(selectedTopic) {
+    const forumItems = document.querySelectorAll(".forum-item");
+
+    forumItems.forEach((forumItem) => {
+        const forumTopics = forumItem.dataset.topics; // Get the topics associated with the forum
+        if (forumTopics.includes(selectedTopic)) {
+            forumItem.style.display = "block"; // Show the forum if it matches the topic
+        } else {
+            forumItem.style.display = "none"; // Hide the forum if it doesn't match the topic
+        }
+    });
+}
+
+// Function to reset the filter and show all forums
+function resetForumFilter() {
+    const forumItems = document.querySelectorAll(".forum-item");
+    forumItems.forEach((forumItem) => {
+        forumItem.style.display = "block"; // Show all forums
+    });
+
+    // Remove active class from all topic bubbles
+    document.querySelectorAll(".topic-bubble").forEach((bubble) => {
+        bubble.classList.remove("active");
+    });
+}
+
+// Add click event listeners to topic bubbles
+document.querySelectorAll(".topic-bubble").forEach((bubble) => {
+    let isFiltered = false; // Track whether the filter is applied
+
+    // Single-click to filter by topic or reset the filter
+    bubble.addEventListener("click", () => {
+        const selectedTopic = bubble.dataset.topic;
+
+        if (isFiltered) {
+            // If the filter is already applied, reset the filter
+            resetForumFilter();
+        } else {
+            // If the filter is not applied, filter by the selected topic
+            filterForumsByTopic(selectedTopic);
+        }
+
+        // Toggle the filter state
+        isFiltered = !isFiltered;
+
+        // Toggle active class for the clicked bubble
+        document.querySelectorAll(".topic-bubble").forEach((b) => b.classList.remove("active"));
+        if (isFiltered) {
+            bubble.classList.add("active"); // Add active class if filter is applied
+        }
+    });
+});
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Add click event listeners to all forum links
+    document.querySelectorAll('.forum-link').forEach(link => {
+        link.addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent the default link behavior
+
+            const forumId = this.getAttribute('data-forum-id');
+            const viewsCountElement = this.closest('.forum-item').querySelector('.views-count');
+
+            // Send an AJAX request to increment the views
+            fetch(`/forum/${forumId}/increment-views`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.views !== undefined) {
+                    // Update the views count on the page
+                    viewsCountElement.textContent = `${data.views} Views`;
+                }
+            })
+            .catch(error => {
+                console.error('Error incrementing views:', error);
+            });
+
+            // Navigate to the forum page after the AJAX request is sent
+            window.location.href = this.href;
         });
+    });
+});
+
+
+let predefinedResponses = {};
+
+// Fetch responses from Symfony backend
+async function fetchResponses() {
+    try {
+        const response = await fetch('/get-responses');
+        predefinedResponses = await response.json();
+    } catch (error) {
+        console.error("Failed to fetch responses:", error);
+        predefinedResponses = {
+            'default': ["I'm sorry, I couldn't load the responses. Please try again later."]
+        };
     }
+}
+
+// Call this function when the page loads
+fetchResponses();
 </script>
 {% endblock %}

@@ -20,10 +20,30 @@
                 </nav>
                 <nav class="nav">
                     <a class="nav-link" href="#"><i class="far fa-save"></i> Save Report</a>
-                    <a class="nav-link" href="#"><i class="far fa-file-pdf"></i> Export to PDF</a>
+                    <a class="nav-link" href="{{ path('app_forum_export_pdf') }}"><i class="far fa-file-pdf"></i> Export to PDF</a>
                     <a class="nav-link" href="#"><i class="far fa-envelope"></i>Send to Email</a>
                     <a class="nav-link" href="#"><i class="fas fa-ellipsis-h"></i></a>
                 </nav>
+
+                  <!-- Add a new section for charts -->
+                    <div class="row mt-4">
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Number of Forums by Topic</h5>
+                                    <canvas id="forumChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Number of Posts by Topic</h5>
+                                    <canvas id="postChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
             </div>
 
             <div class="az-dashboard-nav">
@@ -174,7 +194,6 @@
                                     </td>
 
                                     <td>
-                                        <a href="{{ path('app_forum_show', {'id': forum.id}) }}" class="btn btn-info btn-sm mr-2">Show</a>
                                         <a href="{{ path('app_forum_edit', {'id': forum.id}) }}" class="btn btn-warning btn-sm mr-2">Edit</a>
                                         <form method="post" action="{{ path('app_forum_delete', {'id': forum.id}) }}" style="display: inline-block;" onsubmit="return confirm('Are you sure you want to delete this forum?');">
                                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ forum.id) }}">
@@ -191,4 +210,64 @@
         </div>
     </div>
 </div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Data from the controller
+        const topicStats = {{ topicStats|json_encode|raw }};
+
+        // Extract labels and data for the charts
+        const topics = Object.keys(topicStats);
+        const forumCounts = topics.map(topic => topicStats[topic].forumCount);
+        const postCounts = topics.map(topic => topicStats[topic].postCount);
+
+        // Forum Chart
+        const forumCtx = document.getElementById('forumChart').getContext('2d');
+        new Chart(forumCtx, {
+            type: 'bar',
+            data: {
+                labels: topics,
+                datasets: [{
+                    label: 'Number of Forums',
+                    data: forumCounts,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Post Chart
+        const postCtx = document.getElementById('postChart').getContext('2d');
+        new Chart(postCtx, {
+            type: 'bar',
+            data: {
+                labels: topics,
+                datasets: [{
+                    label: 'Number of Posts',
+                    data: postCounts,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}

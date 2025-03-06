@@ -3,14 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\PostRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-/**
- * @ORM\Entity(repositoryClass=PostRepository::class)
- */
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
 {
@@ -22,12 +20,17 @@ class Post
     #[ORM\ManyToOne(inversedBy: 'posts')]
     private ?Forum $forum = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 2000)]
     #[Assert\NotBlank(message: "Content cannot be empty.")]
     #[Assert\Length(
         max: 2000,
         maxMessage: "Content cannot exceed 2000 characters."
     )]
+    #[Assert\Regex(
+        pattern: '/\b(admin|root|sudo)\b/i',
+        match: false,
+        message: "Content contains prohibited terms"
+    )] // Temporary simple filter
     private ?string $content = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
@@ -36,21 +39,74 @@ class Post
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updatedAt = null;
 
+    #[ORM\OneToMany(
+        targetEntity: Comment::class, 
+        mappedBy: 'post', 
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
+    private Collection $comments;
+
     #[ORM\Column]
     private ?int $likes = 0;
 
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    #[Assert\Count(
+        max: 10,
+        maxMessage: "You can upload up to 10 photos maximum."
+    )]
+    #[Assert\All([
+        new Assert\File([
+            'maxSize' => '5M',
+            'mimeTypes' => [
+                'image/jpeg',
+                'image/png',
+                'image/gif',
+                'image/webp',
+            ],
+            'mimeTypesMessage' => 'Please upload a valid image (JPEG, PNG, GIF, or WEBP)',
+        ])
+    ])]
+    private ?array $photos = null;
+
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $photo = null;
+    #[Assert\Url(
+        protocols: ['http', 'https'],
+        message: 'Please enter a valid GIF URL'
+    )]
+    private ?string $gifUrl = null;
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    #[ORM\ManyToMany(targetEntity: User::class)]
+    #[ORM\JoinTable(name: 'post_likes')]
+    private Collection $likedByUsers;
+
+    #[ORM\OneToMany(
+        targetEntity: Notif::class, 
+        mappedBy: 'post', 
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
+    private Collection $notifications;
+
+    public function __construct()
+    {
+        $this->comments = new ArrayCollection();
+        $this->likedByUsers = new ArrayCollection();
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
+        $this->notifications = new ArrayCollection();
+
+    }
+
+    // Getters and Setters
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-        return $this;
     }
 
     public function getForum(): ?Forum
@@ -72,6 +128,7 @@ class Post
     public function setContent(string $content): static
     {
         $this->content = $content;
+        $this->updatedAt = new \DateTime();
         return $this;
     }
 
@@ -108,33 +165,109 @@ class Post
         return $this;
     }
 
-    public function getPhoto(): ?string
+    public function getPhotos(): ?array
     {
-        return $this->photo;
+        return $this->photos;
     }
 
-    public function setPhoto(?string $photo): static
+    public function setPhotos(?array $photos): static
     {
-        $this->photo = $photo;
+        $this->photos = $photos;
         return $this;
     }
 
-    // Custom validation logic for content
-    public static function validateContent($value, ExecutionContextInterface $context)
+    public function getGifUrl(): ?string
     {
-        // Ensure content is not empty
-        if (empty($value)) {
-            $context->buildViolation('Content cannot be empty.')
-                ->atPath('content')
-                ->addViolation();
-        }
+        return $this->gifUrl;
+    }
 
-        // Check word count (limit to 200 words)
-        $wordCount = str_word_count($value);
-        if ($wordCount > 200) {
-            $context->buildViolation('Content must be limited to 200 words.')
-                ->atPath('content')
-                ->addViolation();
+    public function setGifUrl(?string $gifUrl): static
+    {
+        $this->gifUrl = $gifUrl;
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): static
+    {
+        $this->user = $user;
+        return $this;
+    }
+
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): static
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setPost($this);
         }
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): static
+    {
+        if ($this->comments->removeElement($comment)) {
+            if ($comment->getPost() === $this) {
+                $comment->setPost(null);
+            }
+        }
+        return $this;
+    }
+
+    public function getLikedByUsers(): Collection
+    {
+        return $this->likedByUsers;
+    }
+
+    public function addLikedByUser(User $user): static
+    {
+        if (!$this->likedByUsers->contains($user)) {
+            $this->likedByUsers->add($user);
+        }
+        return $this;
+    }
+
+    public function removeLikedByUser(User $user): static
+    {
+        $this->likedByUsers->removeElement($user);
+        return $this;
+    }
+
+    public function isLikedByUser(User $user): bool
+    {
+        return $this->likedByUsers->contains($user);
+    }
+
+    public function getNotifications(): Collection
+    {
+        return $this->notifications;
+    }
+
+    public function addNotification(Notif $notification): static
+    {
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setPost($this);
+        }
+        return $this;
+    }
+
+    public function removeNotification(Notif $notification): static
+    {
+        if ($this->notifications->removeElement($notification)) {
+            // set the owning side to null (unless already changed)
+            if ($notification->getPost() === $this) {
+                $notification->setPost(null);
+            }
+        }
+        return $this;
     }
 }
