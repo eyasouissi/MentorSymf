@@ -13,7 +13,6 @@ Welcome to the GitHub repository of **Mentor**, an interactive educational platf
 
 - [Installation](#installation)
 - [Usage](#usage)
-- [Features](#features)
 - [Technologies](#technologies)
 - [Team](#team-brainiacs)
 - [Project Structure](#project-structure)
