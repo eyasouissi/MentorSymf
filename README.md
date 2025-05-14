@@ -22,19 +22,19 @@ Welcome to the GitHub repository of **Mentor**, an interactive educational platf
 
 ---
 
-## 🚀 Project Overview
+## Project Overview
 
 > **Mentor** is a JavaFX application dedicated to interactive learning. It includes several powerful modules ranging from course management to the creation of collaborative study rooms with modern tools like artificial intelligence and facial recognition.
 
 ---
 
-## 👨‍💻 GitHub Repository Link
+## GitHub Repository Link
 
 🔗 [https://github.com/eyasouissi/MentorJava.git](https://github.com/eyasouissi/MentorJava.git)
 
 ---
 
-## 🛠️ Technologies
+## Technologies
 
 ![Java](https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=java&logoColor=white)
 ![JavaFX](https://img.shields.io/badge/JavaFX-0064A5?style=for-the-badge)
@@ -43,7 +43,7 @@ Welcome to the GitHub repository of **Mentor**, an interactive educational platf
 
 ---
 
-## 🧠 Team Brainiacs
+## Team Brainiacs
 
 | Name               | Role             |
 |--------------------|------------------|
@@ -56,7 +56,7 @@ Welcome to the GitHub repository of **Mentor**, an interactive educational platf
 
 ---
 
-## 🧱 Project Structure
+## Project Structure
 
 ```bash
 MentorJava/
@@ -82,7 +82,7 @@ MentorJava/
 
 ---
 
-## 🧪 Installation
+## Installation
 
 1. Clone the repository: :
 
@@ -102,7 +102,7 @@ cd MentorJava
 ---
 
 
-## 🧰 Usage
+## Usage
 
 - 👤 **Advanced Authentication:** :Log in via facial recognition, Captcha, and password.
 - 🖼️ **Personal Profile:** : Add an AI-generated avatar and view your achievements.
@@ -126,11 +126,11 @@ cd MentorJava
 
 ---
 
-## 🤝 Contributions
+## Contributions
 
 We sincerely thank everyone who contributed to this project!
 
-### 👥 Contributors
+### Contributors
 
 The following people have contributed by adding key features, fixing bugs, and enhancing the user experience:
 
@@ -154,7 +154,7 @@ The following people have contributed by adding key features, fixing bugs, and e
 ---
 ---
 
-## 🙏 Acknowledgements
+## Acknowledgements
 
 I would like to sincerely thank my professors [Mrs. Sana Fayechi](mailto:sana.fayechi@esprit.tn) and [Mr. Mohamed Ali Bellili](mailto:mohammedali.bellili@esprit.tn) for their guidance, availability, and valuable advice throughout this project.
 
@@ -164,7 +164,7 @@ This project was carried out as part of my training at **ESPRIT – Private High
 
 
 
-## 📜 License
+## License
 
 Project under the **MIT** license.
 
