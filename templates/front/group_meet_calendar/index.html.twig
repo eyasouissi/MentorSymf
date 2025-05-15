@@ -1,0 +1,208 @@
+{# templates/front/group_meet_calendar/index.html.twig #}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Group Meet Calendar</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/locales/en.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* General style */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa; /* Light and modern background */
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        #calendar {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        /* Header style */
+        .fc-header-toolbar {
+            background: #2c3e50; /* Dark blue modern */
+            color: white;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 0;
+        }
+
+        .fc-toolbar-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .fc-button {
+            background: #3498db; /* Light blue modern */
+            border: none;
+            color: white;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .fc-button:hover {
+            background: #2980b9; /* Darker blue on hover */
+        }
+
+        /* Event style */
+        .fc-event {
+            border: none;
+            color: white;
+            padding: 8px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .fc-event:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .fc-event-title {
+            font-weight: 600;
+        }
+
+        /* Cell style */
+        .fc-daygrid-day {
+            border: 1px solid #e0e0e0;
+            transition: background 0.3s ease;
+        }
+
+        .fc-daygrid-day:hover {
+            background: #f0f0f0;
+        }
+
+        .fc-day-today {
+            background: #e3f2fd !important;
+        }
+
+        /* Time style */
+        .fc-timegrid-slot {
+            color: #666;
+        }
+
+        /* Title animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fc-toolbar-title {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Footer style */
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        footer a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="calendar"></div>
+
+    <footer>
+        Always get ready with <a href="#" target="_blank">Mentor ❤️</a>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+
+            // Convert Twig data to JSON for FullCalendar
+            var events = {{ events|json_encode|raw }};
+
+            // Function to determine color based on date
+            function getEventColor(startDate) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Ignore time
+                const deadline = new Date(startDate);
+                deadline.setHours(0, 0, 0, 0); // Ignore time
+
+                const diffInDays = Math.floor((deadline - today) / (1000 * 60 * 60 * 24));
+
+                if (diffInDays === 0) {
+                    return '#e74c3c'; // Dark red for today
+                } else if (diffInDays === 1) {
+                    return '#e67e22'; // Orange for +1 day
+                } else if (diffInDays === 2) {
+                    return '#f1c40f'; // Yellow for +2 days
+                } else if (diffInDays === 3) {
+                    return '#2ecc71'; // Light green for +3 days
+                } else if (diffInDays === 4) {
+                    return '#3498db'; // Light blue for +4 days
+                } else {
+                    return '#95a5a6'; // Gray for other dates
+                }
+            }
+
+            // Add color to events
+            events = events.map(event => {
+                return {
+                    ...event,
+                    color: getEventColor(event.start), // Apply color based on date
+                };
+            });
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'en', // Calendar in English
+                timeZone: 'UTC',
+                events: events,
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                },
+                eventDisplay: 'block',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                eventClick: function(info) {
+                    // Open Jitsi link in a new tab
+                    if (info.event.url) {
+                        window.open(info.event.url, '_blank');
+                    }
+                }
+            });
+
+            calendar.render();
+        });
+    </script>
+</body>
+</html>

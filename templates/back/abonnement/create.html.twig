@@ -35,10 +35,10 @@
 
              <!-- id_user with error handling -->
                 <div class="form-group">
-                {{ form_label(form.id_user) }}
-                {{ form_widget(form.id_user, {
+                {{ form_label(user.getName()) }}
+                {{ form_widget(user.getName(), {
                     'attr': {
-                        'class': form.id_user.vars.errors|length > 0 ? 'form-control is-invalid' : 'form-control'
+                        'class': form.user.getName().vars.errors|length > 0 ? 'form-control is-invalid' : 'form-control'
                     }
                 }) }}
                 {% if form.id_user.vars.errors|length > 0 %}

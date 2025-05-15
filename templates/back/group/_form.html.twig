@@ -1,4 +1,6 @@
-{{ form_start(form, { 'attr': { 'novalidate': 'novalidate' } }) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+{% extends 'back/baseback.html.twig' %}
+
+{% block body %}
+    <h1>Edit Group</h1>
+    {% include 'back/group/_form.html.twig' with { 'form': form, 'button_label': 'Update' } %}
+{% endblock %}

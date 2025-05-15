@@ -35,8 +35,8 @@ class ProjectType extends AbstractType
             ->add('titre', TextType::class, [
                 'label' => 'Title '],)
 
-            ->add('description_project', TextType::class, [
-                'label' => 'Project description '],)
+                ->add('description_project')
+                
                 ->add('fichier_pdf', FileType::class, [
                     'label' => 'Upload a PDF file ',
                     'mapped' => true,
@@ -52,11 +52,18 @@ class ProjectType extends AbstractType
                     'required' => false, 
                 ])
                 ->add('date_limite', DateTimeType::class, [
-                    'label' => 'Limit date',
+                    'label' => 'Deadline',
                     'widget' => 'single_text',
                     'attr' => ['min' => (new \DateTime())->format('Y-m-d\TH:i')],
-                ])
-                ;
+                ]);
+                if ($options['allow_group_selection']) {
+                    $builder->add('group', EntityType::class, [
+                        'class' => GroupStudent::class,
+                        'choice_label' => 'nom_group',
+                        'placeholder' => 'Select a group',
+                        'required' => false,
+                    ]);
+                }
             
     }
 
@@ -64,6 +71,8 @@ class ProjectType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Project::class,
+            'allow_group_selection' => true,
+
         ]);
     }
 }

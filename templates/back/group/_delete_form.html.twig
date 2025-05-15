@@ -1,5 +1,8 @@
-<form action="{{ path('app_group_delete_all') }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment tout supprimer ?');">
-    <button type="submit" class="btn btn-danger">
-        🗑️ Supprimer tous les groupes
-    </button>
+<form action="{{ path('app_group_delete_all') }}" method="POST" onsubmit="return confirm('Are you sure to delete all groups ?');">
+    <div class="form-group">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete_all_groups') }}">
+        <button type="submit" class="btn btn-danger">
+            🗑️ All groups are deleted!
+        </button>
+    </div>
 </form>

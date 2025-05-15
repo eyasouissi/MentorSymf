@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use App\Entity\GroupStudent;
 use App\Entity\Project;
 use App\Form\ProjectType;
 use App\Repository\ProjectRepository;
@@ -23,20 +24,37 @@ final class ProjectController extends AbstractController
         ]);
     }
 
+
+    #[Route('/project/{id}', name: 'app_project_show', methods: ['GET'])]
+public function show(Project $project): Response
+{
+    // On s'assure que le chemin du fichier PDF pointe vers le bon répertoire public
+    $pdfPath = $project->getFichierPdf() ? 'uploads/projet/' . $project->getFichierPdf() : null;
+
+    return $this->render('back/project/show.html.twig', [
+        'project' => $project,
+        'pdfPath' => $pdfPath,
+    ]);
+}
+
+    
+
     #[Route('/add', name: 'app_project_add', methods: ['GET', 'POST'])]
     public function add(Request $request, EntityManagerInterface $entityManager): Response
     {
         $project = new Project();
-        $form = $this->createForm(ProjectType::class, $project);
+        $form = $this->createForm(ProjectType::class, $project, [
+            'allow_group_selection' => false, // Désactiver la sélection du groupe
+        ]);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
-            // Gérer le téléchargement du PDF
+            // Gérer le téléchargement du fichier PDF
             $pdfFile = $form->get('fichier_pdf')->getData();
             if ($pdfFile) {
                 $uploadsDirectory = $this->getParameter('uploads_directory');
                 $newFilename = uniqid() . '.' . $pdfFile->guessExtension();
-
+    
                 try {
                     $pdfFile->move($uploadsDirectory, $newFilename);
                     $project->setFichierPdf($newFilename);
@@ -45,13 +63,13 @@ final class ProjectController extends AbstractController
                     return $this->redirectToRoute('app_project_add');
                 }
             }
-
+    
             // Gérer le téléchargement de l'image
             $imageFile = $form->get('image')->getData();
             if ($imageFile) {
                 $imageDirectory = $this->getParameter('project_images_directory');
                 $newImageName = uniqid() . '.' . $imageFile->guessExtension();
-
+    
                 try {
                     $imageFile->move($imageDirectory, $newImageName);
                     $project->setImage($newImageName);
@@ -60,27 +78,25 @@ final class ProjectController extends AbstractController
                     return $this->redirectToRoute('app_project_add');
                 }
             }
-
+    
+            // Persist the project
             $entityManager->persist($project);
             $entityManager->flush();
-
+    
             $this->addFlash('success', '✅ Project successfully added!');
-            return $this->redirectToRoute('app_project_index');
+            return $this->redirectToRoute('app_project_index'); // Or any other page that fits your flow
         }
-
+    
         return $this->render('back/project/add.html.twig', [
             'form' => $form->createView(),
             'project' => $project,
         ]);
     }
+    
+    
+    
 
-    #[Route('/{id}', name: 'app_project_show', methods: ['GET'])]
-    public function show(Project $project): Response
-    {
-        return $this->render('back/project/show.html.twig', [
-            'project' => $project,
-        ]);
-    }
+
 
     #[Route('/{id}/edit', name: 'app_project_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Project $project, EntityManagerInterface $entityManager): Response
@@ -195,7 +211,6 @@ public function front(ProjectRepository $projectRepository, Request $request): R
         'projects' => $projects,
     ]);
 }
-
 
 
 }

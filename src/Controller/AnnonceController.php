@@ -15,19 +15,70 @@ use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 final class AnnonceController extends AbstractController
-{
-
-    
-    #[Route('/annonces', name: 'app_annonces')]
-    public function index(AnnonceRepository $annonceRepository): Response
+{ #[Route('/annonce/{id}/qr', name: 'app_annonce_qr', requirements: ['id' => '\d+'])]
+    public function generateQrCode(Annonce $annonce): Response
     {
-        // Fetch all annonces from the database
-        $annonces = $annonceRepository->findAll();
-
-        return $this->render('front/annonce/index.html.twig', [
-            'annonces' => $annonces,
+        // Créer le QR code avec l'URL de l'annonce
+        $url = $this->generateUrl('app_annonce_show', ['id' => $annonce->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+        $qrCode = new QrCode($url);
+    
+        // Générer l'image du QR code en format PNG
+        $response = new Response($qrCode->writeString());
+        $response->headers->set('Content-Type', 'image/png');
+    
+        return $response;
+    }
+    #[Route('/annonce/statistics', name: 'ann_statistics')]
+    public function statisticsAction(
+        AnnonceRepository $AnnonceRepository,
+    ): Response {
+        // Fetch the statistics for the forum (daily)
+        $forumsByDate = $AnnonceRepository->countByDate();
+        
+        // Prepare data for the pie chart
+        $labels = [];
+        $data = [];
+        foreach ($forumsByDate as $forum) {
+            $labels[] = $forum['date']; // Add date to labels
+            $data[] = $forum['count'];  // Add count to data
+        }
+    
+        // Fetch the statistics for the forum (monthly)
+        $forumsByMonth = $AnnonceRepository->countByMonth();
+    
+        // Prepare monthly statistics for the view
+        $monthLabels = [];
+        $monthData = [];
+        foreach ($forumsByMonth as $forum) {
+            $monthLabels[] = $forum['month']; // Add month to labels
+            $monthData[] = $forum['count'];  // Add count to data
+        }
+    
+        // Render the template with all the statistics
+        return $this->render('back/annonce/statistics.html.twig', [
+            'labels' => $labels,           // Labels for the chart (daily)
+            'data' => $data,               // Data for the chart (daily)
+            'monthLabels' => $monthLabels, // Labels for the chart (monthly)
+            'monthData' => $monthData,  
+               // Data for the chart (monthly)
         ]);
     }
+    
+    #[Route('/annonces', name: 'app_annonces')]
+public function index(Request $request, AnnonceRepository $annonceRepository): Response
+{
+    $searchTerm = $request->query->get('search', '');
+    $orderBy = $request->query->get('orderBy', 'date_a');  // Assurez-vous que 'orderBy' existe
+    $page = $request->query->get('page', 1);  // La page par défaut est 1
+
+    // Récupérer les annonces en fonction du tri
+    $annonces = $annonceRepository->findBySearchTermAndOrder($searchTerm, $orderBy, $page);
+
+    return $this->render('front/annonce/index.html.twig', [
+        'annonces' => $annonces,
+    ]);
+}
+
     #[Route('/annoncesback', name: 'app_annoncesback')]
     public function indexback(AnnonceRepository $annonceRepository): Response
     {
@@ -53,7 +104,7 @@ final class AnnonceController extends AbstractController
         $annonce = new Annonce();
         
         // Example user ID set to 1 (can be replaced with current user)
-       /* $userId = 1;
+        $userId = 1;
         $user = $doctrine->getRepository(User::class)->find($userId);
         
         if (!$user) {
@@ -61,7 +112,7 @@ final class AnnonceController extends AbstractController
         }
         
         // Set the user to the annonce
-        $annonce->setUser($user);*/
+        $annonce->setUser($user);
         
         // Automatically set the current date for 'date_a'
         $annonce->setDateA(new \DateTime());
@@ -165,7 +216,7 @@ final class AnnonceController extends AbstractController
         
                 try {
                     // Move the file to the directory where images are stored
-                    $image->move($params->get('upload_directory'), $fileName);
+                    $image->move($params->get('uploadsDirectory'), $fileName);
                     $annonce->setImageA($fileName);  // Set the image filename in the entity
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Erreur lors du téléchargement de l\'image.');
@@ -215,7 +266,7 @@ public function deleteback(Annonce $annonce, EntityManagerInterface $entityManag
         $annonce = new Annonce();
         
         // Example user ID set to 1 (can be replaced with current user)
-      /*  $userId = 1;
+        $userId = 1;
         $user = $doctrine->getRepository(User::class)->find($userId);
         
         if (!$user) {
@@ -223,7 +274,7 @@ public function deleteback(Annonce $annonce, EntityManagerInterface $entityManag
         }
         
         // Set the user to the annonce
-        $annonce->setUser($user);*/
+        $annonce->setUser($user);
         
         // Automatically set the current date for 'date_a'
         $annonce->setDateA(new \DateTime());
@@ -241,7 +292,7 @@ public function deleteback(Annonce $annonce, EntityManagerInterface $entityManag
     
                 try {
                     // Move the file to the directory where images are stored
-                    $image->move($params->get('upload_directory'), $fileName);
+                    $image->move($params->get('uploadsDirectory'), $fileName);
                     $annonce->setImageA($fileName);  // Set the image filename in the entity
                 } catch (FileException $e) {
                     $this->addFlash('error', 'Erreur lors du téléchargement de l\'image.');

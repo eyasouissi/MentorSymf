@@ -1,0 +1,379 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}{{ group.nomGroup }}{% endblock %}
+
+
+
+{% block body %}
+    {# Group Header Section #}
+    <div class="group-header">
+        <div class="group-info-container">
+            <div class="group-image-wrapper">
+                <img src="{{ group.image ? asset('uploads/groupPics/' ~ group.image) : asset('assets/img/defaultgroup.jpg') }}" 
+     alt="{{ group.nomGroup }}"
+     class="group-image">
+                {% if is_granted('ROLE_TUTOR') %}
+                    <a href="{{ path('app_group_edit', {'id': group.id}) }}" class="edit-group-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="#8c84a1">
+                            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                        </svg>
+                    </a>
+                {% endif %}
+            </div>
+            <div class="group-details">
+    <h1 class="group-name">{{ group.nomGroup }}</h1>
+    <p class="members-count">{{ group.nbrMembers }} Members</p>
+    
+    <div class="member-avatars-container">
+        <div class="member-bubbles">
+            {% for member in group.members|slice(0, 5) %}
+                <img src="{{ asset('uploads/pfp/' ~ member.pfp) }}" 
+                     alt="{{ member.name }}" 
+                     class="member-bubble"
+                     title="{{ member.name }}">
+            {% endfor %}
+            
+            {% if group.members|length > 5 %}
+                <div class="more-members-bubble" 
+                     data-count="{{ group.members|length - 5 }}"
+                     onmouseover="showMembersDropdown(this)"
+                     onmouseout="hideMembersDropdown(this)">
+                    +{{ group.members|length - 5 }}
+                    
+                    <div class="members-dropdown">
+                        {% for member in group.members|slice(5) %}
+                            <div class="dropdown-member">
+                                <img src="{{ asset('uploads/pfp/' ~ member.pfp) }}" 
+                                     alt="{{ member.name }}"
+                                     class="member-bubble">
+                                <span class="member-name">{{ member.name }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="group-description">
+        {{ group.descriptionGroup|raw }}
+    </div>
+</div>
+        </div>
+    </div>
+
+    {# Main Content #}
+    <div class="group-content-wrapper">
+       <div class="container mt-5">
+        <div class="calendar-buttons">
+            <a href="{{ path('groupfront_index') }}" class="btn">
+                📅 Deadlines Calendar
+            </a>
+            <a href="{{ path('group_meet_calendar') }}" class="btn">
+                🗓️ Meeting Calendar
+            </a>
+        </div>
+    </div>
+
+        {# Projects Sidebar #}
+        <div class="projects-sidebar">
+            <h3>Group Projects ({{ group.projects|length }})</h3>
+            {% if group.projects is empty %}
+                <div class="alert alert-info">No projects created yet</div>
+            {% else %}
+                {% for project in group.projects %}
+                    <a href="{{ path('project_show', {'id': project.id}) }}" class="project-item">
+                        <h5>{{ project.titre }}</h5>
+                        <p class="text-muted">{{ project.descriptionProject|slice(0, 80) }}...</p>
+                        <div class="project-meta">
+                            <span class="badge bg-primary">{{ project.difficulte }}</span>
+                            <small class="text-muted">Due: {{ project.dateLimite|date('M d') }}</small>
+                        </div>
+                    </a>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+{%block javascript%}
+<script>
+function showMembersDropdown(element) {
+    const dropdown = element.querySelector('.members-dropdown');
+    dropdown.style.display = 'flex';
+}
+
+function hideMembersDropdown(element) {
+    const dropdown = element.querySelector('.members-dropdown');
+    dropdown.style.display = 'none';
+}
+
+// Optional: Touch device support
+document.querySelectorAll('.more-members-bubble').forEach(bubble => {
+    bubble.addEventListener('click', (e) => {
+        if ('ontouchstart' in window) {
+            const dropdown = bubble.querySelector('.members-dropdown');
+            dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+        }
+    });
+});
+</script>
+{%endblock%}
+     <style>
+      body {
+            background-color: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .calendar-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-buttons .btn {
+            background-color: #8c84a1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .calendar-buttons .btn:hover {
+            background-color:rgb(121, 114, 138);
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .view-toggle .btn {
+            background-color: #8c84a1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .view-toggle .btn:hover {
+            background-color: rgb(121, 114, 138);
+        }
+
+        /* Group Header Section */
+        .group-header {
+            position: relative;
+            height: 400px;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                        url("{{ asset('images/default-group-bg.jpg') }}") center/cover;
+            margin-bottom: 80px;
+        }
+
+        .group-info-container {
+            position: absolute;
+            bottom: -60px;
+            left: 50px;
+            display: flex;
+            align-items: flex-end;
+            gap: 30px;
+        }
+
+        .group-image-wrapper {
+            position: relative;
+        }
+
+        .group-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 4px solid white;
+            object-fit: cover;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .edit-group-btn {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: white;
+            border-radius: 50%;
+            padding: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .edit-group-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .group-details {
+            color: white;
+            padding-bottom: 20px;
+        }
+
+        .group-name {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: white;
+}
+
+        /* Main Content Layout */
+        .group-content-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Projects Sidebar */
+        .projects-sidebar {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+        }
+
+        .project-item {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .project-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Post Feed Section */
+        .post-feed {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .group-content-wrapper {
+                grid-template-columns: 1fr;
+            }
+            
+            .group-info-container {
+                left: 20px;
+                right: 20px;
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .projects-sidebar {
+                order: -1;
+                position: static;
+            }
+        }
+        /* Group Header Section */
+.member-bubbles {
+    display: flex;
+    align-items: center;
+    margin: 12px 0;
+    position: relative;
+    padding-left: 8px; /* Compensate for negative margin */
+}
+
+.member-bubble {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+    margin-left: -8px; /* Overlapping effect */
+}
+
+.member-bubble:first-child {
+    margin-left: 0;
+}
+
+.member-bubble:hover {
+    transform: scale(1.1);
+    z-index: 1;
+}
+
+.more-members-bubble {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #8c84a1;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease;
+    margin-left: -8px; /* Match overlapping style */
+    border: 2px solid white;
+}
+
+.more-members-bubble:hover {
+    background: #7a738e;
+    transform: scale(1.1);
+    z-index: 1;
+}
+
+.more-members-bubble:hover {
+    background: #7a738e;
+}
+
+.members-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 12px;
+    min-width: 200px;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.more-members-bubble:hover .members-dropdown {
+    display: flex;
+}
+
+.dropdown-member {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px;
+    border-radius: 6px;
+    transition: background 0.2s ease;
+}
+
+.dropdown-member:hover {
+    background: #f8f9fa;
+}
+
+.member-name {
+    font-size: 0.95rem;
+    color: #2c3e50;
+}
+    </style>
+{% endblock %}

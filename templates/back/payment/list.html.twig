@@ -7,37 +7,47 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
     <!-- Lightbox2 CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
 
     <div class="az-content az-content-dashboard">
         <div class="container">
             <div class="az-content-body">
-                <!-- Dashboard Title -->
-                <div class="az-dashboard-one-title">
-                    <div>
-                        <h2 class="az-dashboard-title">Hi, welcome back!</h2>
-                        <p class="az-dashboard-text">Your web analytics dashboard template.</p>
-                    </div>
-                </div>
-
+               
                 <!-- Navigation Tabs -->
                 <div class="az-dashboard-nav"> 
                     <nav class="nav">
                         <a href="{{ path('app_add_offre') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_add_offre' %}active{% endif %}">Add Offer</a>
                         <a href="{{ path('offre_list') }}" class="nav-link {% if app.request.attributes.get('_route') == 'offre_list' %}active{% endif %}">List</a>
-                    </nav>
+                            
+              </nav>
+                <!-- Export Button -->
+                <nav class="nav">
+                    <a href="{{ path('export_offres_pdf') }}" class="btn btn-primary">
+                        <i class="far fa-file-pdf"></i> Export to PDF
+                    </a>
+                </nav>
                 </div>
 
                 <h2>List of Offers</h2>
 
-                <!-- Search Input -->
-                <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search by offer name...">
+                <!-- Search Input with Search Icon -->
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    </div>
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by offer name...">
+                </div>
 
                 <!-- Sorting Dropdown -->
-                <select id="sortSelect" class="form-control mb-3">
-                    <option value="">Sort by price</option>
-                    <option value="asc">Lowest Price</option>
-                    <option value="desc">Highest Price</option>
-                </select>
+               <!-- Sorting Dropdown -->
+<select id="sortSelect" class="form-control mb-3">
+    <option value="">Sort by price</option>
+    <option value="asc">Lowest Price <i class="fas fa-arrow-up"></i></option>
+    <option value="desc">Highest Price <i class="fas fa-arrow-down"></i></option>
+</select>
+
 
                 <div class="table-container">
                     <table class="table table-bordered">
@@ -72,7 +82,6 @@
                                     <td>{{ o.getDescription() }}</td>
                                     <td>
                                         <a href="{{ path('app_edit_offre', {'id': o.getIdOffre()}) }}" class="btn btn-warning">Edit</a>
-                                        <br></br>
                                         <a href="{{ path('app_delete_offre', {'id': o.getIdOffre()}) }}" class="btn btn-danger delete-offre" data-id="{{ o.getIdOffre() }}">Delete</a>
                                     </td>
                                 </tr>
@@ -132,5 +141,6 @@ document.addEventListener("DOMContentLoaded", function () {
     sortSelect.addEventListener("change", fetchOffers);
 });
 </script>
+
 
 {% endblock %}

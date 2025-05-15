@@ -1,52 +1,184 @@
-{% extends 'base.html.twig' %}
+{% extends 'back/baseback.html.twig' %}
 
 {% block title %}Add New Project{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <!-- CKEditor -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+    <style>
+        .ck-editor__editable {
+            border-radius: 10px;
+            margin-top: 10px;
+            min-height: 200px;
+        }
+        .card {
+            border-radius: 15px;
+            border: none;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .form-control-lg, .form-select-lg {
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 1.1rem;
+        }
+        .form-label {
+            color: #495057;
+            font-size: 1.1rem;
+        }
+        .btn-lg {
+            border-radius: 10px;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+        }
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #1e7e34;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+        .star-rating {
+            font-size: 2rem;
+            cursor: pointer;
+        }
+        .star {
+            transition: color 0.3s;
+        }
+        .star:hover {
+            color: #ffc107 !important;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+        <div class="container">
+            <div class="navbar-nav">
+                <a class="nav-link" href="{{ path('app_group_index') }}">Groups</a>
+                <a class="nav-link" href="{{ path('app_project_index') }}">Projects</a>
+            </div>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="{{ path('app_group_new') }}">Add Group</a>
+                <a class="nav-link" href="{{ path('app_project_add') }}">Add Project</a>
+            </div>
+        </div>
+    </nav>
+
     <div class="container mt-4">
-        <h1>Add New Project</h1>
+        <h1 class="text-center fw-bold mb-4">Add New Project</h1>
 
-        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data', 'novalidate': 'novalidate'}}) }}
-        
-        <!-- Project Title -->
-        <div class="mb-3">
-            {{ form_label(form.titre) }}
-            {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.titre) }}  <!-- Affichage des erreurs -->
-        </div>
+        <div class="card shadow-lg p-4">
+            {{ form_start(form, {'attr': {'enctype': 'multipart/form-data', 'novalidate': 'novalidate', 'class': 'needs-validation'}}) }}
 
-        <!-- Project Description -->
-        <div class="mb-3">
-            {{ form_label(form.description_project) }}
-            {{ form_widget(form.description_project, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.description_project) }}  <!-- Affichage des erreurs -->
-        </div>
+            <!-- Project Title -->
+            <div class="mb-4">
+                {{ form_label(form.titre, 'Project Title', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.titre, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Enter project title'}}) }}
+                {{ form_errors(form.titre) }}
+            </div>
 
-        <!-- File Upload Field -->
-        <div class="mb-3">
-            {{ form_label(form.fichier_pdf) }}
-            {{ form_widget(form.fichier_pdf, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.fichier_pdf) }}  <!-- Affichage des erreurs -->
-        </div>
-         <div class="mb-3">
-            {{ form_label(form.difficulte) }}
-            {{ form_widget(form.difficulte, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.difficulte) }}  <!-- Affichage des erreurs -->
-        </div>
+            <!-- Project Description -->
+            <div class="mb-4">
+                {{ form_label(form.description_project, 'Description', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.description_project, {'attr': {'class': 'form-control form-control-lg ckeditor', 'placeholder': 'Enter project description'}}) }}
+                {{ form_errors(form.description_project) }}
+            </div>
 
-         <div class="mb-3">
-            {{ form_label(form.date_limite) }}
-            {{ form_widget(form.date_limite, {'attr': {'class': 'form-control'}}) }}
-            {{ form_errors(form.date_limite) }}  <!-- Affichage des erreurs -->
-        </div>
+            <!-- PDF File Upload -->
+            <div class="mb-4">
+                {{ form_label(form.fichier_pdf, 'Upload PDF', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.fichier_pdf, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                {{ form_errors(form.fichier_pdf) }}
+            </div>
 
-        <div class="mb-3">
-            <button type="submit" class="btn btn-success">Save Project</button>
-        </div>
+            <!-- Project Image Upload -->
+            <div class="mb-4">
+                {{ form_label(form.image, 'Project Image', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.image, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                {{ form_errors(form.image) }}
+            </div>
 
-        {{ form_end(form) }}
-        
-        <a href="{{ path('app_project_index') }}" class="btn btn-secondary">Back to Project List</a>
+            <!-- Difficulty Level -->
+            <div class="mb-4">
+                <label class="form-label fw-bold">Difficulty Level</label>
+                <div class="star-rating">
+                    <span data-value="1" class="star">★</span>
+                    <span data-value="2" class="star">★</span>
+                    <span data-value="3" class="star">★</span>
+                    <span data-value="4" class="star">★</span>
+                    {{ form_widget(form.difficulte, {'attr': {'class': 'form-control', 'style': 'display:none'}}) }}
+                    {{ form_errors(form.difficulte) }}
+                </div>
+            </div>
+
+            <!-- Date Limit -->
+            <div class="mb-4">
+                {{ form_label(form.date_limite, 'Deadline', {'label_attr': {'class': 'form-label fw-bold'}}) }}
+                {{ form_widget(form.date_limite, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                {{ form_errors(form.date_limite) }}
+            </div>
+
+            <!-- Submit Button -->
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-success btn-lg shadow-sm">
+                    <i class="fas fa-save"></i> Save Project
+                </button>
+                <a href="{{ path('app_project_index') }}" class="btn btn-secondary btn-lg shadow-sm">
+                    <i class="fas fa-arrow-left"></i> Back to Project List
+                </a>
+            </div>
+
+            {{ form_end(form) }}
+        </div>
     </div>
 
+    <!-- CKEditor Initialization -->
+    <script>
+        ClassicEditor
+            .create(document.querySelector('.ckeditor'), {
+                toolbar: {
+                    items: [
+                        'heading', '|',
+                        'bold', 'italic', 'underline', '|',
+                        'fontColor', 'fontBackgroundColor', '|',
+                        'bulletedList', 'numberedList', '|',
+                        'alignment', '|',
+                        'link', 'blockQuote', '|',
+                        'undo', 'redo'
+                    ]
+                },
+                language: 'en',
+                placeholder: 'Enter project description...',
+            })
+            .catch(error => {
+                console.error(error);
+            });
+
+        // Star Rating Management
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', function () {
+                let value = this.getAttribute('data-value');
+                document.querySelector("input[name='project[difficulte]']").value = value;
+
+                // Reset color
+                document.querySelectorAll('.star').forEach(s => s.style.color = '#888');
+
+                // Appliquer la couleur correspondante
+                for (let i = 0; i < value; i++) {
+                    document.querySelectorAll('.star')[i].style.color = ["#28a745", "#ffc107", "#fd7e14", "#dc3545"][i];
+                }
+            });
+        });
+    </script>
 {% endblock %}

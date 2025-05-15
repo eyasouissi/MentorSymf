@@ -1,22 +1,19 @@
 {% extends 'front/base.html.twig' %}
 
 {% block body %}
-
 <style type="text/css">
-    /* Bordure autour du formulaire */
+    /* Style du formulaire */
     form {
         border: 2px solid rgba(126, 108, 142, 0.3);
         padding: 30px;
         border-radius: 8px;
         font-size: 1.5rem;
         width: 100%;
-        max-width: 600px; /* Élargir le formulaire */
+        max-width: 600px;
     }
 
     /* Champs de formulaire */
-    input,
-    select,
-    textarea {
+    input, select, textarea {
         border: 1px solid rgba(126, 108, 142, 0.3);
         padding: 12px;
         border-radius: 4px;
@@ -37,7 +34,7 @@
         margin-top: 5px;
     }
 
-    /* Bouton Payer */
+    /* Bouton */
     button[type="submit"] {
         border: 2px solid rgba(126, 108, 142, 0.3);
         padding: 12px 24px;
@@ -63,12 +60,6 @@
         flex-direction: row;
         gap: 30px;
     }
-
-    /* Carte bancaire */
-    .card p,
-    .card h5 {
-        font-size: 1.4rem;
-    }
 </style>
 
 <div class="container mt-5">
@@ -78,7 +69,7 @@
             <img src="{{ asset('uploads/images/im.jpg') }}" class="d-block w-100" alt="Image fixe">
         </div>
 
-        <!-- Formulaire de paiement -->
+        <!-- Formulaire d'abonnement -->
         <div class="col-lg-6">
             {{ form_start(f, {'attr': {'novalidate': 'novalidate'}}) }}
 
@@ -89,11 +80,8 @@
             {% endif %}
 
             <div class="mb-3">
-                <label for="user" class="form-label">User</label>
-                {{ form_widget(f.id_user, {'attr': {'class': 'form-control'}}) }}
-                {% for error in f.id_user.vars.errors %}
-                    <div class="form-error-message">{{ error.message }}</div>
-                {% endfor %}
+                <label class="form-label">Utilisateur</label>
+                <input type="text" class="form-control" value="{{ user.getName() }}" readonly>
             </div>
 
             <div class="mb-3">
@@ -112,44 +100,96 @@
                 {% endfor %}
             </div>
 
-            <div class="card p-3 border">
-                <h5 class="mb-3">💳 Bank Card</h5>
-
-                <div class="mb-3">
-                    <label for="card-number" class="form-label">Card number</label>
-                    {{ form_widget(f.card_num, {'attr': {'class': 'form-control', 'id': 'card-number', 'placeholder': '1234 1234 1234 1234'}}) }}
-                    {% for error in f.card_num.vars.errors %}
-                        <div class="form-error-message">{{ error.message }}</div>
-                    {% endfor %}
+            <!-- Stripe Elements pour le numéro de carte -->
+            <div class="mb-3">
+                <label for="card_num" class="form-label">Numéro de carte</label>
+                <div id="card-element" class="form-control">
+                    <!-- Un élément de carte sera injecté ici -->
                 </div>
+                <div id="card-errors" role="alert" class="form-error-message"></div>
+            </div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="expiration-date" class="form-label">Date d'expiration</label>
-                        {{ form_widget(f.Date_expiration, {'attr': {'class': 'form-control', 'id': 'expiration-date', 'placeholder': 'MM / AA'}}) }}
-                        {% for error in f.Date_expiration.vars.errors %}
-                            <div class="form-error-message">{{ error.message }}</div>
-                        {% endfor %}
-                    </div>
+            <div class="mb-3">
+                <label for="Date_expiration" class="form-label">Date d'expiration</label>
+                {{ form_widget(f.Date_expiration, {'attr': {'class': 'form-control', 'placeholder': 'MM/AA'}}) }}
+                {% for error in f.Date_expiration.vars.errors %}
+                    <div class="form-error-message">{{ error.message }}</div>
+                {% endfor %}
+            </div>
 
-                    <div class="col-md-6 mb-3">
-                        <label for="security-code" class="form-label">Security code</label>
-                        {{ form_widget(f.cvv, {'attr': {'class': 'form-control', 'id': 'security-code', 'placeholder': 'CVV'}}) }}
-                        {% for error in f.cvv.vars.errors %}
-                            <div class="form-error-message">{{ error.message }}</div>
-                        {% endfor %}
-                    </div>
-                </div>
+            <div class="mb-3">
+                <label for="cvv" class="form-label">CVV</label>
+                {{ form_widget(f.cvv, {'attr': {'class': 'form-control', 'placeholder': '123'}}) }}
+                {% for error in f.cvv.vars.errors %}
+                    <div class="form-error-message">{{ error.message }}</div>
+                {% endfor %}
             </div>
 
             <div class="text-center mt-3">
-                <button type="submit">Payer</button>
+                <button type="button" id="submit-payment">Payer</button>
             </div>
 
             {{ form_end(f) }}
         </div>
     </div>
 </div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+    // Clé publique Stripe
+    const stripe = Stripe('votre_clé_publique_stripe');
+    const elements = stripe.elements();
+
+    // Créez un élément de carte
+    const card = elements.create('card');
+    card.mount('#card-element');
+
+    // Gestion des erreurs de la carte
+    card.on('change', function(event) {
+        const cardErrors = document.getElementById('card-errors');
+        if (event.error) {
+            cardErrors.textContent = event.error.message;
+        } else {
+            cardErrors.textContent = '';
+        }
+    });
+
+    // Gestion de l'envoi du formulaire
+    document.getElementById('submit-payment').addEventListener('click', async (event) => {
+        event.preventDefault();
+
+        const email = document.querySelector('[name="paiement[yourEmail]"]').value;
+        const offerId = document.querySelector('[name="paiement[id_offre]"]').value;
+
+        // Envoi des données au serveur pour créer le PaymentIntent
+        const response = await fetch('/abonnement', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, offerId })
+        });
+
+        const { clientSecret } = await response.json();
+
+        // Confirmer le paiement avec Stripe
+        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: card,
+                billing_details: { email: email },
+            }
+        });
+
+        if (error) {
+            // Afficher l'erreur si le paiement échoue
+            const errorElement = document.getElementById('card-errors');
+            errorElement.textContent = error.message;
+        } else if (paymentIntent.status === 'succeeded') {
+            // Rediriger si le paiement est réussi
+            window.location.href = '/abonnement/success?session_id=' + paymentIntent.id;
+        }
+    });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 

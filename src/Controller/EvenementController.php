@@ -26,13 +26,28 @@ class EvenementController extends AbstractController
         ]);
     }
 
-    #[Route('/viewback', name: 'evenement_indexback', methods: ['GET'])]
-    public function indexback(EvenementRepository $evenementRepository): Response
-    {
-        return $this->render('back/evenement/index.html.twig', [
-            'evenements' => $evenementRepository->findAll(),
-        ]);
-    }
+   // src/Controller/EvenementController.php
+
+   #[Route('/viewback', name: 'evenement_indexback', methods: ['GET'])]
+public function indexback(Request $request, EvenementRepository $evenementRepository): Response
+{
+    $searchTerm = $request->query->get('search', ''); // Get the search term from query parameters
+    $orderBy = $request->query->get('orderBy', 'ASC'); // Get the order parameter from query (default ASC)
+
+    // Call searchEvenements with search term and order
+    $evenements = $searchTerm
+        ? $evenementRepository->searchEvenements($searchTerm, $orderBy)
+        : $evenementRepository->searchEvenements('', $orderBy);
+
+    return $this->render('back/evenement/index.html.twig', [
+        'evenements' => $evenements,
+        'searchTerm' => $searchTerm,
+        'orderBy' => $orderBy, // Pass orderBy parameter for potential UI handling
+    ]);
+}
+
+   
+
     
 
     #[Route('/new', name: 'evenement_new', methods: ['GET', 'POST'])]
@@ -41,14 +56,14 @@ class EvenementController extends AbstractController
         $evenement = new Evenement();
 
         // Fetch the user. Adjust logic as necessary.
-       /* $userId = 1; // Example user ID; replace with your actual logic
+        $userId = 1; // Example user ID; replace with your actual logic
         $user = $doctrine->getRepository(User::class)->find($userId);
 
         if (!$user) {
             throw $this->createNotFoundException('Utilisateur non trouvé');
         }
 
-        $evenement->setUser($user);*/
+        $evenement->setUser($user);
 
         // Create the form and handle the request
         $form = $this->createForm(EvenementType::class, $evenement);
@@ -92,14 +107,14 @@ class EvenementController extends AbstractController
         $evenement = new Evenement();
 
         // Fetch the user. Adjust logic as necessary.
-       /* $userId = 1; // Example user ID; replace with your actual logic
+        $userId = 1; // Example user ID; replace with your actual logic
         $user = $doctrine->getRepository(User::class)->find($userId);
 
         if (!$user) {
             throw $this->createNotFoundException('Utilisateur non trouvé');
         }
 
-        $evenement->setUser($user);*/
+        $evenement->setUser($user);
 
         // Create the form and handle the request
         $form = $this->createForm(EvenementType::class, $evenement);
@@ -137,6 +152,9 @@ class EvenementController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+
+
+    
     #[Route('/{id}', name: 'evenement_show', methods: ['GET'])]
     public function show(Evenement $evenement): Response
     {

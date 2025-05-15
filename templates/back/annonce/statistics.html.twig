@@ -1,0 +1,183 @@
+{% extends 'front/base.html.twig' %}
+
+{% block body %}
+    <div class="dashboard-container">
+        <div class="statistics-container">
+            <h2>Statistiques des forums par date</h2>
+            
+            <!-- Table structure for stats -->
+            <table class="statistics-table">
+                <tr>
+                    <td colspan="2">
+                        <!-- Boutons pour changer de type de graphique -->
+                        <div class="chart-switch">
+                            <button onclick="showChart('pie')">📊 Graphique Circulaire</button>
+                            <button onclick="showChart('bar')">📈 Graphique en Barres</button>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="chart-container">
+                            <canvas id="myPieChart"></canvas> <!-- Graphique Pie -->
+                            <canvas id="myBarChart" style="display: none;"></canvas> <!-- Graphique Bar -->
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var labels = {{ labels|json_encode|raw }};
+        var dataValues = {{ data|json_encode|raw }};
+        var colors = ['#FF5733', '#33FF57', '#3357FF', '#F9FF33', '#FF33F0', '#FF8C00', '#00CED1', '#DA70D6', '#20B2AA', '#FF4500'];
+
+        // Graphique circulaire (Pie)
+        var pieCtx = document.getElementById('myPieChart').getContext('2d');
+        var myPieChart = new Chart(pieCtx, {
+            type: 'doughnut',  // Style Doughnut pour un beau cercle
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: dataValues,
+                    backgroundColor: colors,
+                    borderColor: '#fff',
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'top' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw + ' annonces';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Graphique en barres (Bar)
+        var barCtx = document.getElementById('myBarChart').getContext('2d');
+        var myBarChart = new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Forums par date',
+                    data: dataValues,
+                    backgroundColor: colors,
+                    borderColor: '#333',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.raw + ' annonces';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Fonction pour basculer entre Pie Chart et Bar Chart
+        function showChart(type) {
+            if (type === 'pie') {
+                document.getElementById('myPieChart').style.display = 'block';
+                document.getElementById('myBarChart').style.display = 'none';
+            } else {
+                document.getElementById('myPieChart').style.display = 'none';
+                document.getElementById('myBarChart').style.display = 'block';
+            }
+        }
+    </script>
+
+    <style>
+        /* Conteneur principal pour centrer le contenu */
+        .dashboard-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Hauteur complète de l'écran */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Conteneur des statistiques centré */
+        .statistics-container {
+            text-align: center;
+            width: 100%;
+            max-width: 800px; /* Largeur maximale du contenu */
+            margin-left: 100px; /* Décalage vers la droite */
+            margin: 0 auto; /* Centrer l'élément horizontalement */
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        /* Table pour les statistiques */
+        .statistics-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .statistics-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        /* Boutons pour changer le graphique */
+        .chart-switch {
+            margin-bottom: 15px;
+        }
+
+        .chart-switch button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .chart-switch button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Conteneur des graphiques */
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+        }
+
+        /* S'assurer que le graphique occupe toute la place disponible */
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
+    </style>
+{% endblock %}

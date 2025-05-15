@@ -1,0 +1,512 @@
+{% extends 'front/base.html.twig' %}
+
+{% block title %}Groups{% endblock %}
+
+{% block body %}
+    <section class="categories-hero position-relative d-flex align-items-center">
+        <div class="container text-center">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h1 class="text-white fw-bold animate__animated animate__fadeInDown">Groups 🎓</h1>
+                    <p class="text-light fs-5 animate__animated animate__fadeInUp">Join different groups and work on projects!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+    <a class="navbar-brand" href="#">Available Groups</a>
+    <div class="navbar-nav ml-auto">
+        {% if is_granted('ROLE_TUTOR') %}
+            <a href="{{ path('app_group_new') }}" class="nav-link">
+                <i class="fas fa-plus"></i> Create Group
+            </a>
+        {% endif %}
+        <a class="nav-link" href="{{ path('app_project_front') }}">Projects 📝</a>
+    </div>
+</div>
+
+    </nav>
+
+    <div class="container mt-5">
+        
+        <div class="view-toggle">
+            <button id="list-view-btn" class="btn">
+                📋 List View
+            </button>
+            <button id="kanban-view-btn" class="btn">
+                🗂️ Kanban View
+            </button>
+        </div>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <div class="alert alert-info" role="alert">
+                You are viewing all groups as an administrator.
+            </div>
+        {% elseif is_granted('ROLE_TUTOR') %}
+            <div class="alert alert-info" role="alert">
+                You are viewing groups you manage.
+            </div>
+        {% endif %}
+
+        {% if groups is empty %}
+            <div class="alert alert-warning" role="alert">
+                {% if is_granted('ROLE_STUDENT') %}
+                    You are not a member of any group at the moment.
+                {% else %}
+                    No groups found.
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <!-- Kanban View -->
+        <div id="kanban-view" class="kanban-view">
+            {% for group in groups %}
+                <div class="kanban-card position-relative">
+                    {% if is_granted('ROLE_TUTOR') and group.createdBy == app.user %}
+                        <a href="{{ path('app_group_show', {'id': group.id}) }}" class="group-link"></a>
+                    {% endif %}
+
+                    <img src="{{ group.image ? asset('uploads/groupPics/' ~ group.image) : asset('images/default-group.jpg') }}" 
+                         alt="{{ group.nomGroup }}"
+                         class="group-image">
+                    <div class="creator-info">
+                        <small class="text-muted">Created by:</small>
+                        <div class="d-flex align-items-center justify-content-center mt-1">
+                            <img src="{{ asset('uploads/pfp/' ~ group.createdBy.pfp) }}" 
+                                 alt="{{ group.createdBy.name }}"
+                                 class="creator-pic rounded-circle me-2">
+                            <span class="creator-name">{{ group.createdBy.name }}</span>
+                        </div>
+                    </div>
+                    <h3>{{ group.nomGroup }}</h3>
+                    <div class="group-details">
+                        <p>{{ group.descriptionGroup|striptags|slice(0, 100) }}...</p>
+                        <div class="group-stats">
+                            <div><i class="fas fa-users"></i> {{ group.nbrMembers }} Members</div>
+                            <div><i class="fas fa-calendar-day"></i> {{ group.dateCreationGroup|date('d M Y') }}</div>
+                            {% if group.dateMeet %}
+                            <div><i class="fas fa-clock"></i> {{ group.dateMeet|date('d M Y H:i') }}</div>
+                            {% endif %}
+                        </div>
+                        {% if is_granted('ROLE_STUDENT') %}
+                            {% if group not in app.user.groups %}
+                                <div class="join-button-container mt-3">
+                                    <button class="btn btn-join w-100" data-group-id="{{ group.id }}">
+                                        <i class="fas fa-plus"></i> Join Group
+                                    </button>
+                                </div>
+                            {% else %}
+                                <a href="{{ path('app_group_show', {'id': group.id}) }}" class="btn btn-success w-100 mt-3">
+                                    <i class="fas fa-door-open"></i> Enter Group
+                                </a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- List View -->
+        <div id="group-view" class="list-view" style="display: none;">
+            {% for group in groups %}
+                <div class="list-group-item position-relative">
+                    {% if is_granted('ROLE_TUTOR') and group.createdBy == app.user %}
+                        <a href="{{ path('app_group_show', {'id': group.id}) }}" class="group-link"></a>
+                    {% endif %}
+
+                    <div class="d-flex align-items-start">
+                        <img src="{{ group.image ? asset('uploads/groupPics/' ~ group.image) : asset('images/default-group.jpg') }}" 
+                             class="group-image me-3"
+                             alt="{{ group.nomGroup }}">
+                        <div class="flex-grow-1">
+                            <div class="creator-info mb-2">
+                                <div class="d-flex align-items-center">
+                                    <img src="{{ asset('uploads/pfp/' ~ group.createdBy.pfp) }}" 
+                                         alt="{{ group.createdBy.name }}"
+                                         class="creator-pic rounded-circle me-2">
+                                    <small class="text-muted">Created by {{ group.createdBy.name }}</small>
+                                </div>
+                            </div>
+                            <h3 class="h5 mb-1">{{ group.nomGroup }}</h3>
+                            <p class="text-muted mb-2">{{ group.descriptionGroup|striptags|slice(0, 150) }}...</p>
+                            <div class="group-stats d-flex gap-3 text-muted small">
+                                <div><i class="fas fa-users me-1"></i>{{ group.nbrMembers }} Members</div>
+                                <div><i class="fas fa-calendar-alt me-1"></i>{{ group.dateCreationGroup|date('d M Y') }}</div>
+                                {% if group.dateMeet %}
+                                <div><i class="fas fa-clock me-1"></i>{{ group.dateMeet|date('d M Y H:i') }}</div>
+                                {% endif %}
+                            </div>
+                            {% if is_granted('ROLE_STUDENT') %}
+                                {% if group not in app.user.groups %}
+                                    <div class="join-button-container mt-3">
+                                        <button class="btn btn-join w-100" data-group-id="{{ group.id }}">
+    <i class="fas fa-plus"></i> Join Group
+</button>
+                                    </div>
+                                {% else %}
+                                    <a href="{{ path('app_group_show', {'id': group.id}) }}" class="btn btn-success w-100 mt-3">
+                                        <i class="fas fa-door-open"></i> Enter Group
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        // View toggle script
+        const listViewBtn = document.getElementById('list-view-btn');
+        const kanbanViewBtn = document.getElementById('kanban-view-btn');
+        const listView = document.getElementById('group-view');
+        const kanbanView = document.getElementById('kanban-view');
+
+        listViewBtn.addEventListener('click', () => {
+            listView.style.display = 'block';
+            kanbanView.style.display = 'none';
+        });
+
+        kanbanViewBtn.addEventListener('click', () => {
+            listView.style.display = 'none';
+            kanbanView.style.display = 'flex';
+        });
+
+    document.querySelectorAll('.btn-join').forEach(button => {
+    button.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const groupId = e.currentTarget.dataset.groupId;
+        const button = e.currentTarget;
+        
+        try {
+            button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Joining...`;
+            button.disabled = true;
+
+            // Use FormData to send the CSRF token
+            const formData = new FormData();
+            formData.append('_csrf_token', '{{ csrf_token('join-group') }}');
+
+            const response = await fetch(`/group/${groupId}/join`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            });
+
+            if (response.ok) {
+                window.location.href = `/group/${groupId}`;
+            } else {
+                const error = await response.json();
+                throw new Error(error.message || 'Failed to join group');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            button.innerHTML = `<i class="fas fa-times"></i> Error`;
+            button.disabled = false;
+            setTimeout(() => {
+                button.innerHTML = `<i class="fas fa-plus"></i> Join Group`;
+            }, 2000);
+        }
+    });
+});
+    </script>
+
+    <style>
+        /* Existing styles remain the same */
+        .btn-success {
+            color: rgba(255, 255, 255, 0.8) !important; /* Semi-transparent white */
+            font-weight: 500;
+            margin-left: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            color: #ffffff !important; /* Full white on hover */
+            transform: translateY(-1px);
+        }
+
+        .fa-plus {
+            color: rgba(255, 255, 255, 0.8) !important;
+            margin-right: 5px;
+        }
+    </style>
+    <style>
+    /* Hero Section */
+    .categories-hero {
+        background: linear-gradient(to right, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.3)), url("https://source.unsplash.com/1600x900/?education,learning") center/cover no-repeat;
+        padding: 100px 0;
+        color: white;
+        text-align: center;
+    }
+
+    .categories-hero h1, .categories-hero p {
+        animation-duration: 1s;
+    }
+        /* Styles généraux */
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .calendar-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-buttons .btn {
+            background-color: #8c84a1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .calendar-buttons .btn:hover {
+            background-color:rgb(121, 114, 138);
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .view-toggle .btn {
+            background-color: #8c84a1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .view-toggle .btn:hover {
+            background-color: rgb(121, 114, 138);
+        }
+
+        /* Styles pour la vue Kanban */
+        .kanban-view {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: flex-start;
+        }
+
+        .kanban-card {
+            width: 250px; /* Largeur réduite */
+            min-height: 300px; /* Hauteur réduite */
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 15px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .kanban-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .kanban-card img {
+    width: 60px;  /* Adjust size as needed */
+    height: 60px;
+    border-radius: 50%; 
+    object-fit: cover; /* Ensures images don't stretch */
+    box-sizing: border-box; /* Ensures border doesn't increase size */
+}
+
+        .kanban-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+
+        .kanban-card p {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .kanban-card strong {
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Styles pour la vue Liste */
+        .list-view .list-group-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            background-color: #ffffff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .list-view .list-group-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .list-view .list-group-item img {
+    width: 50px;  /* Adjust size as needed */
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-sizing: border-box;
+}
+        .list-view .list-group-item div {
+            flex-grow: 1;
+        }
+
+        .list-view .list-group-item h3 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        .list-view .list-group-item p {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .list-view .list-group-item strong {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .navbar {
+    background-color: #8c84a1 !important; /* Main navbar color */
+    padding: 0.8rem 1rem; /* Adjust navbar height */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional subtle shadow */
+}
+
+.navbar-brand {
+    color: #ffffff !important; /* White text for brand */
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.8) !important; /* Semi-transparent white */
+    font-weight: 500;
+    margin-left: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #ffffff !important; /* Full white on hover */
+    transform: translateY(-1px);
+}
+
+/* Active link styling */
+.nav-link.active {
+    color: #ffffff !important;
+    border-bottom: 2px solid #ffffff;
+}
+
+/* Mobile menu toggle icon color */
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(255, 255, 255, 0.8)' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+}
+
+/* Mobile menu background */
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        background-color: #8c84a1;
+        padding: 1rem;
+        margin-top: 0.5rem;
+    }
+}
+
+/* Add to existing styles */
+        .creator-info {
+            margin: 10px 0;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            width: 100%;
+        }
+        
+        .kanban-card {
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .kanban-card:hover .creator-info {
+            background-color: #e9ecef;
+        }
+
+        .list-view .list-group-item {
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .text-muted {
+            color: #6c757d !important;
+        }
+
+        .btn-join {
+            background-color: #8c84a1;
+            color: white;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .btn-join:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-joined {
+            background-color:rgb(185, 222, 255) !important;
+            cursor: default;
+        }
+
+        .group-link {
+            text-decoration: none;
+            color: inherit;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+        }
+
+        .join-button-container {
+            position: relative;
+            z-index: 2;
+        }
+
+        .kanban-card, .list-group-item {
+            transition: transform 0.3s ease;
+        }
+
+        .kanban-card:hover:not(.joined) {
+            transform: translateY(-5px);
+            cursor: pointer;
+        }
+    </style>
+{% endblock %}

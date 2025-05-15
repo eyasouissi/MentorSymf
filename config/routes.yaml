@@ -43,3 +43,24 @@ chatbot:
     path: /chatbot
     controller: App\Controller\ChatbotController::chatbot
     methods: POST
+app_project_assign_group:
+  path: /assign-group/{id}
+  controller: App\Controller\ProjectController::assignGroupAction
+
+
+
+
+app_project_calendar:
+    path: /calendar
+    controller: App\Controller\ProjectController::calendar
+    methods: GET
+
+api_project_deadlines:
+    path: /api/deadlines
+    controller: App\Controller\ProjectController::getDeadlines
+    methods: GET
+
+groupfront_index:
+    path: /groupfront
+    controller: App\Controller\IndexFrontController::index
+    methods: GET

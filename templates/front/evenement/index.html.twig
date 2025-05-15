@@ -18,17 +18,16 @@
         </div>
     </div><!-- End Page Title -->
 
-    <!-- Buttons to Add Event and Annonce -->
+    <!-- Buttons to Add Event, Annonce, and Go to Calendar -->
     <div class="container mb-4">
-       <div class="container mb-4">
-       <br>
-    <div class="d-flex justify-content-center gap-4 mb-4">
-    <a href="{{ path('evenement_new') }}" class="btn btn-info btn-lg">Ajouter un Événement</a>
-    <a href="{{ path('ajouter_annonce') }}" class="btn btn-warning btn-lg">Ajouter une Annonce</a>
-</div>
-
-</div>
-
+        <div class="container mb-4">
+            <br>
+            <div class="d-flex justify-content-center gap-4 mb-4">
+                <a href="{{ path('evenement_new') }}" class="btn btn-info btn-lg">Ajouter un Événement</a>
+                <a href="{{ path('ajouter_annonce') }}" class="btn btn-warning btn-lg">Ajouter une Annonce</a>
+                <a href="{{ path('calendar') }}" class="btn btn-success btn-lg">Voir le Calendrier</a> <!-- Add this line for the Calendar button -->
+            </div>
+        </div>
     </div>
 
     <!-- Evenements Section -->
@@ -50,12 +49,11 @@
                                 <p class="card-text"><strong>End Date:</strong> {{ evenement.dateFin|date('Y-m-d H:i') }}</p>
                                 
                                 <!-- Affichage du titre de l'annonce associée -->
-                              {% if evenement.annonce is not null %}
-    <p class="card-text"><strong>Associated Annonce Title:</strong> {{ evenement.annonce.titreA }}</p>
-{% else %}
-    <p class="card-text"><strong>Associated Annonce Title:</strong> None</p>
-{% endif %}
-
+                                {% if evenement.annonce is not null %}
+                                    <p class="card-text"><strong>Associated Annonce Title:</strong> {{ evenement.annonce.titreA }}</p>
+                                {% else %}
+                                    <p class="card-text"><strong>Associated Annonce Title:</strong> None</p>
+                                {% endif %}
 
                                 <a href="{{ path('evenement_edit', { id: evenement.id }) }}" class="btn btn-warning">Modifier</a>
 

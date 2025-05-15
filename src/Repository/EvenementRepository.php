@@ -15,6 +15,20 @@ class EvenementRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Evenement::class);
     }
+// src/Repository/EvenementRepository.php
+
+public function searchEvenements($searchTerm, $orderBy = 'ASC'): array
+{
+    return $this->createQueryBuilder('e')
+        ->andWhere('e.titreE LIKE :searchTerm OR e.descriptionE LIKE :searchTerm')
+        ->setParameter('searchTerm', '%' . $searchTerm . '%')
+        ->orderBy('e.dateDebut', $orderBy) // Tri par dateDebut avec l'ordre spécifié
+        ->getQuery()
+        ->getResult();
+}
+
+
+
 
     //    /**
     //     * @return Evenement[] Returns an array of Evenement objects

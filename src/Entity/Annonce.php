@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\AnnonceRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: AnnonceRepository::class)]
@@ -38,9 +37,11 @@ class Annonce
     #[ORM\Column(type: "datetime")]
     private \DateTime $date_a;
 
-    //#[ORM\ManyToOne(targetEntity: User::class)]
-    //#[ORM\JoinColumn(name: "id_user", referencedColumnName: "id")]
-    //private ?User $user = null;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: "user", referencedColumnName: "id")]
+    private ?User $user = null;
+    
+    
 
     public function getId(): ?int
     {

@@ -61,8 +61,9 @@ class Offre
     )]
     private ?string $description = null;
 
-    #[ORM\OneToMany(mappedBy: 'id_offre', targetEntity: Paiement::class, cascade: ['remove'], orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'offre', targetEntity: Paiement::class, cascade: ['remove'], orphanRemoval: true)]
     private Collection $paiements;
+    
 
     public function __construct()
     {
@@ -150,26 +151,5 @@ class Offre
     {
         return $this->nom_offre ?? 'Offre';
     }
-
-    public function addPaiement(Paiement $paiement): static
-    {
-        if (!$this->paiements->contains($paiement)) {
-            $this->paiements->add($paiement);
-            $paiement->setIdOffre($this);
-        }
-
-        return $this;
-    }
-
-    public function removePaiement(Paiement $paiement): static
-    {
-        if ($this->paiements->removeElement($paiement)) {
-            // set the owning side to null (unless already changed)
-            if ($paiement->getIdOffre() === $this) {
-                $paiement->setIdOffre(null);
-            }
-        }
-
-        return $this;
-    }
+    
 }

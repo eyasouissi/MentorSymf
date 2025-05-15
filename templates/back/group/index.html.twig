@@ -1,88 +1,233 @@
-{% extends 'base.html.twig' %}
+{% extends 'back/baseback.html.twig' %}
 
-{% block title %}Groupe Index{% endblock %}
+{% block title %}Groups{% endblock %}
 
 {% block body %}
-    <div class="container mt-4">
-        <h1 class="mb-4">Groupe List</h1>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container">
+        <!-- Partie à gauche (Groups et Projects) -->
+        <div class="navbar-nav">
+            <a class="nav-link" href="{{ path('app_group_index') }}">Groups</a>
+            <a class="nav-link" href="{{ path('app_project_index') }}">Projects</a>
+        </div>
 
-        {% for message in app.flashes('success') %}
-            <div class="alert alert-success">{{ message }}</div>
-        {% endfor %}
+        <!-- Partie à droite (Add Group et Add Project) -->
+        <div class="navbar-nav ms-auto"> <!-- ms-auto pour aligner à droite -->
+            <a class="nav-link" href="{{ path('app_group_new') }}">Add Group</a>
+            <a class="nav-link" href="{{ path('app_project_add') }}">Add Project</a>
+        </div>
+    </div>
+</nav>
 
-        {% for message in app.flashes('warning') %}
-            <div class="alert alert-warning">{{ message }}</div>
-        {% endfor %}
+<div class="container mt-4">
+    <h1 class="mb-4 text-center fw-bold">Groups Management</h1>
 
-        <table class="table table-striped">
+    <!-- Barre de recherche et bouton -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <input type="text" id="search" class="form-control w-25 shadow-sm" placeholder="Search groups...">
+        <a href="{{ path('app_group_new') }}" class="btn btn-success btn-lg shadow-sm">
+            <i class="fas fa-plus"></i> Create New Group
+        </a>
+    </div>
+
+    <!-- Filtres sous forme de cartes -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <label for="sortDate" class="form-label fw-bold">Sort by Date</label>
+                    <select id="sortDate" class="form-select">
+                        <option value="">Default</option>
+                        <option value="asc">Oldest First</option>
+                        <option value="desc">Newest First</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <label for="filterImage" class="form-label fw-bold">Filter by Image</label>
+                    <select id="filterImage" class="form-select">
+                        <option value="">All</option>
+                        <option value="yes">With Image</option>
+                        <option value="no">Without Image</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <label for="filterMeetingDate" class="form-label fw-bold">Filter by Meeting Date</label>
+                    <input type="date" id="filterMeetingDate" class="form-control">
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <label for="filterMembers" class="form-label fw-bold">Filter by Members</label>
+                    <select id="filterMembers" class="form-select">
+                        <option value="">All</option>
+                        <option value="public">Public</option>
+                        <option value="private">Private</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau des groupes -->
+    <div class="table-responsive shadow-sm">
+        <table class="table table-hover table-striped">
             <thead class="table-dark">
                 <tr>
                     <th>ID</th>
                     <th>Number of Members</th>
                     <th>Description</th>
-                    <th>Groupe Name</th>
+                    <th>Group Name</th>
                     <th>Members</th>
                     <th>Creation Date</th>
                     <th>Image</th>
+                    <th>Projects</th> 
                     <th>Meeting Date</th>
                     <th>Actions</th>
                 </tr>
             </thead>
-            <tbody>
-            {% for groupe in groupes %}
-                <tr>
-                    <td>{{ groupe.id }}</td>
-                    <td>{{ groupe.nbrMembers }}</td>
-                    <td>{{ groupe.descriptionGroup|default('No description') }}</td>
-                    <td>{{ groupe.nomGroup }}</td>
+            <tbody id="groupTable">
+            {% for groupStudent in groupStudents %}
+                <tr data-date="{{ groupStudent.dateCreationGroup|date('Y-m-d') }}" 
+                    data-image="{{ groupStudent.getImage ? 'yes' : 'no' }}" 
+                    data-meeting-date="{{ groupStudent.dateMeet ? groupStudent.dateMeet|date('Y-m-d') : '' }}">
+                    <td>{{ groupStudent.id }}</td>
+                    <td>{{ groupStudent.nbrMembers }}</td>
+                    <td>{{ groupStudent.descriptionGroup|striptags|slice(0, 100) ~ '...' }}</td>
+                    <td>{{ groupStudent.nomGroup }}</td>
                     <td>
-                        <span class="badge {% if groupe.members == 'public' %}bg-success{% else %}bg-secondary{% endif %}">
-                            {{ groupe.members }}
-                        </span>
+                        <ul>
+                            {% for member in groupStudent.members %}
+                                <li>{{ member.name }}</li> <!-- Displaying member's name -->
+                            {% else %}
+                                <li>No members found.</li>
+                            {% endfor %}
+                        </ul>
                     </td>
-                    <td>{{ groupe.dateCreationGroup ? groupe.dateCreationGroup|date('Y-m-d') : 'N/A' }}</td>
+                    <td>{{ groupStudent.dateCreationGroup|date("Y-m-d") }}</td>
+
+
+
+
                     <td>
-                        {% if groupe.image %}
-                            <img src="{{ asset('uploads/' ~ groupe.image) }}" alt="Groupe Image" class="img-thumbnail" width="60">
+                        {% if groupStudent.image %}
+                            <img src="{{ asset('uploads/groupPics/' ~ groupStudent.image) }}" alt="Group Image" class="img-thumbnail" width="60">
                         {% else %}
-                            No Image
+                            <img src="{{ asset('images/default-group.jpg') }}" alt="Default Image" class="img-thumbnail" width="60">
                         {% endif %}
                     </td>
-                    <td>{{ groupe.dateMeet ? groupe.dateMeet|date('Y-m-d') : 'N/A' }}</td>
-                    
+
+
+
+
                     <td>
-                        <a href="{{ path('app_groupe_show', {'id': groupe.id}) }}" class="btn btn-sm btn-info">
-                            <i class="bi bi-eye"></i> View
-                        </a>
-                        <a href="{{ path('app_groupe_edit', {'id': groupe.id}) }}" class="btn btn-sm btn-warning">
-                            <i class="bi bi-pencil"></i> Edit
-                        </a>
-                        <form action="{{ path('app_groupe_delete', {'id': groupe.id}) }}" method="POST" style="display: inline;">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ groupe.id) }}">
-                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this groupe?')">
-                                <i class="bi bi-trash"></i> Delete
-                            </button>
+                        <ul>
+                            {% for project in groupStudent.projects %}
+                                <li>
+                                    <a href="{{ path('app_project_show', {'id': project.id}) }}" class="text-decoration-none">
+                                        {{ project.titre }} 
+                                    </a>
+                                </li>
+                            {% else %}
+                                <li>No projects found.</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+
+
+
+
+
+                    <td>{{ groupStudent.dateMeet ? groupStudent.dateMeet|date('d/m/Y') : 'N/A' }}</td>
+                    <td>
+                        <a href="{{ path('app_group_show', {'id': groupStudent.id}) }}" class="btn btn-sm btn-info">View</a>
+                        <a href="{{ path('app_group_edit', {'id': groupStudent.id}) }}" class="btn btn-sm btn-warning">Edit</a>
+                        <form action="{{ path('app_group_delete', {'id': groupStudent.id}) }}" method="POST" style="display: inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ groupStudent.id) }}">
+                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this group?')">Delete</button>
                         </form>
                     </td>
                 </tr>
             {% else %}
                 <tr>
-                    <td colspan="10" class="text-center">No records found</td>
+                    <td colspan="9" class="text-center">No records found</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
-
-        <div class="d-flex gap-2">
-            <a href="{{ path('app_groupe_new') }}" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Create New Groupe
-            </a>
-
-            <form action="{{ path('app_groupe_delete_all') }}" method="POST" style="display: inline;">
-                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete all groupes?')">
-                    <i class="bi bi-trash"></i> Clear
-                </button>
-            </form>
-        </div>
     </div>
+
+    <!-- Bouton Clear All -->
+    <form action="{{ path('app_group_delete_all') }}" method="POST" class="mt-4">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete_all') }}">
+        <button type="submit" class="btn btn-outline-danger shadow-sm" onclick="return confirm('Are you sure you want to delete all groups?')">
+            <i class="fas fa-trash"></i> Clear All Groups
+        </button>
+    </form>
+</div>
+
+<!-- Scripts -->
+<script>
+    // Recherche par texte
+    document.getElementById('search').addEventListener('keyup', function() {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll('#groupTable tr');
+        rows.forEach(row => {
+            let text = row.innerText.toLowerCase();
+            row.style.display = text.includes(filter) ? '' : 'none';
+        });
+    });
+
+    // Tri par date de création
+    document.getElementById('sortDate').addEventListener('change', function() {
+        let order = this.value;
+        let rows = Array.from(document.querySelectorAll('#groupTable tr'));
+        rows.sort((a, b) => {
+            let dateA = a.getAttribute('data-date');
+            let dateB = b.getAttribute('data-date');
+            if (order === 'asc') {
+                return dateA.localeCompare(dateB);
+            } else if (order === 'desc') {
+                return dateB.localeCompare(dateA);
+            } else {
+                return 0;
+            }
+        });
+        let tbody = document.querySelector('#groupTable');
+        tbody.innerHTML = '';
+        rows.forEach(row => tbody.appendChild(row));
+    });
+
+    // Filtre par image
+    document.getElementById('filterImage').addEventListener('change', function() {
+        let filter = this.value;
+        let rows = document.querySelectorAll('#groupTable tr');
+        rows.forEach(row => {
+            let hasImage = row.getAttribute('data-image');
+            row.style.display = (filter === "" || hasImage === filter) ? '' : 'none';
+        });
+    });
+
+    // Filtre par date de réunion
+    document.getElementById('filterMeetingDate').addEventListener('change', function() {
+        let filter = this.value;
+        let rows = document.querySelectorAll('#groupTable tr');
+        rows.forEach(row => {
+            let meetingDate = row.getAttribute('data-meeting-date');
+            row.style.display = (filter === "" || meetingDate === filter) ? '' : 'none';
+        });
+    });
+</script>
 {% endblock %}

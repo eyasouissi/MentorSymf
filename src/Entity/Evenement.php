@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\EvenementRepository;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -36,10 +35,10 @@ class Evenement
     #[Assert\GreaterThan(propertyPath: "dateDebut", message: "La date de fin doit être postérieure à la date de début.")]
     private ?\DateTimeInterface $dateFin = null;
 
-    //#[ORM\ManyToOne(targetEntity: User::class)]
-    //#[ORM\JoinColumn(name: "id_user", referencedColumnName: "id", nullable: false)]
-    //#[Assert\NotNull(message: "L'utilisateur est obligatoire.")]
-    //private ?User $user = null;
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(name: "id_user", referencedColumnName: "id", nullable: false)]
+    #[Assert\NotNull(message: "L'utilisateur est obligatoire.")]
+    private ?User $user = null;
 
     #[ORM\ManyToOne(targetEntity: Annonce::class, inversedBy: 'evenements')]
     #[ORM\JoinColumn(name: "id_annonce", referencedColumnName: "id", nullable: false)]

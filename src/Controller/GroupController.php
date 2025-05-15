@@ -3,18 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\GroupStudent;
-use App\Entity\User;
+use App\Entity\Project;
 use App\Form\GroupType;
 use App\Repository\GroupRepository;
-use App\Repository\UserRepository; // Assure-toi que UserRepository est importé
+use App\Repository\ProjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 #[Route('/group')]
 final class GroupController extends AbstractController
@@ -27,80 +26,72 @@ final class GroupController extends AbstractController
         ]);
     }
 
+
     #[Route('/new', name: 'app_group_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $groupStudent = new GroupStudent();
         $form = $this->createForm(GroupType::class, $groupStudent);
+        
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->handleImageUpload($form, $groupStudent);
+            // Set the creator (tutor) but don't add as member
+            $groupStudent->setCreatedBy($this->getUser());
+            
+            // Image handling
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $newFilename = uniqid().'.'.$imageFile->guessExtension();
+                try {
+                    $imageFile->move(
+                        $this->getParameter('group_images_directory'),
+                        $newFilename
+                    );
+                    $groupStudent->setImage($newFilename);
+                } catch (FileException $e) {
+                    $this->addFlash('error', 'File upload error: '.$e->getMessage());
+                    return $this->redirectToRoute('app_group_new');
+                }
+            }
+    
+            // Add projects without members
+            foreach ($form->get('projects')->getData() as $project) {
+                $groupStudent->addProject($project);
+            }
+    
+            // Members will be added later through join button
             $entityManager->persist($groupStudent);
             $entityManager->flush();
-            
-            $this->addFlash('success', '✅ Group successfully created!');
-            return $this->redirectToRoute('app_group_index');
-        }
-
-        return $this->render('back/group/new.html.twig', [
-            'groupStudent' => $groupStudent,
-            'form' => $form->createView(),
-        ]);
-    }
     
-
-    private function handleImageUpload($form, $groupStudent): void
-    {
-        $file = $form->get('image')->getData();
-
-        if ($file instanceof UploadedFile) {
-            $uploadsDirectory = $this->getParameter('groupimage_directory');
-            $newFilename = uniqid() . '.' . $file->guessExtension();
-
-            $allowedExtensions = ['jpg', 'jpeg', 'png'];
-            $fileExtension = strtolower($file->guessExtension());
-
-            if (!in_array($fileExtension, $allowedExtensions)) {
-                $this->addFlash('danger', '❌ Invalid file type. Only JPG, JPEG, PNG are allowed.');
-                return;
-            }
-
-            try {
-                $file->move($uploadsDirectory, $newFilename);
-                $groupStudent->setImage($newFilename);
-                $this->addFlash('success', '✅ Image uploaded successfully!');
-            } catch (FileException $e) {
-                $this->addFlash('danger', '❌ Failed to upload the image: ' . $e->getMessage());
-            }
+            $this->addFlash('success', '✅ Group created successfully! Members can now join using the join button.');
+            return $this->redirectToRoute('app_group_front');
         }
-    }
-
-    #[Route('/{id}', name: 'app_group_show', methods: ['GET'])]
-    public function show(GroupStudent $groupStudent): Response
-    {
-        return $this->render('back/group/show.html.twig', [
-            'groupStudent' => $groupStudent,
+    
+        return $this->render('front/group/new.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_group_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, GroupStudent $groupStudent, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, GroupStudent $group, EntityManagerInterface $em): Response
     {
-        $form = $this->createForm(GroupType::class, $groupStudent);
+        $form = $this->createForm(GroupType::class, $group, [
+            'is_edit' => true, // Pass the is_edit option as true
+        ]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-            return $this->redirectToRoute('app_group_index', [], Response::HTTP_SEE_OTHER);
+            $em->flush();
+            $this->addFlash('success', 'Group updated successfully!');
+            return $this->redirectToRoute('app_group_show', ['id' => $group->getId()]);
         }
 
-        return $this->render('back/group/edit.html.twig', [
-            'groupStudent' => $groupStudent,
+        return $this->render('front/group/edit.html.twig', [
             'form' => $form->createView(),
+            'group' => $group,
         ]);
     }
-
     #[Route('/{id}', name: 'app_group_delete', methods: ['POST'])]
     public function delete(Request $request, GroupStudent $groupStudent, EntityManagerInterface $entityManager): Response
     {
@@ -126,4 +117,87 @@ final class GroupController extends AbstractController
         $this->addFlash('success', 'All groups have been deleted.');
         return $this->redirectToRoute('app_group_index');
     }
+
+    #[Route('/front/groups', name: 'app_group_front', methods: ['GET'])]
+public function front(GroupRepository $groupRepository): Response
+{
+    $user = $this->getUser();
+    $groups = $groupRepository->findAllWithCreator();
+    
+    return $this->render('front/group/index.html.twig', [
+        'groups' => $groups,
+        'current_user' => $user
+    ]);
 }
+    
+#[Route('/{id}/join', name: 'group_join', methods: ['POST'])]
+public function joinGroup(GroupStudent $group, EntityManagerInterface $em, Request $request): Response
+{
+    $user = $this->getUser();
+    
+    if (!$user || !$this->isGranted('ROLE_STUDENT')) {
+        return $this->json(['error' => 'Authentication required'], 401);
+    }
+
+    // Verify CSRF token from form data
+    $submittedToken = $request->request->get('_csrf_token');
+    if (!$this->isCsrfTokenValid('join-group', $submittedToken)) {
+        return $this->json(['error' => 'Invalid CSRF token'], 403);
+    }
+
+    try {
+        if (!$group->getMembers()->contains($user)) {
+            $group->addMember($user);
+            $em->flush();
+            return $this->json(['success' => true, 'newCount' => $group->getNbrMembers()]);
+        }
+        
+        return $this->json(['success' => true, 'message' => 'Already a member']);
+
+    } catch (\Exception $e) {
+        return $this->json([
+            'error' => 'Error joining group: ' . $e->getMessage()
+        ], 500);
+    }
+}
+    #[Route('/{id}', name: 'app_group_show', methods: ['GET'])]
+    public function show(GroupStudent $group): Response
+    {
+        return $this->render('front/group/show.html.twig', [
+            'group' => $group,
+        ]);
+    }
+
+
+   
+    
+    #[Route('/calendar', name: 'app_calendar_front')]
+    public function calendar(EntityManagerInterface $entityManager): Response
+    {
+        $projects = $entityManager->getRepository(Project::class)->findAll();
+    
+        // Transformer les projets en événements pour FullCalendar
+        $events = [];
+        foreach ($projects as $project) {
+            $events[] = [
+                'title' => $project->getTitre(),
+                'start' => $project->getDateLimite()->format('Y-m-d'),
+            ];
+        }
+    
+        return $this->render('front/groupfront/index.html.twig', [
+            'events' => $events
+        ]);
+    }
+    #[Route('/group/{id}', name: 'group_show', methods: ['GET'])]
+    public function showgroup(GroupStudent $group): Response
+    {
+        return $this->render('front/group/show.html.twig', [
+            'group' => $group,
+        ]);
+    }
+    
+    
+    
+ }
+

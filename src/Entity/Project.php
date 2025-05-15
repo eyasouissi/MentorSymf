@@ -1,9 +1,9 @@
 <?php
+
 namespace App\Entity;
 
+
 use App\Repository\ProjectRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -17,65 +17,38 @@ class Project
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: "Title cannot be empty !")]
+    #[Assert\NotBlank(message: "Title cannot be empty!")]
     private ?string $titre = null;
 
-    #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Assert\NotBlank(message: "Description cannot be empty !")]
+    #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: "Description cannot be empty!")]
     #[Assert\Length(
         min: 5,
-        minMessage: "Description must contain at least 5 characters !"
+        minMessage: "Description must contain at least 5 characters!"
     )]
     private ?string $description_project = null;
 
     #[ORM\Column(type: "string", nullable: true)]
-    #[Assert\NotBlank(message: "Please select a PDF file ")]
     private ?string $fichier_pdf = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $date_creation_project = null;
 
     #[ORM\Column(type: "string", length: 255)]
-    #[Assert\NotBlank(message: "Select one of these choices !")]
+    #[Assert\NotBlank(message: "Select one of these choices!")]
     private ?string $difficulte = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Assert\GreaterThanOrEqual("today", message: "Please enter a valid date !")]
-    #[Assert\NotBlank(message: "Select one of these choices !")]
+    #[Assert\GreaterThanOrEqual("today", message: "Please enter a valid date!")]
     private ?\DateTimeInterface $date_limite = null;
 
     #[ORM\Column(type: "string", length: 255, nullable: true)]
     private ?string $image = null;
 
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
+    #[ORM\ManyToOne(targetEntity: GroupStudent::class, inversedBy: 'projects')]
+    #[ORM\JoinColumn(nullable: true, onDelete: "CASCADE")]
+    private ?GroupStudent $group = null;
 
-    public function setImage(?string $image): self
-    {
-        $this->image = $image;
-        return $this;
-    }
-    // Relation ManyToOne avec GroupStudent
-    /**
-     * @ORM\ManyToOne(targetEntity=GroupStudent::class, inversedBy="projects")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $group;
-
-    public function getGroup(): ?GroupStudent
-    {
-        return $this->group;
-    }
-
-    public function setGroup(?GroupStudent $group): self
-    {
-        $this->group = $group;
-
-        return $this;
-    }
-   
 
     public function __construct()
     {
@@ -152,4 +125,27 @@ class Project
         $this->fichier_pdf = $fichier_pdf;
         return $this;
     }
+
+    public function getGroup(): ?GroupStudent
+    {
+        return $this->group;
+    }
+
+    public function setGroup(?GroupStudent $group): self
+    {
+        $this->group = $group;
+        return $this;
+    }
+
+    public function getImage(): ?string
+    {
+        return $this->image;
+    }
+
+    public function setImage(?string $image): self
+    {
+        $this->image = $image;
+        return $this;
+    }
 }
+

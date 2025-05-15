@@ -9,15 +9,17 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use App\Repository\PaiementRepository;
 
 class PaiementType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $data = $options['data'];  
-        $isEditMode = $data && $data->getCardNum(); 
+        $data = $options['data'];
+        $isEditMode = $data && $data->getCardNum();
+
         $builder
-            ->add('id_user')
             ->add('id_offre')
             ->add('yourEmail', EmailType::class, [
                 'label' => 'yourEmail',
@@ -26,7 +28,6 @@ class PaiementType extends AbstractType
                     new Assert\Email(['message' => 'Please enter a valid email address.']),
                 ]
             ])
-            
             ->add('Date_expiration', DateType::class, [
                 'label' => 'Date d\'expiration',
                 'widget' => 'single_text',
@@ -38,10 +39,9 @@ class PaiementType extends AbstractType
                 ]
             ]);
 
-            if (!$isEditMode) {
-                $builder->add('card_num');
-            }
-
+        if (!$isEditMode) {
+            $builder->add('card_num');
+        }
 
         $builder->add('cvv', IntegerType::class, [
             'label' => 'Code de sécurité (CVV)',
@@ -50,7 +50,7 @@ class PaiementType extends AbstractType
                 new Assert\Length([
                     'min' => 3,
                     'max' => 4,
-                    'exactMessage' => 'The CVV must contain exactly 3 or 4 digits.',
+                    'exactMessage' => 'Le CVV doit contenir exactement 3 ou 4 chiffres.',
                 ]),
             ]
         ]);
@@ -58,6 +58,8 @@ class PaiementType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([]);
+        $resolver->setDefaults([
+            'user' => null, // Permet de passer l'utilisateur dans les options
+        ]);
     }
 }

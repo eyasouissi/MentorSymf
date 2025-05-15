@@ -40,4 +40,15 @@ class PaiementRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function getPaiementsStatistiques()
+    {
+        return $this->createQueryBuilder('p')
+            ->select('u.email, COUNT(p.id_paiement) AS nombrePaiements, SUM(o.prix) AS sommePaiements')
+            ->join('p.user', 'u')
+            ->join('p.offre', 'o')
+            ->groupBy('u.id')
+            ->orderBy('sommePaiements', 'DESC')
+            ->getQuery()
+            ->getArrayResult(); // Retourne un tableau associatif
+    }
 }

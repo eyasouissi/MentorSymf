@@ -1,54 +1,64 @@
-{% extends 'base.html.twig' %}
+{% extends 'back/baseback.html.twig' %}
 
-{% block title %}Groupe{% endblock %}
+{% block title %}Group{% endblock %}
 
 {% block body %}
-    <h1>Groupe</h1>
+    <div class="container mt-4">
+        <h1>Group Details</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ groupe.id }}</td>
-            </tr>
-            <tr>
-                <th>Number of Members</th>
-                <td>{{ groupe.nbrMembers }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ groupe.descriptionGroup }}</td>
-            </tr>
-            <tr>
-                <th>Group Name</th>
-                <td>{{ groupe.nomGroup }}</td>
-            </tr>
-            <tr>
-                <th>Members</th>
-                <td>{{ groupe.members }}</td>
-            </tr>
-            <tr>
-                <th>Creation Date</th>
-                <td>{{ groupe.dateCreationGroup ? groupe.dateCreationGroup|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Image</th>
-                <td>{{ groupe.image }}</td>
-            </tr>
-            <tr>
-                <th>Meeting Date</th>
-                <td>{{ groupe.dateMeet ? groupe.dateMeet|date('Y-m-d') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <th>Id</th>
+                    <td>{{ groupStudent.id }}</td>
+                </tr>
+                <tr>
+                    <th>Number of Members</th>
+                    <td>{{ groupStudent.nbrMembers }}</td>
+                </tr>
+                <tr>
+                    <th>Description</th>
+                    <td>{{ groupStudent.descriptionGroup }}</td>
+                </tr>
+                <tr>
+                    <th>Group Name</th>
+                    <td>{{ groupStudent.nomGroup }}</td>
+                </tr>
+                <tr>
+                    <th>Members</th>
+                    <td>{{ groupStudent.members }}</td>
+                </tr>
+                <tr>
+                    <th>Creation Date</th>
+                    <td>{{ groupStudent.dateCreationGroup ? groupStudent.dateCreationGroup|date('Y-m-d') : 'N/A' }}</td>
+                </tr>
+                <tr>
+                    <th>Image</th>
+                    <td>
+                        {% if groupStudent.image %}
+                            <img src="{{ asset('uploads/groupPics/' ~ groupStudent.image) }}" alt="Group Image" class="img-thumbnail" width="100">
+                        {% else %}
+                            No Image Available
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Meeting Date</th>
+                    <td>{{ groupStudent.dateMeet ? groupStudent.dateMeet|date('Y-m-d') : 'N/A' }}</td>
+                </tr>
+            </tbody>
+        </table>
 
-    <a href="{{ path('app_group_index') }}" class="btn btn-secondary">
-        <i class="bi bi-arrow-left-circle"></i> Back to List
-    </a>
+        <div class="d-flex gap-2">
+            <a href="{{ path('app_group_index') }}" class="btn btn-secondary">
+                <i class="bi bi-arrow-left-circle"></i> Back to List
+            </a>
 
-    <a href="{{ path('app_group_edit', {'id': groupe.id}) }}" class="btn btn-warning">
-        <i class="bi bi-pencil"></i> Edit
-    </a>
+            <a href="{{ path('app_group_edit', {'id': groupStudent.id}) }}" class="btn btn-warning">
+                <i class="bi bi-pencil"></i> Edit
+            </a>
 
-    {{ include('groupe/_delete_form.html.twig') }}
+            {{ include('group/_delete_form.html.twig') }}
+        </div>
+    </div>
 {% endblock %}

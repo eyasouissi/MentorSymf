@@ -1,0 +1,135 @@
+{% extends 'back/baseback.html.twig' %}
+
+{% block title %}Statistiques des Paiements{% endblock %}
+
+{% block body %}
+  <div>
+    <div class="az-dashboard-nav">
+      <nav class="nav">
+        <a href="{{ path('app_list_abonnement') }}" class="nav-link {% if app.request.attributes.get('_route') == 'app_list_abonnement' %}active{% endif %}">Liste</a>
+      </nav> 
+    </div>
+  </div>
+  <br>
+
+  <!-- Alignement du titre au centre -->
+  <div style="text-align: center;">
+      <h2>Charts</h2>
+  </div>
+
+  <!-- Graphique -->
+  <canvas id="paiementChart" width="300" height="150"></canvas>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script> <!-- Plugin pour afficher les labels sur les barres -->
+  <script>
+      var labels = JSON.parse('{{ labels | raw }}');
+      var nombrePaiements = JSON.parse('{{ nombrePaiements | raw }}');
+      var sommePaiements = JSON.parse('{{ sommePaiements | raw }}');
+
+      var ctx = document.getElementById('paiementChart').getContext('2d');
+      var paiementChart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+              labels: labels,  // Emails des utilisateurs
+              datasets: [{
+                  label: 'Nombre de Paiements',
+                  data: nombrePaiements,  // Nombre de paiements
+                  backgroundColor: 'rgba(54, 162, 235, 0.5)',  // Couleur plus douce
+                  borderColor: 'rgba(54, 162, 235, 1)',
+                  borderWidth: 1,
+                  datalabels: {
+                      align: 'end',
+                      anchor: 'end',
+                      font: {
+                          weight: 'bold',
+                          size: 10  
+                      },
+                      color: 'black',
+                      padding: 5  
+                  }
+              },
+              {
+                  label: 'Somme des Paiements',
+                  data: sommePaiements,  
+                  backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                  borderColor: 'rgba(255, 99, 132, 1)',
+                  borderWidth: 1,
+                  datalabels: {
+                      align: 'end',
+                      anchor: 'end',
+                      font: {
+                          weight: 'bold',
+                          size: 10  
+                      },
+                      color: 'black',
+                      padding: 5  
+                  }
+              }]
+          },
+          options: {
+              responsive: true,  
+              plugins: {
+                  legend: {
+                      position: 'right',  // Légende à droite
+                      labels: {
+                          font: {
+                              size: 12  
+                          },
+                          padding: 20  
+                      }
+                  },
+                  tooltip: {
+                      callbacks: {
+                          label: function(context) {
+                              return context.dataset.label + ': ' + context.raw;
+                          }
+                      }
+                  },
+                  datalabels: {
+                      color: 'white',
+                      anchor: 'start',
+                      align: 'start',
+                      font: {
+                          weight: 'bold',
+                          size: 10  
+                      }
+                  }
+              },
+              scales: {
+                  y: {
+                      beginAtZero: true,
+                      title: {
+                          display: true,
+                          text: 'Montant / Nombre de Paiements',  
+                          font: {
+                              size: 12
+                          }
+                      },
+                      ticks: {
+                          callback: function(value) {
+                              return value.toLocaleString();  
+                          }
+                      }
+                  },
+                  x: {
+                      title: {
+                          display: true,
+                          text: 'Utilisateurs',  
+                          font: {
+                              size: 12
+                          }
+                      },
+                      ticks: {
+                          autoSkip: true,  
+                          maxRotation: 45,  
+                          minRotation: 0
+                      }
+                  }
+              }
+          },
+          plugins: [ChartDataLabels]  
+      });
+  </script>
+
+{% endblock %}

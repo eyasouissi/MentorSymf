@@ -3,7 +3,7 @@
 {% block title %}Add Evenement{% endblock %}
 
 {% block body %}
-  <main class="main">
+<main class="main">
 
     <!-- Page Title -->
     <div class="page-title" data-aos="fade-up">
@@ -26,6 +26,14 @@
         </div>
       </nav>
     </div><!-- End Page Title -->
+
+    <!-- Flash Notifications -->
+    {% for message in app.flashes('success') %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
 
     <!-- Form Section -->
     <section id="form-section" class="form-section section" data-aos="fade-up">
@@ -125,7 +133,8 @@
       </div>
     </section><!-- /Form Section -->
 
-  </main>
+</main>
+
 
   <style>
     /* Custom styles for form elements */

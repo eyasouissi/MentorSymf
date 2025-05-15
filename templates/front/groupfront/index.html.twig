@@ -1,0 +1,212 @@
+{# templates/front/groupfront/index.html.twig #}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Project Calendar</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Style général */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f8f9fa; /* Fond clair et moderne */
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        #calendar {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        /* Style des en-têtes */
+        .fc-header-toolbar {
+            background: #2c3e50; /* Bleu foncé moderne */
+            color: white;
+            padding: 15px;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 0;
+        }
+
+        .fc-toolbar-title {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .fc-button {
+            background: #3498db; /* Bleu clair moderne */
+            border: none;
+            color: white;
+            border-radius: 5px;
+            padding: 8px 15px;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+        .fc-button:hover {
+            background: #2980b9; /* Bleu plus foncé au survol */
+        }
+
+        /* Style des événements */
+        .fc-event {
+            border: none;
+            color: white;
+            padding: 8px;
+            border-radius: 5px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .fc-event:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .fc-event-title {
+            font-weight: 600;
+        }
+
+        /* Style des cellules */
+        .fc-daygrid-day {
+            border: 1px solid #e0e0e0;
+            transition: background 0.3s ease;
+        }
+
+        .fc-daygrid-day:hover {
+            background: #f0f0f0;
+        }
+
+        .fc-day-today {
+            background: #e3f2fd !important;
+        }
+
+        /* Style des heures */
+        .fc-timegrid-slot {
+            color: #666;
+        }
+
+        /* Animation du titre */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fc-toolbar-title {
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Style du footer */
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        footer a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="calendar"></div>
+
+    <footer>
+        Allways get ready with <a href="#" target="_blank">Mentor ❤️</a>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+
+            // Convertir les données Twig en JSON pour FullCalendar
+            var events = {{ events|json_encode|raw }};
+
+            // Fonction pour déterminer la couleur en fonction de la date
+            function getEventColor(startDate) {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Ignorer l'heure
+                const deadline = new Date(startDate);
+                deadline.setHours(0, 0, 0, 0); // Ignorer l'heure
+
+                const diffInDays = Math.floor((deadline - today) / (1000 * 60 * 60 * 24));
+
+                if (diffInDays === 0) {
+                    return '#e74c3c'; // Rouge foncé pour aujourd'hui
+                } else if (diffInDays === 1) {
+                    return '#e67e22'; // Orange pour +1 jour
+                } else if (diffInDays === 2) {
+                    return '#f1c40f'; // Jaune pour +2 jours
+                } else if (diffInDays === 3) {
+                    return '#2ecc71'; // Vert clair pour +3 jours
+                } else if (diffInDays === 4) {
+                    return '#3498db'; // Bleu clair pour +4 jours
+                } else {
+                    return '#95a5a6'; // Gris pour les autres dates
+                }
+            }
+
+            // Ajouter la couleur aux événements
+            events = events.map(event => {
+                return {
+                    ...event,
+                    color: getEventColor(event.start), // Appliquer la couleur en fonction de la date
+                };
+            });
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'en', // Calendrier en anglais
+                timeZone: 'UTC',
+                events: events,
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                },
+                eventDisplay: 'block',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                eventClick: function(info) {
+                    alert(
+                        'Project: ' + info.event.title + '\n' +
+                        'Deadline: ' + info.event.start.toLocaleString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        })
+                    );
+                }
+            });
+
+            calendar.render();
+        });
+    </script>
+</body>
+</html>
