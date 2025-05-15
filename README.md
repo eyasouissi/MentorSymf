@@ -66,23 +66,22 @@ Welcome to the GitHub repository of **Mentor**, an interactive educational platf
 ## Project Structure
 
 ```bash
-MentorJava/
+MentorSymf/
 ├── src/
-│   ├── controllers/       # JavaFX Controllers
-│   ├── models/            # Domain Models
-│   ├── Entities/          # Entity Views
-│   ├── services/          # Services
-│   ├── tests/             # Test Classes
-│   ├── tools/             # Tools           
-│   └── utils/             # Helpers and Utilities
-├── resources/
-│   ├── assets/            # Assets
-│   ├── css/               # Stylesheets
-│   ├── fonts/             # Fonts
-│   ├── interfaces/        # FXML Interfaces 
-│   ├── images/            # Logos, Icons
-│   └── styles/            # CSS Files
-├── Main.java              # JavaFX Entry Point
+│   ├── controller/        #  Controllers
+│   ├── Command/           # command
+│   ├── Entity/            # Entity Views
+│   ├── Form/              # Form
+│   ├── Repository/        # Repository
+│   ├── Service/           # service           
+│   └── Security/          #  security
+├── template/
+│   ├── back/              # back
+│   ├── calendar/          # calender
+│   ├── front/             # Front
+│   ├── meeting/           # meeting
+│   └── user/              # user
+├── .env                   # .env
 └── README.md              # Documentation
 
 ```
